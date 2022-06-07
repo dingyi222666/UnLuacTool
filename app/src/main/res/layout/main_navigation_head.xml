@@ -8,6 +8,8 @@
 
     android:fitsSystemWindows="true">
 
+
+
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/avatar"
         android:layout_width="60dp"
@@ -34,13 +36,14 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/user_email"
-
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="16dp"
-
-        android:paddingRight="24dp"
+        android:layout_marginEnd="16dp"
+        android:paddingEnd="26dp"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.94"
+        app:layout_constrainedWidth="true"
         android:paddingBottom="15dp"
         android:text="@string/home_navigation_head_user_hitokoto"
         android:textColor="?colorOnPrimary"
@@ -49,10 +52,5 @@
         app:layout_constraintTop_toBottomOf="@id/user_name" />
 
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/background_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
