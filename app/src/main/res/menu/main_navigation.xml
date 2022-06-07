@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/navigation_default"
+
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/home"
+            android:checkable="true"
+            android:checked="true"
+            android:icon="@drawable/ic_twotone_home_24"
+            android:title="@string/menu_navigation_default_home" />
+        <item
+            android:id="@+id/settings"
+            android:checkable="true"
+            android:checked="false"
+            android:icon="@drawable/ic_twotone_settings_24"
+            android:title="@string/menu_navigation_default_settings" />
+        <item
+            android:id="@+id/about"
+            android:checkable="true"
+            android:checked="false"
+            android:icon="@drawable/ic_twotone_bubble_chart_24"
+            android:title="@string/menu_navigation_default_about" />
+    </group>
+
+</menu>

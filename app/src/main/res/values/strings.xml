@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">UnLuacTool</string>
+    <string name="menu_navigation_default_home">首页</string>
+    <string name="menu_navigation_default_settings">设置</string>
+    <string name="menu_navigation_default_about">关于</string>
+    <string name="home_navigation_head_user_name">dingyi</string>
+    <string name="home_navigation_head_user_hitokoto">loading....</string>
+    <string name="settings_common_title">常用</string>
+    <string name="about_version_title">版本</string>
+    <string name="about_licence_title">许可证书</string>
+    <string name="about_agreement_title">用户协议</string>
+    <string name="about_helper_title">帮助文档</string>
+    <string name="about_author_title">dingyi</string>
+    <string name="about_share_title">分享该应用</string>
+    <string name="about_other_title">其他</string>
+    <string name="app_version">1.0 (1)</string>
+    <string name="about_author_summary">作者</string>
+    <string name="toast_is_install_qq">打开QQ聊天窗口失败 请检查是否安装了QQ</string>
+</resources>

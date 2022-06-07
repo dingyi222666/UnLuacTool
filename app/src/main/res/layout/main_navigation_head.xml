@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?colorPrimary"
+
+    android:fitsSystemWindows="true">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/avatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/default_avatar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/circleImageShapeAppearance" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/home_navigation_head_user_name"
+        android:textColor="?colorOnPrimary"
+        android:textSize="16sp"
+        android:tint="@null"
+        app:layout_constraintLeft_toLeftOf="@id/avatar"
+        app:layout_constraintTop_toBottomOf="@id/avatar"
+        app:tint="@null" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/user_email"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="16dp"
+        android:ellipsize="end"
+        android:lines="1"
+        android:paddingRight="24dp"
+        android:paddingBottom="15dp"
+        android:text="@string/home_navigation_head_user_hitokoto"
+        android:textColor="?colorOnPrimary"
+        android:textSize="14sp"
+        app:layout_constraintLeft_toLeftOf="@id/user_name"
+        app:layout_constraintTop_toBottomOf="@id/user_name" />
+
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/background_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
