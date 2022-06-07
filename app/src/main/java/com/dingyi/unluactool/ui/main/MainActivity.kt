@@ -3,21 +3,26 @@ package com.dingyi.unluactool.ui.main
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
+import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
 import com.dingyi.unluactool.ui.ktx.getAttributeColor
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
 
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
-
         MainBinding.inflate(layoutInflater)
     }
+
+    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -35,7 +40,27 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+
+        initViewModel()
+
         initView()
+
+        lifecycleScope.launch {
+            refreshData()
+        }
+    }
+
+
+    private suspend fun refreshData() {
+        viewModel.refreshHitokoto()
+    }
+
+    private fun initViewModel() {
+        val navigationHeadBinding = MainNavigationHeadBinding
+            .bind(binding.mainNavigationView.getHeaderView(0))
+        viewModel.hitokoto.observe(this) {
+            navigationHeadBinding.userEmail.text = it
+        }
     }
 
 
