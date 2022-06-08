@@ -101,9 +101,7 @@ public class Main {
               new FileOutputStream(config.output)
             );
             a.assemble();
-          } catch(IOException e) {
-            error(e.getMessage(), false);
-          } catch(AssemblerException e) {
+          } catch(IOException | AssemblerException e) {
             error(e.getMessage(), false);
           }
         }

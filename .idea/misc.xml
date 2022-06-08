@@ -4,7 +4,10 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/layout/activity_main.xml" value="0.22826086956521738" />
+        <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/layout/fragment_main.xml" value="0.22826086956521738" />
         <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/layout/include_toolbar.xml" value="0.22826086956521738" />
+        <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/layout/item_main_fragment_list.xml" value="0.4" />
+        <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/layout/main.xml" value="0.13323201621073963" />
         <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/layout/main_drawer_main.xml" value="0.22826086956521738" />
         <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/layout/main_navigation_head.xml" value="0.4" />
         <entry key="..\:/android studio project/UnLuacTool/app/src/main/res/menu/main_navigation.xml" value="0.27395833333333336" />

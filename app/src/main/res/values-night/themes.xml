@@ -1,16 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!--TODO 添加夜间主题·-->
-    <style name="Theme.UnLuacTool" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.UnLuacTool" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/teal_300</item>
-        <item name="colorPrimaryDark">@color/teal_800</item>
-        <item name="colorPrimaryVariant">@color/teal_800</item>
+        <item name="colorPrimaryDark">@color/teal_400</item>
+        <item name="colorPrimaryVariant">@color/teal_500</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_800</item>
-        <item name="colorSecondaryVariant">#176EB3</item>
+        <item name="colorSecondary">@color/teal_500</item>
+        <item name="colorSecondaryVariant">@color/teal_500</item>
         <item name="colorOnSecondary">@color/white</item>
 
+        <item name="textColorPrimary">@color/grey_100</item>
+        <item name="textColorSecondary">@color/grey_400</item>
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">false</item><!--可以页面拉伸到状态栏顶部-->
         <item name="strokeColor">#E0E0E0</item>

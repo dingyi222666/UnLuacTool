@@ -20,12 +20,9 @@ android {
     sourceSets {
         getByName("main") {
             java.srcDirs("src/main/kotlin")
-            resources.srcDirs("src/main/res")
-
         }
         getByName("test") {
             java.srcDirs("src/test/kotlin")
-            resources.srcDirs("src/test/res")
         }
     }
 

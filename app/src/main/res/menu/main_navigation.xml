@@ -9,7 +9,7 @@
             android:id="@+id/home"
             android:checkable="true"
             android:checked="true"
-            android:icon="@drawable/ic_twotone_build_24"
+            android:icon="@drawable/ic_twotone_move_to_inbox_24"
             android:title="@string/menu_navigation_default_home" />
         <item
             android:id="@+id/settings"
