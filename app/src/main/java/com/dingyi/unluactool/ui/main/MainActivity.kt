@@ -1,10 +1,16 @@
 package com.dingyi.unluactool.ui.main
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.ActivityChooserView
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -13,8 +19,8 @@ import com.dingyi.unluactool.R
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
 import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
-import com.dingyi.unluactool.ui.ktx.getAttributeColor
-import com.dingyi.unluactool.ui.ktx.getJavaClass
+import com.dingyi.unluactool.ktx.getAttributeColor
+import com.dingyi.unluactool.ktx.getJavaClass
 import kotlinx.coroutines.launch
 
 
@@ -23,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
         MainBinding.inflate(layoutInflater)
     }
+
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -50,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             refreshData()
         }
     }
+
 
 
     private suspend fun refreshData() {
@@ -117,15 +125,18 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
         actionBarDrawerToggle.apply {
             syncState()
             drawerArrowDrawable.color =
                 getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
         }
 
+
+
     }
 
-    fun getPagerFragments():List<Class<*>> {
+    private fun getPagerFragments(): List<Class<*>> {
         return listOf(getJavaClass<MainFragment>())
     }
 }

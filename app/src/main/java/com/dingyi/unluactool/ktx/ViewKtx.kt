@@ -1,4 +1,4 @@
-package com.dingyi.unluactool.ui.ktx
+package com.dingyi.unluactool.ktx
 
 import android.content.Context
 
