@@ -9,6 +9,7 @@ import java.io.File
 
 class LuaProject(private val projectPath: File) {
 
+
     private val projectInfoBean =
         projectPath.resolve(".project.json").readText().decodeToBean<ProjectInfoBean>()
 
@@ -29,12 +30,13 @@ class LuaProject(private val projectPath: File) {
     }
 
 
-    fun resolve(file:File):LuaFile {
+    fun resolve(file: File): LuaFile {
         TODO("not implemented")
     }
 
+    fun getPath(): String = projectPath.absolutePath
 
-
+    fun getProjectInfo() = projectInfoBean
 
 
 }

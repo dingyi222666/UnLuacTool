@@ -37,7 +37,10 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
+        setTheme(R.style.Theme_UnLuacTool)
+
         setContentView(binding.root)
+
 
         setSupportActionBar(getToolBar())
 
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity() {
             title = getString(R.string.app_name)
             setDisplayHomeAsUpEnabled(true)
         }
+
 
 
         initViewModel()

@@ -1,8 +1,12 @@
 package com.dingyi.unluactool.repository
 
 import com.dingyi.unluactool.beans.HitokotoBean
+import com.dingyi.unluactool.core.project.LuaProject
+import com.dingyi.unluactool.core.project.LuaProjectResolver
+import com.dingyi.unluactool.ktx.Paths
 import com.dingyi.unluactool.network.SimpleHttp
 import com.dingyi.unluactool.network.createJsonConvert
+import java.io.File
 
 object MainRepository {
 
@@ -14,5 +18,11 @@ object MainRepository {
             it.hitokoto + " - " + it.from
         } ?: "???"
     }
+
+    suspend fun resolveAllProject() =
+        LuaProjectResolver(File(Paths.projectDir.value)).resolveAllProject(1).map {
+            it.getProjectInfo()
+        }.toList()
+
 }
 

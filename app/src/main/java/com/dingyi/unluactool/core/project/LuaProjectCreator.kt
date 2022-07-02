@@ -21,24 +21,32 @@ object LuaProjectCreator {
             val projectPath = File(Paths.projectDir.value, projectName)
 
             if (!isZipFile) {
+
                 file.copyTo(projectPath.resolve("main.lua"), true)
+
             } else {
                 val zipFile = ZipFile(file)
-                zipFile.extractAll(projectPath.toString())
-                zipFile.close()
+                kotlin.runCatching {
+                    zipFile.extractAll(projectPath.toString())
+                    zipFile.close()
+                }
             }
 
             file.delete()
 
-            projectPath.resolve("project.json")
+            projectPath.resolve(".project.json")
                 .writeText(Gson().toJson(generateProjectInfo(projectPath, projectName)))
-
         }
 
 
     private fun generateProjectInfo(projectPath: File, projectName: String): ProjectInfoBean {
         val luaFileCount = projectPath.walk().map { it.name }.filter { it.endsWith(".lua") }.count()
-        return ProjectInfoBean(projectName, luaFileCount)
+        return ProjectInfoBean(
+            name = projectName,
+            fileCountOfLuaFile = luaFileCount,
+            path = projectPath.path,
+            icon = null
+        )
     }
 
     private fun getProjectName(): String {
@@ -46,7 +54,6 @@ object LuaProjectCreator {
     }
 
     private fun getProjectCount() =
-        (File(Paths.projectDir.value)?.listFiles()?.size?.plus(1)) ?: 1
-
+        (File(Paths.projectDir.value).listFiles()?.size?.plus(1)) ?: 1
 
 }
