@@ -1,5 +1,6 @@
 package com.dingyi.unluactool
 
+import com.dingyi.unluactool.engine.tree.ChunkTree
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import unluac.Configuration
@@ -35,22 +36,36 @@ class ExampleUnitTest {
 
     }
 
+    @Test
+    fun chunkTreeTest() {
+        val path = "C:\\Users\\dingyi\\Nox_share\\ImageShare\\c.lua"
 
-    private fun fileToFunction(fn: String, config: Configuration): LFunction? {
-        var file: RandomAccessFile? = null
-        return try {
-            file = RandomAccessFile(fn, "r")
+        val header = checkNotNull(fileToBHeader(path, Configuration().apply {
+            this.mode = Configuration.Mode.ASSEMBLE
+            this.variable = Configuration.VariableMode.DEFAULT
+        }))
+
+        val tree = ChunkTree(header)
+        tree.parse()
+        println(tree.getRootNode())
+    }
+
+
+    private fun fileToBHeader(path: String, config: Configuration): BHeader? {
+        return runCatching {
+            val file = RandomAccessFile(path, "r")
             val buffer = ByteBuffer.allocate(file.length().toInt())
             buffer.order(ByteOrder.LITTLE_ENDIAN)
             var len = file.length().toInt()
-            val `in` = file.channel
-            while (len > 0) len -= `in`.read(buffer)
+            val channel = file.channel
+            while (len > 0) len -= channel.read(buffer)
             buffer.rewind()
-            val header = BHeader(buffer, config)
-            header.main
-        } finally {
-            file?.close()
-        }
+            BHeader(buffer, config)
+        }.getOrNull()
+    }
+
+    private fun fileToFunction(fn: String, config: Configuration): LFunction? {
+        return fileToBHeader(fn, config)?.main
     }
 
 

@@ -21,14 +21,19 @@ object LuaProjectCreator {
             val projectPath = File(Paths.projectDir.value, projectName)
 
             if (!isZipFile) {
-
                 file.copyTo(projectPath.resolve("main.lua"), true)
-
             } else {
                 val zipFile = ZipFile(file)
                 kotlin.runCatching {
-                    zipFile.extractAll(projectPath.toString())
+                    zipFile.fileHeaders.forEach {
+                        val fileName = it.fileName
+                        if (fileName.endsWith(".lua")) {
+                            zipFile.extractFile(it, projectPath.absolutePath)
+                        }
+                    }
                     zipFile.close()
+                }.onFailure {
+                    it.printStackTrace()
                 }
             }
 

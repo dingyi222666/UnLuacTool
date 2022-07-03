@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.dingyi.unluactool"
-        minSdk = 21
+        minSdk = 26
         targetSdk = 31
 
         versionCode = 1
@@ -26,9 +26,6 @@ android {
         }
     }
 
-    buildFeatures {
-        viewBinding = true
-    }
 
     buildTypes {
         release {
@@ -44,13 +41,16 @@ android {
 
         }
     }
+
     buildFeatures {
         viewBinding = true
     }
+
     packagingOptions {
         resources.excludes.addAll(listOf("META-INF/**", "xsd/*", "license/*"))
         resources.pickFirsts.add("kotlin/**")
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -72,6 +72,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.4.1")
 
     implementation("net.lingala.zip4j:zip4j:2.11.1")
+
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     testImplementation("junit:junit:4.13.2")

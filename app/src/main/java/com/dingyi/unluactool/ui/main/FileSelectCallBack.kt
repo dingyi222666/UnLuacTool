@@ -13,14 +13,17 @@ import kotlinx.coroutines.launch
 
 class FileSelectCallBack(
     private val fragment: Fragment
-) : ActivityResultCallback<Uri> {
+) : ActivityResultCallback<Uri?> {
 
     companion object {
         val ZIP_HEADER_BYTES_1 = byteArrayOf(0x50, 0x4b, 0x03, 0x04)
         val ZIP_HEADER_BYTES_2 = byteArrayOf(0x50, 0x4b, 0x05, 0x06)
     }
 
-    override fun onActivityResult(result: Uri) {
+    override fun onActivityResult(result: Uri?) {
+        if (result == null) {
+            return
+        }
         val inputStream = fragment.requireContext()
             .contentResolver
             .openInputStream(result)
