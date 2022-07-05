@@ -1,5 +1,8 @@
 package com.dingyi.unluactool
 
+import com.dingyi.unluactool.engine.decompiler.LFunctionDecompiler
+import com.dingyi.unluactool.engine.lasm.assemble.Assembler
+import com.dingyi.unluactool.engine.lasm.disassemble.Disassembler
 import com.dingyi.unluactool.engine.tree.ChunkTree
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -17,6 +20,11 @@ import java.nio.ByteOrder
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+
+    companion object {
+        const val LUA_PATH = "G:\\dingyi\\Documents\\QQ_Data\\2187778735\\FileRecv\\androlua.luac"
+    }
+
     @Test
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
@@ -24,7 +32,7 @@ class ExampleUnitTest {
 
     @Test
     fun lasmTest1() {
-        val path = "C:\\Users\\dingyi\\Nox_share\\ImageShare\\c.lua"
+        val path = LUA_PATH
 
         val lFunction = checkNotNull(
             fileToFunction(path, Configuration().apply {
@@ -37,17 +45,24 @@ class ExampleUnitTest {
     }
 
     @Test
-    fun chunkTreeTest() {
-        val path = "C:\\Users\\dingyi\\Nox_share\\ImageShare\\c.lua"
+    fun lasmTest2() {
+        val path = LUA_PATH
 
         val header = checkNotNull(fileToBHeader(path, Configuration().apply {
             this.mode = Configuration.Mode.ASSEMBLE
             this.variable = Configuration.VariableMode.DEFAULT
         }))
 
-        val tree = ChunkTree(header)
-        tree.parse()
-        println(tree.getRootNode())
+        val disassembler = Disassembler(header.main)
+        val function = disassembler.disassemble()
+        println(function.getDataWithChildFunctions())
+        val assembler = Assembler(function)
+
+        val string = assembler.assemble(function.childFunctions.get(1)).second.let {
+            LFunctionDecompiler.decompile(it)
+        }.decodeToString()
+        println("-----------------------------------------------------")
+        println(string)
     }
 
 

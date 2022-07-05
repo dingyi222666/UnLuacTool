@@ -23,8 +23,9 @@ public class BHeader {
   };
   
   public final boolean debug = false;
-  
-  public final Configuration config;
+
+  //暴力更改
+  public Configuration config;
   public final Version version;
   public final LHeader lheader;
   public final LHeaderType lheader_type;
@@ -43,7 +44,7 @@ public class BHeader {
   public final CodeExtract extractor;
   public final OpcodeMap opmap;
   
-  public final LFunction main;
+  public LFunction main;
   
   public BHeader(Version version, LHeader lheader) {
     this(version, lheader, null);
