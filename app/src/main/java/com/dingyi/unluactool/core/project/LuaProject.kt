@@ -22,7 +22,6 @@ class LuaProject(private val projectPath: File) {
     }
 
     suspend fun updateProjectInfo() {
-
         val projectInfoBean =
             projectPath.resolve(".project.json").readText().decodeToBean<ProjectInfoBean>()
         projectInfoBean.fileCountOfLuaFile = getRealFileCount()

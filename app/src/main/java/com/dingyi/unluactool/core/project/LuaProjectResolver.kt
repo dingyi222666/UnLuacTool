@@ -8,7 +8,6 @@ class LuaProjectResolver(
     private val resolverFile: File
 ) {
 
-
     fun resolveProject(relativeFile: File): LuaProject? {
         val targetPath = resolverFile.resolve(relativeFile)
         return runCatching {
