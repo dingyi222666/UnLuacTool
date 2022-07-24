@@ -1,9 +1,11 @@
 package com.dingyi.unluactool.core.service
 
+/**
+ * Wraps a single service instance. Implementations must be thread safe.
+ */
 interface Service {
+    fun get(): Any
 
-    fun <T> get(clazz: Class<T>): T
-
-    fun <T> find(clazz: Class<T>): T?
+    fun getDisplayName(): String
 
 }
