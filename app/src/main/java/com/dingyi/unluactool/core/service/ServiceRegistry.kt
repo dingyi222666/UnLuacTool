@@ -22,15 +22,6 @@ interface ServiceRegistry {
 
     fun <T> getAll(serviceType: Class<T>): List<T>
 
-    /**
-     * Locates the service of the given type.
-     *
-     * @param serviceType The service type.
-     * @return The service instance. Never returns null.
-
-     */
-
-    operator fun get(serviceType: Type): Any
 
     /**
      * Locates the service of the given type, returning null if no such service.
