@@ -31,7 +31,8 @@ interface ServiceRegistry {
 
      */
 
-    fun find(serviceType: Type): Any?
+
+    fun find(serviceType: Class<*>): Any?
 
 
 }

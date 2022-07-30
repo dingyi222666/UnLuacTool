@@ -3,13 +3,11 @@ package com.dingyi.unluactool
 import com.dingyi.unluactool.engine.decompiler.LFunctionDecompiler
 import com.dingyi.unluactool.engine.lasm.assemble.Assembler
 import com.dingyi.unluactool.engine.lasm.disassemble.Disassembler
-import com.dingyi.unluactool.engine.tree.ChunkTree
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import unluac.Configuration
 import unluac.parse.BHeader
 import unluac.parse.LFunction
-import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -19,7 +17,7 @@ import java.nio.ByteOrder
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class ExampleUnitTest {
+class LASMTest {
 
     companion object {
         const val LUA_PATH = "G:\\dingyi\\Documents\\QQ_Data\\2187778735\\FileRecv\\androlua.luac"

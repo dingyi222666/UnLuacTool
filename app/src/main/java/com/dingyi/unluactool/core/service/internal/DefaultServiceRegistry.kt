@@ -1,11 +1,9 @@
 package com.dingyi.unluactool.core.service.internal
 
+import com.dingyi.unluactool.core.service.*
 import com.dingyi.unluactool.core.service.ContainsServices
-import com.dingyi.unluactool.core.service.Service
-import com.dingyi.unluactool.core.service.ServiceProvider
-import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.google.gson.internal.Primitives.unwrap
-import java.lang.reflect.Type
+import java.lang.reflect.Method
 import java.util.*
 
 
@@ -65,6 +63,24 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
 
     private fun findProviderMethods(target: Any) {
 
+        //1.getAllMethodsAndFilter
+
+        val targetMethods = target::class.java.declaredMethods
+            .filter { it.name.startsWith("create") }
+
+        if (targetMethods.isEmpty())
+            return
+
+
+        //2. addService
+
+
+        targetMethods.forEach {
+            it.isAccessible = true
+            ownServices.add(FactoryService(this, it.returnType, it, target))
+        }
+
+
     }
 
     constructor(displayName: String?) : this(displayName, *NO_PARENTS)
@@ -89,8 +105,8 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
             return null
         }
 
-        override fun getAll(): Iterator<Service> {
-            return serviceProviders.flatMap { it.getAll().asSequence() }.iterator()
+        override fun getAll(serviceType: Class<*>): Iterator<Service> {
+            return serviceProviders.flatMap { it.getAll(serviceType).asSequence() }.iterator()
         }
 
     }
@@ -130,9 +146,10 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
             throw RuntimeException("Multiple services of type %s".format(serviceType))
         }
 
-        override fun getAll(): Iterator<Service> {
-            return services.iterator()
+        override fun getAll(serviceType: Class<*>): Iterator<Service> {
+            return services.filter { it.serviceType.isAssignableFrom(serviceType) }.iterator()
         }
+
 
         private fun getProviders(type: Class<*>): List<ServiceProvider> {
             val providers = providersByType[type]
@@ -142,8 +159,17 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
 
         fun add(serviceProvider: SingletonService) {
             services.add(serviceProvider)
+            putServiceType(serviceProvider.serviceType, serviceProvider)
         }
 
+        private fun putServiceType(type: Class<*>, serviceProvider: ServiceProvider) {
+            var serviceProviders = providersByType[type]
+            if (serviceProviders == null) {
+                serviceProviders = ArrayList(2)
+                providersByType[type] = serviceProviders
+            }
+            serviceProviders.add(serviceProvider)
+        }
 
     }
 
@@ -154,8 +180,8 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
             } else null
         }
 
-        override fun getAll(): Iterator<Service> {
-            return arrayOf(this).iterator()
+        override fun getAll(serviceType: Class<*>): Iterator<Service> {
+            return arrayOf(this).filter { serviceType == ServiceRegistry::class.java }.iterator()
         }
 
 
@@ -167,6 +193,36 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
             return this@DefaultServiceRegistry
         }
 
+
+    }
+
+    private class FactoryService(
+        owner: DefaultServiceRegistry,
+        override var serviceType: Class<*>,
+        private val createMethod: Method,
+        private val target: Any
+    ) : SingletonService(owner, serviceType) {
+
+        override fun createServiceInstance(): Any? {
+            val params = createMethod.parameterTypes//.map { it.type }
+            createMethod.isAccessible = true
+            val invokeArray = arrayOfNulls<Any>(params.size)
+            params.forEachIndexed { index, any ->
+                val availableService = Optional.ofNullable(owner[any])
+                if (!availableService.isPresent) {
+                    error("Can't create services")
+                }
+                invokeArray[index] = availableService.get()
+            }
+
+
+            return createMethod.invoke(target, *invokeArray)
+
+        }
+
+        override fun getDisplayName(): String {
+            return "Service " + serviceType.name + " with implementation " + getInstance()::class.java.name
+        }
 
     }
 
@@ -238,7 +294,7 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
 
 
         override fun getService(serviceType: Class<*>): Service? {
-            return if (serviceType.isAssignableFrom(this.serviceType)) {
+            return if (!serviceType.isAssignableFrom(this.serviceType)) {
                 null
             } else prepare()
         }
@@ -257,16 +313,19 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
 
         abstract var serviceType: Class<*>
 
-        protected fun setInstance(instance: Any) {
+        protected fun setInstance(instance: Any?) {
             this.instance = instance
             arrayOfService = arrayOf(this)
         }
 
         override fun getService(serviceType: Class<*>): Service? {
-            return null
+            return this
         }
 
-        override fun getAll(): Iterator<Service> = arrayOfService.iterator()
+        override fun getAll(serviceType: Class<*>): Iterator<Service> {
+            return arrayOfService.filter { this.serviceType.isAssignableFrom(serviceType) }
+                .iterator()
+        }
 
         fun getInstance(): Any {
             var result = instance
@@ -285,7 +344,7 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
         /**
          * Subclasses implement this method to create the service instance. It is never called concurrently and may not return null.
          */
-        protected abstract fun createServiceInstance(): Any
+        protected abstract fun createServiceInstance(): Any?
 
 
     }
@@ -301,27 +360,57 @@ class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegist
             return parent.getService(serviceType)
         }
 
-        override fun getAll(): Iterator<Service> {
-            return parent.getAll()
+        override fun getAll(serviceType: Class<*>): Iterator<Service> {
+            return parent.getAll(serviceType)
         }
 
-        fun stop() {}
     }
 
     private fun getDisplayName(): String {
         return displayName ?: javaClass.simpleName
     }
 
+    /**
+     * Adds a service instance to this registry with the given public type. The given object is closed when this registry is closed.
+     */
+    fun <T : Any> add(serviceType: Class<out T>, serviceInstance: T): DefaultServiceRegistry {
+        ownServices.add(FixedInstanceService(this, serviceType, serviceInstance))
+        return this
+    }
+
+    /**
+     * Adds a service instance to this registry. The given object is closed when this registry is closed.
+     */
+    fun add(serviceInstance: Any): DefaultServiceRegistry {
+        return add(serviceInstance.javaClass, serviceInstance)
+    }
+
+    /**
+     * Adds a service provider bean to this registry. This provider may define factory and decorator methods.
+     */
+    fun addProvider(provider: Any): DefaultServiceRegistry {
+        findProviderMethods(provider)
+        return this
+    }
+
+
     override fun <T> get(serviceType: Class<T>): T {
-        TODO("Not yet implemented")
+        val instance = find(serviceType)
+        return checkNotNull(instance) as T
     }
 
     override fun <T> getAll(serviceType: Class<T>): List<T> {
-        TODO("Not yet implemented")
+        return allServices.getAll(serviceType)
+            .asSequence()
+            .mapNotNull {
+                runCatching {
+                    it.get() as T
+                }.getOrNull()
+            }.toList()
     }
 
-    override fun find(serviceType: Type): Any? {
-        TODO("Not yet implemented")
+    override fun find(serviceType: Class<*>): Any? {
+        return ownServices.getService(serviceType)?.get()
     }
 
     override fun asProvider(): ServiceProvider {

@@ -12,14 +12,14 @@ interface ServiceProvider {
     fun getService(serviceType: Class<*>): Service?
 
 
-    fun getAll(): Iterator<Service>
+    fun getAll(serviceType: Class<*>): Iterator<Service>
 
     companion object EmptyServiceProvider : ServiceProvider {
         override fun getService(serviceType: Class<*>): Service? {
             return null
         }
 
-        override fun getAll(): Iterator<Service> = EmptyIterator
+        override fun getAll(serviceType: Class<*>): Iterator<Service> = EmptyIterator
 
     }
 
