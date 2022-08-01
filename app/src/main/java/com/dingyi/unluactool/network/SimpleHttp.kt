@@ -13,8 +13,6 @@ import java.io.File
 object SimpleHttp {
 
     private val okHttpClient = OkHttpClient()
-
-
     suspend fun <T> get(url: String, convert: ResponseConvert<T>): T? =
         withContext(Dispatchers.IO) {
             val request = Request.Builder()

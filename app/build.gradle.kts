@@ -79,4 +79,11 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     implementation(kotlin("reflect"))
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
+    implementation("org.apache.commons:commons-vfs2:2.9.0") {
+        exclude("org.apache.hadoop")
+    }
+
+
 }

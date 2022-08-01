@@ -9,9 +9,16 @@ inline fun <reified T> String.decodeToBean(): T {
 }
 
 
-fun String.toFile():File = File(this)
+fun Any.encodeToJson(): String {
+    return Gson().toJson(this)
+}
+
+fun String.toFile(): File = File(this)
 
 object Paths {
     val projectDir =
-        lazy(LazyThreadSafetyMode.NONE) { MainApplication.instance.getExternalFilesDir(null)?.resolve("projects")?.absolutePath ?: "" }
+        lazy(LazyThreadSafetyMode.NONE) {
+            MainApplication.instance.getExternalFilesDir(null)?.resolve("projects")?.absolutePath
+                ?: ""
+        }
 }
