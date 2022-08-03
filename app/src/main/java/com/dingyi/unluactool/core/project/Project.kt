@@ -5,17 +5,16 @@ import java.io.File
 
 abstract interface Project {
 
-    fun getName(): String
+    val fileCount:Int
 
-    fun getProjectFileCount(): Int
+    val projectPath:FileObject
 
-    fun getProjectPath(): FileObject
+    var projectIconPath:String?
 
-    fun getProjectIconPath(): String?
+    var name:String
 
-    fun setProjectIconPath(path: String)
 
-    fun setName(name:String)
+    suspend fun resolveProjectFileCount(): Int
 
 
     suspend fun remove():Boolean

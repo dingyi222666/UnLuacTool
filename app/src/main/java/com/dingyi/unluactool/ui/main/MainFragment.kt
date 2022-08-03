@@ -1,28 +1,43 @@
 package com.dingyi.unluactool.ui.main
 
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.base.BaseFragment
+import com.dingyi.unluactool.core.project.ProjectCreator
+import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.databinding.FragmentMainBinding
 import com.dingyi.unluactool.ktx.getAttributeColor
+import com.dingyi.unluactool.ktx.showSnackBar
 import com.dingyi.unluactool.ui.main.adapter.ProjectListAdapter
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class MainFragment: BaseFragment<FragmentMainBinding>() {
+class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private lateinit var fileSelectLauncher: ActivityResultLauncher<Array<String>>
 
     private lateinit var adapter: ProjectListAdapter
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel by viewModels<MainViewModel>()
+
+    private val coroutineHandler = CoroutineExceptionHandler { _, exception ->
+        exception.message?.showSnackBar(binding.root)
+        Log.e(javaClass.simpleName, "error for create project", exception)
+    }
 
     override fun getViewBinding(
         inflater: LayoutInflater,
@@ -37,9 +52,21 @@ class MainFragment: BaseFragment<FragmentMainBinding>() {
 
 
         fileSelectLauncher = registerForActivityResult(
-            ActivityResultContracts.OpenDocument(),
-            FileSelectCallBack(this)
-        )
+            ActivityResultContracts.OpenDocument()
+        ) {
+            it?.let { uri ->
+                doRefresh(Dispatchers.Main + coroutineHandler) {
+
+                    MainApplication
+                        .instance
+                        .globalServiceRegistry
+                        .get<ProjectCreator>()
+                        .createProject(requireContext().contentResolver, uri)
+
+                    refreshProject()
+                }
+            }
+        }
 
         adapter = ProjectListAdapter()
 
@@ -58,7 +85,6 @@ class MainFragment: BaseFragment<FragmentMainBinding>() {
                 }
                 setColorSchemeColors(requireActivity().getAttributeColor(androidx.appcompat.R.attr.colorPrimary))
             }
-            refresh.isRefreshing = true
 
         }
 
@@ -74,12 +100,17 @@ class MainFragment: BaseFragment<FragmentMainBinding>() {
         }
     }
 
-    private fun refreshProject() {
-
-        lifecycleScope.launch {
-            viewModel.refreshProjectList()
+    private fun doRefresh(context: CoroutineContext = Dispatchers.Main, block: suspend () -> Unit) {
+        lifecycleScope.launch(context) {
+            binding.refresh.isRefreshing = true
+            block.invoke()
             binding.refresh.isRefreshing = false
         }
+    }
+
+    private fun refreshProject() {
+
+        doRefresh(block = viewModel::refreshProjectList)
 
     }
 

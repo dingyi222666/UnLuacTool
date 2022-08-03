@@ -30,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         MainBinding.inflate(layoutInflater)
     }
 
-
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

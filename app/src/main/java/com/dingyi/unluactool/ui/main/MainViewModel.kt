@@ -5,12 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.dingyi.unluactool.beans.ProjectInfoBean
+import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.repository.MainRepository
 import com.dingyi.unluactool.ui.main.adapter.ProjectListAdapter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val _hitokoto = MutableLiveData<String>()
 
@@ -18,19 +19,17 @@ class MainViewModel: ViewModel() {
         get() = _hitokoto
 
 
-    private val _projectList = MutableLiveData<List<ProjectInfoBean>>()
+    private val _projectList = MutableLiveData<List<Project>>()
 
-    val projectList: LiveData<List<ProjectInfoBean>>
+    val projectList: LiveData<List<Project>>
         get() = _projectList
 
     suspend fun refreshProjectList() {
-        withContext(Dispatchers.IO) {
-            val projectList = MainRepository.resolveAllProject()
-            _projectList.postValue(projectList)
-        }
+        val projectList = MainRepository.resolveAllProject()
+        _projectList.postValue(projectList)
     }
 
-    suspend fun refreshHitokoto() = withContext(Dispatchers.Main) {
+    suspend fun refreshHitokoto() {
         _hitokoto.value = MainRepository
             .refreshHitokoto()
     }

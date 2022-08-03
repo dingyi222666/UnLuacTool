@@ -1,12 +1,14 @@
 package com.dingyi.unluactool.repository
 
+import android.content.ContentResolver
+import android.net.Uri
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.beans.HitokotoBean
-import com.dingyi.unluactool.core.project.LuaProject
-import com.dingyi.unluactool.core.project.LuaProjectResolver
-import com.dingyi.unluactool.ktx.Paths
+import com.dingyi.unluactool.core.project.ProjectCreator
+import com.dingyi.unluactool.core.project.ProjectManager
+import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.network.SimpleHttp
 import com.dingyi.unluactool.network.createJsonConvert
-import java.io.File
 
 object MainRepository {
 
@@ -20,9 +22,18 @@ object MainRepository {
     }
 
     suspend fun resolveAllProject() =
-        LuaProjectResolver(File(Paths.projectDir.value)).resolveAllProject(1).map {
-            it.getProjectInfo()
-        }.toList()
+        MainApplication.instance.globalServiceRegistry
+            .get<ProjectManager>()
+            .resolveAllProject()
+            .onEach {
+                it.resolveProjectFileCount()
+            }
+
+    suspend fun createProject(contentResolver: ContentResolver, uri: Uri) {
+        MainApplication.instance.globalServiceRegistry
+            .get<ProjectCreator>()
+            .createProject(contentResolver, uri)
+    }
 
 }
 

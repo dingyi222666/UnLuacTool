@@ -4,7 +4,6 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
-import com.dingyi.unluactool.core.project.LuaProjectCreator
 import com.dingyi.unluactool.core.project.ProjectCreator
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get
@@ -12,7 +11,6 @@ import com.dingyi.unluactool.ktx.Paths
 import com.dingyi.unluactool.ktx.encodeToJson
 import com.dingyi.unluactool.ktx.getString
 import com.dingyi.unluactool.ktx.isZipFile
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -30,7 +28,7 @@ class LuaProjectCreator : ProjectCreator {
             val importPath = uri.path ?: "?.lua"
 
             if (!importPath.matches(Regex(".*(.lua|.zip|.apk)$"))) {
-                error(R.string.main_project_import_fail)
+                error(getString(R.string.main_project_import_fail))
             }
 
             val cacheFile = checkNotNull(
@@ -62,10 +60,10 @@ class LuaProjectCreator : ProjectCreator {
             val projectPath =
                 VFS.getManager().resolveFile(File(Paths.projectDir.value, projectName).toURI())
 
-            projectPath.resolveFile("origin").createFolder()
+            projectPath.resolveFile(LuaProject.ORIGIN_DIR_NAME).createFolder()
 
             if (!isZipFile) {
-                projectPath.resolveFile("origin/main.lua").apply {
+                projectPath.resolveFile("${LuaProject.ORIGIN_DIR_NAME}/main.lua").apply {
                     parent.createFolder()
                     createFile()
                     content.outputStream.use { outputStream ->
@@ -86,7 +84,8 @@ class LuaProjectCreator : ProjectCreator {
                             val fileName = it.fileName
                             if (fileName.endsWith(".lua")) {
                                 val targetFile =
-                                    projectPath.resolveFile("origin").resolveFile(fileName)
+                                    projectPath.resolveFile(LuaProject.ORIGIN_DIR_NAME)
+                                        .resolveFile(fileName)
                                 targetFile.parent.createFolder()
                                 targetFile.createFile()
                                 zipFile.getInputStream(it).use { inputStream ->
@@ -104,7 +103,7 @@ class LuaProjectCreator : ProjectCreator {
 
             cacheFile.delete()
 
-            projectPath.resolveFile(".project.json")
+            projectPath.resolveFile(LuaProject.PROJECT_CONFIG_JSON)
                 .content
                 .outputStream
                 .use {
@@ -121,7 +120,7 @@ class LuaProjectCreator : ProjectCreator {
 
 
     private fun getProjectName(): String {
-        return getString(R.string.main_temporary_project_name) + "_" + MainApplication.globalServiceRegistry.get<ProjectManager>()
+        return getString(R.string.main_temporary_project_name) + "_" + MainApplication.instance.globalServiceRegistry.get<ProjectManager>()
             .getProjectCount()
     }
 }

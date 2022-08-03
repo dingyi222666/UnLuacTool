@@ -3,18 +3,19 @@ package com.dingyi.unluactool.ui.main.adapter
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dingyi.unluactool.R
-import com.dingyi.unluactool.beans.ProjectInfoBean
+import com.dingyi.unluactool.core.project.Project
 
 import com.dingyi.unluactool.databinding.ItemMainFragmentListBinding
 import com.dingyi.unluactool.ktx.getString
 import com.dingyi.unluactool.ktx.toFile
 
 class ProjectListAdapter :
-    ListAdapter<ProjectInfoBean, ProjectListAdapter.ViewHolder>(DiffItemCallback) {
+    ListAdapter<Project, ProjectListAdapter.ViewHolder>(DiffItemCallback) {
 
 
     data class ViewHolder(
@@ -22,19 +23,20 @@ class ProjectListAdapter :
     ) : RecyclerView.ViewHolder(binding.root)
 
 
-    companion object DiffItemCallback : DiffUtil.ItemCallback<ProjectInfoBean>() {
+    companion object DiffItemCallback : DiffUtil.ItemCallback<Project>() {
         override fun areItemsTheSame(
-            oldItem: ProjectInfoBean,
-            newItem: ProjectInfoBean
+            oldItem: Project,
+            newItem: Project
         ): Boolean {
             return oldItem == newItem
         }
 
         override fun areContentsTheSame(
-            oldItem: ProjectInfoBean,
-            newItem: ProjectInfoBean
+            oldItem: Project,
+            newItem: Project
         ): Boolean {
-            return oldItem.path == newItem.path
+            return oldItem.projectPath.publicURIString == newItem.projectPath.publicURIString
+
         }
 
     }
@@ -50,11 +52,12 @@ class ProjectListAdapter :
         holder.binding.apply {
             val item = getItem(position)
             title.text = item.name
+
             size.text = getString(
                 R.string.main_project_lua_file_count,
-                item.fileCountOfLuaFile
+                item.fileCount
             )
-            item.icon?.let {
+            item.projectIconPath?.let {
                 image.setImageURI(Uri.fromFile(it.toFile()))
             }
         }

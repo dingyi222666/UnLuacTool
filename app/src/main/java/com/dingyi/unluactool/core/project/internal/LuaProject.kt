@@ -10,19 +10,39 @@ import org.apache.commons.vfs2.FileSelectInfo
 import org.apache.commons.vfs2.FileSelector
 
 internal class LuaProject constructor(
-    private val projectDir: FileObject
+    override val projectPath: FileObject
 ) : Project {
 
     private var projectInfo = readInfo()
 
+    private var _fileCount: Int = 0
 
-    override fun getName(): String {
-        return projectInfo.name
-    }
+    override val fileCount: Int
+        get() = _fileCount
+
+    override var name: String
+        get() = projectInfo.name
+        set(value) {
+            projectInfo.copy(name = value)
+                .apply {
+                    projectInfo = this
+                }
+                .update()
+        }
 
 
-    override fun getProjectFileCount(): Int {
-        return projectDir
+    override var projectIconPath: String?
+        get() = projectInfo.iconPath
+        set(value) {
+            projectInfo.copy(iconPath = value)
+                .apply {
+                    projectInfo = this
+                }
+                .update()
+        }
+
+    override suspend fun resolveProjectFileCount(): Int = withContext(Dispatchers.IO) {
+        _fileCount = projectPath
             .findFiles(object : FileSelector {
                 override fun includeFile(fileInfo: FileSelectInfo): Boolean {
                     return fileInfo.file.run { isFile && name.extension == "lua" }
@@ -34,28 +54,15 @@ internal class LuaProject constructor(
 
             })
             .size
+
+        fileCount
     }
 
-    override fun getProjectPath(): FileObject {
-        return projectDir
-    }
-
-    override fun getProjectIconPath(): String? {
-        return projectInfo.iconPath
-    }
-
-    override fun setProjectIconPath(path: String) {
-        projectInfo.copy(iconPath = path).update()
-    }
-
-    override fun setName(name: String) {
-        projectInfo.copy(name = name).update()
-    }
 
     private fun ProjectInfo.update() {
-        projectDir.resolveFile(".project.json")
+        //
+        projectPath.resolveFile(PROJECT_CONFIG_JSON)
             .use { fileObject ->
-
                 if (!fileObject.isFile) {
                     fileObject.close()
                     error("Can't resolve file info")
@@ -66,12 +73,12 @@ internal class LuaProject constructor(
 
             }
 
+
     }
 
     private fun readInfo(): ProjectInfo {
-        return projectDir.resolveFile(".project.json")
+        return projectPath.resolveFile(PROJECT_CONFIG_JSON)
             .use { fileObject ->
-
                 if (!fileObject.isFile) {
                     error("Can't resolve file info")
                 }
@@ -86,9 +93,29 @@ internal class LuaProject constructor(
 
     override suspend fun remove(): Boolean = withContext(Dispatchers.IO) {
         runCatching {
-            projectDir.deleteAll()
+            projectPath.deleteAll()
         }.isSuccess
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as LuaProject
+
+        if (projectPath.publicURIString != other.projectPath.publicURIString) return false
+        if (name != other.name) return false
+        if (projectIconPath != other.projectIconPath) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = projectPath.publicURIString.hashCode()
+        result = 31 * result + name.hashCode()
+        return result
+    }
+
 
     companion object {
 
@@ -96,6 +123,9 @@ internal class LuaProject constructor(
 
         const val LASM_DIR_NAME = "lasm"
 
+        const val PROJECT_CONFIG_JSON = ".project.json"
+
     }
+
 
 }
