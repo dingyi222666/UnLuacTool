@@ -15,7 +15,6 @@ class MainViewPagerAdapter(fragmentActivity: FragmentActivity) :
 
     fun addFragments(fragmentList:List<Class<*>>) {
         fragmentClasses.addAll(fragmentList)
-        Log.ASSERT
     }
 
     override fun getItemCount(): Int {

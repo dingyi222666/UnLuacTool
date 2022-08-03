@@ -17,4 +17,6 @@ abstract interface Project {
 
     fun setName(name:String)
 
+
+    suspend fun remove():Boolean
 }

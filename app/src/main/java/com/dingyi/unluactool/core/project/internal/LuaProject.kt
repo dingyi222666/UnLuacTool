@@ -3,6 +3,8 @@ package com.dingyi.unluactool.core.project.internal
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.ktx.decodeToBean
 import com.dingyi.unluactool.ktx.encodeToJson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSelectInfo
 import org.apache.commons.vfs2.FileSelector
@@ -26,7 +28,6 @@ internal class LuaProject constructor(
                     return fileInfo.file.run { isFile && name.extension == "lua" }
                 }
 
-
                 override fun traverseDescendents(fileInfo: FileSelectInfo): Boolean {
                     return true
                 }
@@ -40,7 +41,7 @@ internal class LuaProject constructor(
     }
 
     override fun getProjectIconPath(): String? {
-       return projectInfo.iconPath
+        return projectInfo.iconPath
     }
 
     override fun setProjectIconPath(path: String) {
@@ -79,8 +80,21 @@ internal class LuaProject constructor(
                     .use { it.readBytes() }
                     .decodeToString()
                     .decodeToBean()
-
             }
+
+    }
+
+    override suspend fun remove(): Boolean = withContext(Dispatchers.IO) {
+        runCatching {
+            projectDir.deleteAll()
+        }.isSuccess
+    }
+
+    companion object {
+
+        const val ORIGIN_DIR_NAME = "origin"
+
+        const val LASM_DIR_NAME = "lasm"
 
     }
 

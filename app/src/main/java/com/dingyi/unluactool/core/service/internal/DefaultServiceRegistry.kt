@@ -7,7 +7,7 @@ import java.lang.reflect.Method
 import java.util.*
 
 
-class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegistry) :
+open class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceRegistry) :
     ServiceRegistry, ContainsServices {
 
     companion object {

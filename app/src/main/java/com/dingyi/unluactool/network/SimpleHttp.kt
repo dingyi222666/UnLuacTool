@@ -33,7 +33,6 @@ object SimpleHttp {
 
         }
 
-
 }
 /**
  * 转换响应对象
