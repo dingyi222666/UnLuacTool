@@ -19,8 +19,8 @@ import com.dingyi.unluactool.R
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
 import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
-import com.dingyi.unluactool.ktx.getAttributeColor
-import com.dingyi.unluactool.ktx.getJavaClass
+import com.dingyi.unluactool.common.ktx.getAttributeColor
+import com.dingyi.unluactool.common.ktx.getJavaClass
 import kotlinx.coroutines.launch
 
 
@@ -39,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         setTheme(R.style.Theme_UnLuacTool)
 
         setContentView(binding.root)
-
 
         setSupportActionBar(getToolBar())
 
@@ -101,6 +100,7 @@ class MainActivity : AppCompatActivity() {
         val homePagerAdapter = MainViewPagerAdapter(this)
             .apply {
                 addFragments(getPagerFragments())
+
             }
 
         binding.main.homePager.apply {
@@ -125,7 +125,6 @@ class MainActivity : AppCompatActivity() {
             binding.root.closeDrawers()
             return@setNavigationItemSelectedListener true
         }
-
 
 
 

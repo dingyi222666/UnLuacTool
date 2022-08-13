@@ -11,12 +11,14 @@ import com.dingyi.unluactool.R
 import com.dingyi.unluactool.core.project.Project
 
 import com.dingyi.unluactool.databinding.ItemMainFragmentListBinding
-import com.dingyi.unluactool.ktx.getString
-import com.dingyi.unluactool.ktx.toFile
+import com.dingyi.unluactool.common.ktx.getString
+import com.dingyi.unluactool.common.ktx.toFile
 
 class ProjectListAdapter :
     ListAdapter<Project, ProjectListAdapter.ViewHolder>(DiffItemCallback) {
 
+
+    var listClickEvent = { _: Project -> }
 
     data class ViewHolder(
         val binding: ItemMainFragmentListBinding
@@ -60,6 +62,11 @@ class ProjectListAdapter :
             item.projectIconPath?.let {
                 image.setImageURI(Uri.fromFile(it.toFile()))
             }
+
+            root.setOnClickListener {
+                listClickEvent(item)
+            }
+
         }
     }
 }

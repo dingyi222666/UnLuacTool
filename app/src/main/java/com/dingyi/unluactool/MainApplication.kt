@@ -32,6 +32,10 @@ class MainApplication : Application() {
         //need call init method
         fileSystemManager.init()
         VFS.setManager(fileSystemManager)
+
+
+        CrashHandler.init(this)
+
     }
 
 

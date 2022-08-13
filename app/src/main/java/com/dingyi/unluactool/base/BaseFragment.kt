@@ -11,7 +11,6 @@ abstract class BaseFragment<T:ViewBinding>:Fragment() {
 
     protected lateinit var binding: T
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -1,8 +1,10 @@
 package com.dingyi.unluactool.core.project.internal
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.dingyi.unluactool.core.project.Project
-import com.dingyi.unluactool.ktx.decodeToBean
-import com.dingyi.unluactool.ktx.encodeToJson
+import com.dingyi.unluactool.common.ktx.decodeToBean
+import com.dingyi.unluactool.common.ktx.encodeToJson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
@@ -40,6 +42,8 @@ internal class LuaProject constructor(
                 }
                 .update()
         }
+
+
 
     override suspend fun resolveProjectFileCount(): Int = withContext(Dispatchers.IO) {
         _fileCount = projectPath
@@ -126,6 +130,7 @@ internal class LuaProject constructor(
         const val PROJECT_CONFIG_JSON = ".project.json"
 
     }
+
 
 
 }

@@ -12,26 +12,29 @@
 
 
     <application
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:name=".MainApplication"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.UnLuacTool"
         tools:targetApi="31">
         <activity
             android:name=".ui.main.MainActivity"
-            android:theme="@style/Theme.UnLuacTool"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.UnLuacTool">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.editor.EditorActivity"
+            android:theme="@style/Theme.UnLuacTool" />
     </application>
 
 </manifest>

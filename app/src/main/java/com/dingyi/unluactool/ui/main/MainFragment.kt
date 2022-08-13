@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,8 +19,10 @@ import com.dingyi.unluactool.base.BaseFragment
 import com.dingyi.unluactool.core.project.ProjectCreator
 import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.databinding.FragmentMainBinding
-import com.dingyi.unluactool.ktx.getAttributeColor
-import com.dingyi.unluactool.ktx.showSnackBar
+import com.dingyi.unluactool.common.ktx.getAttributeColor
+import com.dingyi.unluactool.common.ktx.showSnackBar
+import com.dingyi.unluactool.common.ktx.startActivity
+import com.dingyi.unluactool.ui.editor.EditorActivity
 import com.dingyi.unluactool.ui.main.adapter.ProjectListAdapter
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +35,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
 
     private lateinit var adapter: ProjectListAdapter
 
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by activityViewModels<MainViewModel>()
 
     private val coroutineHandler = CoroutineExceptionHandler { _, exception ->
         exception.message?.showSnackBar(binding.root)
@@ -69,6 +72,13 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
 
         adapter = ProjectListAdapter()
+            .apply {
+                listClickEvent = {
+                    startActivity<EditorActivity> {
+                        putExtra("path",it.projectPath.name.uri)
+                    }
+                }
+            }
 
         binding.apply {
             btnSelectFile.setOnClickListener {
@@ -89,7 +99,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
 
         observeLiveData()
-
 
         refreshProject()
     }

@@ -1,4 +1,4 @@
-package com.dingyi.unluactool.ktx
+package com.dingyi.unluactool.common.ktx
 
 import com.dingyi.unluactool.MainApplication
 import com.google.gson.Gson

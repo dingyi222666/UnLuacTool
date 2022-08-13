@@ -7,9 +7,12 @@ interface ProjectManager {
 
     fun getAllProject(): List<Project>?
 
-
     fun getProjectCount(): Int
 
     fun setProjectRootPath(fileObject: FileObject)
 
+    fun getProjectByPath(path: FileObject): Project?
+
+
+    suspend fun resolveProjectByPath(path: FileObject):Project?
 }

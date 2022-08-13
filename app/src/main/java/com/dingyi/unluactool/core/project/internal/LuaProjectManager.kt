@@ -2,7 +2,7 @@ package com.dingyi.unluactool.core.project.internal
 
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
-import com.dingyi.unluactool.ktx.Paths
+import com.dingyi.unluactool.common.ktx.Paths
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
@@ -20,7 +20,6 @@ class LuaProjectManager : ProjectManager {
     }
 
     override suspend fun resolveAllProject(): List<Project> = withContext(Dispatchers.IO) {
-
         val copyOfProject = projectRootPath.children.mapNotNull {
             runCatching {
                 LuaProject(it)
@@ -43,5 +42,14 @@ class LuaProjectManager : ProjectManager {
 
     override fun setProjectRootPath(fileObject: FileObject) {
         projectRootPath = fileObject
+    }
+
+    override fun getProjectByPath(path: FileObject): Project? {
+        return getAllProject().first { it.projectPath.uri == path.uri }
+    }
+
+    override suspend fun resolveProjectByPath(path: FileObject): Project? {
+        resolveAllProject()
+        return getProjectByPath(path)
     }
 }

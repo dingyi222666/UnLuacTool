@@ -17,6 +17,11 @@ class VFSTest {
         val fileObject = fileManager.resolveFile(
             URI.create("file:///G:/IdeaProjects/adofai_macro/build/install/adofai_macro/bin/adofai_macro")
         )
+        println(arrayOf(
+            fileObject.uri, fileObject.publicURIString,
+            fileObject.name.friendlyURI,
+            fileObject.name.uri
+        ).joinToString { it.toString() })
         fileObject.content.inputStream.use {
             it.readBytes().decodeToString()
         }.let {
