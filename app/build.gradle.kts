@@ -59,17 +59,17 @@ android {
 
 dependencies {
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0-rc01")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0-rc01")
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.1")
-    implementation("com.google.android.material:material:1.6.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha01")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha01")
+    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation ("com.google.code.gson:gson:2.9.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0-rc01")
-    implementation("androidx.fragment:fragment-ktx:1.4.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha01")
+    implementation("androidx.fragment:fragment-ktx:1.5.2")
 
     implementation("net.lingala.zip4j:zip4j:2.11.1")
 

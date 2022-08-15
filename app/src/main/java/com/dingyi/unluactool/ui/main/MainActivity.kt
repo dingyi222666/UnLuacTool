@@ -1,26 +1,19 @@
 package com.dingyi.unluactool.ui.main
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.registerForActivityResult
+import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.widget.ActivityChooserView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
+import com.dingyi.unluactool.common.ktx.getAttributeColor
+import com.dingyi.unluactool.common.ktx.getJavaClass
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
 import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
-import com.dingyi.unluactool.common.ktx.getAttributeColor
-import com.dingyi.unluactool.common.ktx.getJavaClass
 import kotlinx.coroutines.launch
 
 
@@ -46,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         //toolbar set
         supportActionBar?.apply {
             title = getString(R.string.app_name)
-            setDisplayHomeAsUpEnabled(true)
         }
 
 
@@ -59,7 +51,6 @@ class MainActivity : AppCompatActivity() {
             refreshData()
         }
     }
-
 
 
     private suspend fun refreshData() {
@@ -81,11 +72,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun initView() {
 
-        val actionBarDrawerToggle = ActionBarDrawerToggle(this, binding.root, getToolBar(), 0, 0)
 
-        binding.root.apply {
-            addDrawerListener(actionBarDrawerToggle)
-         /*   addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+        val rootView = binding.root
+
+
+        if (rootView is DrawerLayout) {
+
+            supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+            rootView.apply {
+
+
+                val actionBarDrawerToggle =
+                    ActionBarDrawerToggle(this@MainActivity, this, getToolBar(), 0, 0)
+
+                addDrawerListener(actionBarDrawerToggle)
+                /*   addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
                 override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
                     super.onDrawerSlide(drawerView, slideOffset)
                     binding.main.root.translationX =
@@ -94,6 +96,19 @@ class MainActivity : AppCompatActivity() {
             })
             setDrawerShadow(null, 0)
             setScrimColor(0)*/
+
+                actionBarDrawerToggle.apply {
+                    syncState()
+                    drawerArrowDrawable.color =
+                        getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
+                }
+
+            }
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+            )
         }
 
 
@@ -116,24 +131,22 @@ class MainActivity : AppCompatActivity() {
 
                 val index = when (it.itemId) {
                     R.id.main -> 0
-                 /*   R.id.settings -> 1
-                    R.id.about -> 2*/
+                    /*   R.id.settings -> 1
+                       R.id.about -> 2*/
                     else -> 0
                 }
                 binding.main.homePager.setCurrentItem(index, true)
             }
-            binding.root.closeDrawers()
+
+
+
+
+
+            if (rootView is DrawerLayout) {
+                rootView.closeDrawers()
+            }
             return@setNavigationItemSelectedListener true
         }
-
-
-
-        actionBarDrawerToggle.apply {
-            syncState()
-            drawerArrowDrawable.color =
-                getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
-        }
-
 
 
     }

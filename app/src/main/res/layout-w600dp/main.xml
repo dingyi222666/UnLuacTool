@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_height="match_parent">
+
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/main_navigation_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:elevation="0dp"
+        app:layout_constraintWidth_percent="0.3"
+        app:layout_constraintRight_toLeftOf="@id/main_navigation_view"
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/main_navigation_head"
+        app:menu="@menu/main_navigation" />
+
+    <include
+        android:id="@+id/main"
+        layout="@layout/main_drawer_main"
+        android:layout_width="0dp"
+        android:fitsSystemWindows="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/main_navigation_view"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_height="0dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

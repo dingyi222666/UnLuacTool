@@ -17,6 +17,11 @@ class LuaProjectManager : ProjectManager {
 
     init {
         projectRootPath = VFS.getManager().resolveFile(File(Paths.projectDir.value).toURI())
+
+        if (!projectRootPath.isFolder) {
+            projectRootPath.createFolder()
+        }
+
     }
 
     override suspend fun resolveAllProject(): List<Project> = withContext(Dispatchers.IO) {
