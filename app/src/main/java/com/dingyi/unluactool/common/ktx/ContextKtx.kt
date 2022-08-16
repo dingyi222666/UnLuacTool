@@ -2,6 +2,7 @@ package com.dingyi.unluactool.common.ktx
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Rect
 import androidx.fragment.app.Fragment
 import com.dingyi.unluactool.MainApplication
 
@@ -19,6 +20,13 @@ inline fun Activity.startActivity(targetClass: Class<*>, block: Intent.() -> Uni
     startActivity(Intent(this, targetClass).apply(block))
 }
 
+
+fun Activity.getStatusBarHeight(): Int {
+    val rectangle = Rect()
+    window.decorView.getWindowVisibleDisplayFrame(rectangle)
+    return rectangle.top
+
+}
 
 inline fun <reified T> Fragment.startActivity(block: Intent.() -> Unit = {}) {
     startActivity(Intent(requireContext(), getJavaClass<T>()).apply(block))

@@ -1,19 +1,26 @@
 package com.dingyi.unluactool.ui.main
 
 import android.os.Bundle
-import android.view.WindowManager
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.getJavaClass
+import com.dingyi.unluactool.common.ktx.getStatusBarHeight
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
 import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
+import dev.chrisbanes.insetter.applyInsetter
+import dev.chrisbanes.insetter.applySystemWindowInsetsToMargin
 import kotlinx.coroutines.launch
 
 
@@ -80,8 +87,8 @@ class MainActivity : AppCompatActivity() {
 
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-            rootView.apply {
 
+            rootView.apply {
 
                 val actionBarDrawerToggle =
                     ActionBarDrawerToggle(this@MainActivity, this, getToolBar(), 0, 0)
@@ -105,10 +112,9 @@ class MainActivity : AppCompatActivity() {
 
             }
         } else {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-            )
+
+
+
         }
 
 

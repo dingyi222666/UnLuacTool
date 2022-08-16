@@ -2,7 +2,9 @@ package com.dingyi.unluactool.common.ktx
 
 import android.content.Context
 import android.view.View
+import com.dingyi.unluactool.MainApplication
 import com.google.android.material.snackbar.Snackbar
+import kotlin.math.roundToInt
 
 fun Context.getAttributeColor(resId: Int): Int {
     val typedArray = obtainStyledAttributes(intArrayOf(resId))
@@ -16,3 +18,6 @@ fun String.showSnackBar(view: View) =
         .apply {
             animationMode = Snackbar.ANIMATION_MODE_SLIDE
         }.show()
+
+inline val Int.dp: Int
+    get() = (MainApplication.instance.resources.displayMetrics.density * this).roundToInt()
