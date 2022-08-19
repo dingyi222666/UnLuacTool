@@ -5,7 +5,7 @@ import android.os.Parcelable
 import org.apache.commons.vfs2.FileObject
 import java.io.File
 
-abstract interface Project {
+interface Project {
 
     val fileCount: Int
 

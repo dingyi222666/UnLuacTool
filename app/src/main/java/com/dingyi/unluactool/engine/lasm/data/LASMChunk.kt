@@ -1,24 +1,34 @@
 package com.dingyi.unluactool.engine.lasm.data
 
-/**
- * 代表一个lasm函数，所有信息都存在data里面，还包含一个函数名
- */
-data class LASMFunction(
+class LASMChunk(
     var data: String,
+    var versionData: String,
     val name: String,
     val fullName: String,
-    val parent: LASMFunction? = null
 ) : AbsFunction<LASMFunction> {
 
-    init {
-        parent?.childFunctions?.add(this)
-    }
 
     val childFunctions = mutableListOf<LASMFunction>()
 
+    override fun addChildFunction(func: LASMFunction) {
+        childFunctions.add(func)
+    }
 
-    fun getDataWithChildFunctions(): String {
+    override fun removeChildFunction(func: LASMFunction) {
+        childFunctions.remove(func)
+    }
+
+    override fun removeChildFunctionByName(name: String) {
+        childFunctions.removeIf { it.name == "name" }
+    }
+
+    fun getAllData(): String {
+
         val buffer = StringBuilder()
+
+
+        buffer
+            .append(versionData)
 
 
         buffer
@@ -43,18 +53,8 @@ data class LASMFunction(
         }
 
         return buffer.toString()
-    }
 
-    override fun addChildFunction(func: LASMFunction) {
-        childFunctions.add(func)
-    }
 
-    override fun removeChildFunction(func: LASMFunction) {
-        childFunctions.remove(func)
-    }
-
-    override fun removeChildFunctionByName(name: String) {
-        childFunctions.removeIf { it.name == "name" }
     }
 
 

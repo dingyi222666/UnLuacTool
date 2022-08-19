@@ -44,7 +44,6 @@ internal class LuaProject constructor(
         }
 
 
-
     override suspend fun resolveProjectFileCount(): Int = withContext(Dispatchers.IO) {
         _fileCount = projectPath
             .findFiles(object : FileSelector {
@@ -129,8 +128,11 @@ internal class LuaProject constructor(
 
         const val PROJECT_CONFIG_JSON = ".project.json"
 
-    }
+        const val CACHE_DIR_NAME = "cache"
 
+        const val BACKUP_DIR_NAME = "backup"
+
+    }
 
 
 }

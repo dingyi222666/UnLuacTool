@@ -31,6 +31,7 @@ class MainApplication : Application() {
         fileSystemManager = StandardFileSystemManager()
         //need call init method
         fileSystemManager.init()
+
         VFS.setManager(fileSystemManager)
 
 

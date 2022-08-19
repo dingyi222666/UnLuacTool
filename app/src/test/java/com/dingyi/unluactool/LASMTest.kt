@@ -23,10 +23,6 @@ class LASMTest {
         const val LUA_PATH = "G:\\dingyi\\Documents\\QQ_Data\\2187778735\\FileRecv\\androlua.luac"
     }
 
-    @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
-    }
 
     @Test
     fun lasmTest1() {

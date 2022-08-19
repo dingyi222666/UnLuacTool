@@ -79,9 +79,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initView() {
 
-
         val rootView = binding.root
-
 
         if (rootView is DrawerLayout) {
 
