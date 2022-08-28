@@ -1,11 +1,11 @@
 package com.dingyi.unluactool
 
-import com.dingyi.unluactool.engine.decompiler.LFunctionDecompiler
-import com.dingyi.unluactool.engine.lasm.assemble.Assembler
-import com.dingyi.unluactool.engine.lasm.disassemble.Disassembler
-import org.junit.Assert.assertEquals
+import com.dingyi.unluactool.engine.lasm.decompile.LasmDecompiler
+import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
+import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import org.junit.Test
 import unluac.Configuration
+import unluac.decompile.Output
 import unluac.parse.BHeader
 import unluac.parse.LFunction
 import java.io.RandomAccessFile
@@ -47,7 +47,7 @@ class LASMTest {
             this.variable = Configuration.VariableMode.DEFAULT
         }))
 
-        val disassembler = Disassembler(header.main)
+        /*val disassembler = Disassembler(header.main)
         val function = disassembler.disassemble()
         println(function.getDataWithChildFunctions())
         val assembler = Assembler(function)
@@ -56,9 +56,44 @@ class LASMTest {
             LFunctionDecompiler.decompile(it)
         }.decodeToString()
         println("-----------------------------------------------------")
-        println(string)
+        println(string)*/
     }
 
+
+    private fun println() {
+        println("-----------------------------------------------------")
+    }
+
+    @Test
+    fun lasmTest3() {
+        val path = LUA_PATH
+
+        val header = checkNotNull(fileToBHeader(path, Configuration().apply {
+            this.mode = Configuration.Mode.ASSEMBLE
+            this.variable = Configuration.VariableMode.DEFAULT
+        }))
+
+        val chunk = LasmDecompiler(header.main).decompile()
+
+
+        println(chunk.getAllData())
+
+        println()
+
+
+        val provider = ByteArrayOutputProvider()
+
+        val output = Output(provider)
+
+        val dumper = LasmDumper(output, chunk)
+
+        dumper.dump()
+
+        println(String(provider.getBytes()))
+
+        provider.close()
+
+    }
 
     private fun fileToBHeader(path: String, config: Configuration): BHeader? {
         return runCatching {

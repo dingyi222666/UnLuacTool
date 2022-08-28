@@ -4,8 +4,8 @@ import com.dingyi.unluactool.common.ktx.toByteArray
 import com.dingyi.unluactool.engine.lasm.data.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.LASMFunction
 import unluac.decompile.Output
-import java.nio.ByteBuffer
-import java.nio.IntBuffer
+import java.io.ByteArrayOutputStream
+import java.util.zip.GZIPOutputStream
 
 class LasmDumper(
     private val output: Output,
@@ -60,8 +60,23 @@ class LasmDumper(
 
 
     private fun dumpString(data: String) {
-        dumpInt(data.length)
-        dumpByteArray(data.toByteArray())
+
+
+        val byteArrayOutputStream = ByteArrayOutputStream()
+
+        val gzipOutputStream = GZIPOutputStream(byteArrayOutputStream)
+
+        gzipOutputStream.write(data.toByteArray())
+
+        gzipOutputStream.finish()
+
+        val dumpBytes = byteArrayOutputStream.toByteArray()
+
+        dumpInt(dumpBytes.size)
+
+        dumpByteArray(dumpBytes)
+
+        gzipOutputStream.close()
     }
 
     private fun dumpInt(length: Int) {
