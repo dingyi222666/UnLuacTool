@@ -8,7 +8,6 @@ import unluac.assemble.Directive
 import unluac.decompile.Code
 import unluac.decompile.Op
 import unluac.decompile.Output
-import unluac.decompile.OutputProvider
 import unluac.parse.LFunction
 import unluac.util.StringUtils
 
