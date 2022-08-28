@@ -2,12 +2,14 @@ package com.dingyi.unluactool
 
 import com.dingyi.unluactool.engine.lasm.decompile.LasmDecompiler
 import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
+import com.dingyi.unluactool.engine.lasm.dump.LasmUnDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import org.junit.Test
 import unluac.Configuration
 import unluac.decompile.Output
 import unluac.parse.BHeader
 import unluac.parse.LFunction
+import java.io.ByteArrayInputStream
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -89,9 +91,20 @@ class LASMTest {
 
         dumper.dump()
 
-        println(String(provider.getBytes()))
+        val bytes = provider.getBytes()
+
+        println(String(bytes))
 
         provider.close()
+
+
+        println()
+
+        val unDumper = LasmUnDumper()
+
+        val unDumperChunk = unDumper.unDump(ByteArrayInputStream(bytes))
+
+        println(unDumperChunk.getAllData() == chunk.getAllData())
 
     }
 
