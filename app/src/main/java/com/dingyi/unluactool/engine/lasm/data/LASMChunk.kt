@@ -1,10 +1,10 @@
 package com.dingyi.unluactool.engine.lasm.data
 
 class LASMChunk(
-    var data: String,
+    override var data: String,
     var versionData: String,
-    val name: String,
-    val fullName: String,
+    override val name: String,
+    override val fullName: String,
 ) : AbsFunction<LASMFunction> {
 
 

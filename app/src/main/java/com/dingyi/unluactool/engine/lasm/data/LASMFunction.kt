@@ -4,14 +4,14 @@ package com.dingyi.unluactool.engine.lasm.data
  * 代表一个lasm函数，所有信息都存在data里面，还包含一个函数名
  */
 data class LASMFunction(
-    var data: String,
-    val name: String,
-    val fullName: String,
-    val parent: LASMFunction? = null
+    override var data: String,
+    override val name: String,
+    override val fullName: String,
+    val parent: AbsFunction<LASMFunction>? = null
 ) : AbsFunction<LASMFunction> {
 
     init {
-        parent?.childFunctions?.add(this)
+        parent?.addChildFunction(this)
     }
 
     val childFunctions = mutableListOf<LASMFunction>()

@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
+import com.dingyi.unluactool.beans.ProjectInfo
 import com.dingyi.unluactool.core.project.ProjectCreator
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get

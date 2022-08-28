@@ -5,10 +5,12 @@ data class HitokotoBean(
     val from: String
 )
 
-data class ProjectInfoBean(
-    var name: String,
-    var fileCountOfLuaFile: Int,
-    val path: String,
-    var icon:String?
-)
 
+data class ProjectInfo(
+    val iconPath: String?,
+    val name: String,
+    val path: String
+) {
+
+
+}

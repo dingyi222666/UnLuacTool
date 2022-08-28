@@ -15,9 +15,7 @@ interface Project {
 
     var name: String
 
-
     suspend fun resolveProjectFileCount(): Int
-
 
     suspend fun remove(): Boolean
 }

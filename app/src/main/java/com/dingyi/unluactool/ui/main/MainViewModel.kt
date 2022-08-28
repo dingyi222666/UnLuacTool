@@ -2,14 +2,9 @@ package com.dingyi.unluactool.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.dingyi.unluactool.beans.ProjectInfoBean
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.repository.MainRepository
-import com.dingyi.unluactool.ui.main.adapter.ProjectListAdapter
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 class MainViewModel : ViewModel() {
 

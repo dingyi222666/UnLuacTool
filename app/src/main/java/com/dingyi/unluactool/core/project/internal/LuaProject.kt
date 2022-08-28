@@ -2,6 +2,7 @@ package com.dingyi.unluactool.core.project.internal
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.dingyi.unluactool.beans.ProjectInfo
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson

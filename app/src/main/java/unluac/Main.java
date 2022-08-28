@@ -10,6 +10,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 
 import unluac.Configuration.Mode;
 import unluac.assemble.Assembler;
@@ -171,7 +172,7 @@ public class Main {
   }
   
   public static void assemble(String in, String out) throws IOException, AssemblerException {
-    OutputStream outstream = new BufferedOutputStream(new FileOutputStream(new File(out)));
+    OutputStream outstream = new BufferedOutputStream(Files.newOutputStream(new File(out).toPath()));
     Assembler a = new Assembler(FileUtils.createSmartTextFileReader(new File(in)), outstream);
     a.assemble();
     outstream.flush();
