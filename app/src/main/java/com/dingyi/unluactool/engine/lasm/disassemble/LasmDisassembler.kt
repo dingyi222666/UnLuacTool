@@ -1,4 +1,4 @@
-package com.dingyi.unluactool.engine.lasm.decompile
+package com.dingyi.unluactool.engine.lasm.disassemble
 
 import com.dingyi.unluactool.engine.lasm.data.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.LASMChunk
@@ -11,8 +11,8 @@ import unluac.decompile.Output
 import unluac.parse.LFunction
 import unluac.util.StringUtils
 
-class LasmDecompiler(
-    val mainFunction: LFunction
+class LasmDisassembler(
+    private val mainFunction: LFunction
 ) {
 
     fun decompile(): LASMChunk {
@@ -141,7 +141,7 @@ class LasmDecompiler(
 
         val bufferProvider = ByteArrayOutputProvider()
         val out = Output(bufferProvider)
-        val code = Code(function)
+
 
         out.println(".version\t" + function.header.version.name)
         out.println()

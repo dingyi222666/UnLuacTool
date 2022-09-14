@@ -33,7 +33,7 @@ class ScreenAdapter {
 
     }
 
-    var currentDeviceType = ScreenAdapter.DeviceType.DEFAULT
+    var currentDeviceType = DeviceType.DEFAULT
         private set
 
     var currentOrientation = Orientation.LANDSCAPE

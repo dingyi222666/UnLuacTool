@@ -29,6 +29,7 @@ class MainApplication : Application() {
             .build()
 
         fileSystemManager = StandardFileSystemManager()
+
         //need call init method
         fileSystemManager.init()
 

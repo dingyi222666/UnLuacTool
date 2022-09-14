@@ -37,7 +37,7 @@ class LasmDumper(
         //chunk func size
         dumpInt(chunk.childFunctions.size)
 
-        chunk.childFunctions.forEach(this::dumpFunction)
+        chunk.childFunctions.sortedBy { it.name }.forEach(this::dumpFunction)
 
     }
 
@@ -55,7 +55,7 @@ class LasmDumper(
         dumpInt(chunk.childFunctions.size)
 
 
-        chunk.childFunctions.forEach(this::dumpFunction)
+        chunk.childFunctions.sortedBy { it.name }.forEach(this::dumpFunction)
     }
 
 

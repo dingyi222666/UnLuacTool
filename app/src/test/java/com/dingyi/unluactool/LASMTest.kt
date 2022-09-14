@@ -1,6 +1,6 @@
 package com.dingyi.unluactool
 
-import com.dingyi.unluactool.engine.lasm.decompile.LasmDecompiler
+import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
 import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
 import com.dingyi.unluactool.engine.lasm.dump.LasmUnDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -75,7 +76,7 @@ class LASMTest {
             this.variable = Configuration.VariableMode.DEFAULT
         }))
 
-        val chunk = LasmDecompiler(header.main).decompile()
+        val chunk = LasmDisassembler(header.main).decompile()
 
 
         println(chunk.getAllData())
@@ -107,6 +108,12 @@ class LASMTest {
         println(unDumperChunk.getAllData() == chunk.getAllData())
 
     }
+
+
+    /**
+     * 把文本设置到剪贴板（复制）
+     */
+
 
     private fun fileToBHeader(path: String, config: Configuration): BHeader? {
         return runCatching {
