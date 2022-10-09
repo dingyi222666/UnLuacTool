@@ -18,4 +18,15 @@ interface Project {
     suspend fun resolveProjectFileCount(): Int
 
     suspend fun remove(): Boolean
+
+    fun <T> getIndexer(): ProjectIndexer<T>
+
+    suspend fun getProjectFileList(): List<FileObject>
+
+    fun getProjectPath(attr: String): FileObject
+    suspend fun open()
+
+    companion object {
+        const val PROJECT_SRC_NAME = "srcDir"
+    }
 }

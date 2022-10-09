@@ -6,6 +6,8 @@ import com.dingyi.unluactool.beans.ProjectInfo
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson
+import com.dingyi.unluactool.core.project.CompositeProjectIndexer
+import com.dingyi.unluactool.core.project.ProjectIndexer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
@@ -19,6 +21,8 @@ internal class LuaProject constructor(
     private var projectInfo = readInfo()
 
     private var _fileCount: Int = 0
+
+    private val indexer = CompositeProjectIndexer()
 
     override val fileCount: Int
         get() = _fileCount
@@ -47,6 +51,7 @@ internal class LuaProject constructor(
 
     override suspend fun resolveProjectFileCount(): Int = withContext(Dispatchers.IO) {
         _fileCount = projectPath
+            .resolveFile(ORIGIN_DIR_NAME)
             .findFiles(object : FileSelector {
                 override fun includeFile(fileInfo: FileSelectInfo): Boolean {
                     return fileInfo.file.run { isFile && name.extension == "lua" }
@@ -62,6 +67,20 @@ internal class LuaProject constructor(
         fileCount
     }
 
+    override suspend fun getProjectFileList(): List<FileObject> {
+        return projectPath
+            .resolveFile(ORIGIN_DIR_NAME)
+            .findFiles(object : FileSelector {
+                override fun includeFile(fileInfo: FileSelectInfo): Boolean {
+                    return fileInfo.file.run { isFile && name.extension == "lua" }
+                }
+
+                override fun traverseDescendents(fileInfo: FileSelectInfo): Boolean {
+                    return true
+                }
+
+            }).toList()
+    }
 
     private fun ProjectInfo.update() {
         //
@@ -120,6 +139,13 @@ internal class LuaProject constructor(
         return result
     }
 
+    override fun <T> getIndexer(): ProjectIndexer<T> {
+        return indexer as ProjectIndexer<T>
+    }
+
+    override suspend fun open() {
+        indexer.index(this)
+    }
 
     companion object {
 

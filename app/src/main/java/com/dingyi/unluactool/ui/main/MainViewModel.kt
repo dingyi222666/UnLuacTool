@@ -1,8 +1,10 @@
 package com.dingyi.unluactool.ui.main
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.repository.MainRepository
 
@@ -28,4 +30,8 @@ class MainViewModel : ViewModel() {
         _hitokoto.value = MainRepository
             .refreshHitokoto()
     }
+
+    suspend fun createProject(uri: Uri) = MainRepository.createProject(
+        MainApplication.instance.contentResolver, uri
+    )
 }

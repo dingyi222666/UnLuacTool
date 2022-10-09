@@ -12,4 +12,5 @@ class ProjectServiceRegistry {
     fun createProjectManager(): ProjectManager {
         return LuaProjectManager()
     }
+
 }

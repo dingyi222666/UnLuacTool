@@ -13,5 +13,8 @@ interface ProjectManager {
 
     fun getProjectByPath(path: FileObject): Project?
 
-    suspend fun resolveProjectByPath(path: FileObject):Project?
+    suspend fun resolveProjectByPath(path: FileObject): Project?
+
+
+    fun getCurrentProject(): Project
 }

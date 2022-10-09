@@ -3,17 +3,20 @@ package com.dingyi.unluactool.core.project.internal
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.common.ktx.Paths
+import com.dingyi.unluactool.core.project.ProjectIndexer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
 import java.io.File
+import java.util.Collections
 
 class LuaProjectManager : ProjectManager {
 
     private var projectRootPath: FileObject
     private var allProject = mutableListOf<LuaProject>()
 
+    private lateinit var currentProject: Project
 
     init {
         projectRootPath = VFS.getManager().resolveFile(File(Paths.projectDir.value).toURI())
@@ -50,11 +53,47 @@ class LuaProjectManager : ProjectManager {
     }
 
     override fun getProjectByPath(path: FileObject): Project? {
-        return getAllProject().first { it.projectPath.uri == path.uri }
+        return getAllProject().first { it.projectPath.uri == path.uri }.apply {
+            currentProject = this
+        }
     }
 
     override suspend fun resolveProjectByPath(path: FileObject): Project? {
         resolveAllProject()
-        return getProjectByPath(path)
+        return getProjectByPath(path).apply {
+            currentProject = this ?: EmptyProject
+        }
     }
+
+    override fun getCurrentProject(): Project {
+        return currentProject
+    }
+}
+
+object EmptyProject : Project {
+    override val fileCount: Int
+        get() = error("No support")
+    override val projectPath: FileObject
+        get() = TODO("Not yet implemented")
+    override var projectIconPath: String? = ""
+    override var name = "1"
+
+    override suspend fun resolveProjectFileCount(): Int = 0
+
+    override suspend fun remove(): Boolean = false
+
+    override fun <T> getIndexer(): ProjectIndexer<T> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getProjectFileList() = Collections.emptyList<FileObject>()
+
+    override fun getProjectPath(attr: String): FileObject {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun open() {
+        TODO("Not yet implemented")
+    }
+
 }

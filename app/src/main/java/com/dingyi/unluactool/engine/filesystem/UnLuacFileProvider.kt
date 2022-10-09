@@ -25,7 +25,7 @@ class UnLuacFileProvider : LocalFileProvider,AbstractOriginatingFileProvider() {
     }
 
     companion object {
-        private val allCapability = listOf(
+         val allCapability = listOf(
             Capability.CREATE,
             Capability.DELETE,
             Capability.RENAME,

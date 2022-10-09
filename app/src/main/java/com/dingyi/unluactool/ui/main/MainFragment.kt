@@ -60,11 +60,8 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             it?.let { uri ->
                 doRefresh(Dispatchers.Main + coroutineHandler) {
 
-                    MainApplication
-                        .instance
-                        .globalServiceRegistry
-                        .get<ProjectCreator>()
-                        .createProject(requireContext().contentResolver, uri)
+                    viewModel.createProject(uri)
+                    //createProject(requireContext().contentResolver, uri)
 
                     refreshProject()
                 }
@@ -75,7 +72,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             .apply {
                 listClickEvent = {
                     startActivity<EditorActivity> {
-                        putExtra("path",it.projectPath.name.uri)
+                        putExtra("path", it.projectPath.name.uri)
                     }
                 }
             }
