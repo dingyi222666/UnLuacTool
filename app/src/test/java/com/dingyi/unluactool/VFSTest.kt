@@ -22,11 +22,15 @@ class VFSTest {
             fileObject.name.friendlyURI,
             fileObject.name.uri
         ).joinToString { it.toString() })
-        fileObject.content.inputStream.use {
+
+
+        println(fileObject.uri.path)
+
+        /*fileObject.content.inputStream.use {
             it.readBytes().decodeToString()
         }.let {
             println(it)
-        }
+        }*/
     }
 
 }

@@ -82,6 +82,13 @@ internal class LuaProject constructor(
             }).toList()
     }
 
+    override fun getProjectPath(attr: String): FileObject {
+        return when (attr) {
+            Project.PROJECT_SRC_NAME -> projectPath.resolveFile(ORIGIN_DIR_NAME)
+            else -> projectPath.resolveFile(LASM_DIR_NAME)
+        }
+    }
+
     private fun ProjectInfo.update() {
         //
         projectPath.resolveFile(PROJECT_CONFIG_JSON)

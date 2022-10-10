@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.engine.filesystem
 
+import com.dingyi.unluactool.core.project.Project
 import org.apache.commons.vfs2.Capability
 import org.apache.commons.vfs2.FileName
 import org.apache.commons.vfs2.FileObject
@@ -15,6 +16,10 @@ class UnLuacFileSystem(
 ) : AbstractFileSystem(rootFileName, null, fileSystemOptions) {
     override fun createFile(name: AbstractFileName): FileObject {
         TODO("Not yet implemented")
+    }
+
+    override fun init() {
+
     }
 
     override fun addCapabilities(caps: MutableCollection<Capability>) {
