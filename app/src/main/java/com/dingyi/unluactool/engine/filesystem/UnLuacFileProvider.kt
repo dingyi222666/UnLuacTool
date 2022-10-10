@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.engine.filesystem
 
+import com.dingyi.unluactool.core.event.internal.EventConnectionImpl
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.vfs2.*
 import org.apache.commons.vfs2.FileSystemException
@@ -124,6 +125,8 @@ class UnLuacFileProvider : LocalFileProvider,AbstractOriginatingFileProvider() {
         }.getOrElse {
             throw FileSystemException("vfs.provider/invalid-absolute-uri.error", uri, it)
         }
+
+
 
         // Locate the file
         return findFile(name, fileSystemOptions)

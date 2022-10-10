@@ -25,7 +25,6 @@ fun Activity.getStatusBarHeight(): Int {
     val rectangle = Rect()
     window.decorView.getWindowVisibleDisplayFrame(rectangle)
     return rectangle.top
-
 }
 
 inline fun <reified T> Fragment.startActivity(block: Intent.() -> Unit = {}) {

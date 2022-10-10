@@ -1,6 +1,7 @@
 package com.dingyi.unluactool
 
 import android.app.Application
+import com.dingyi.unluactool.core.event.EventServiceRegistry
 import com.dingyi.unluactool.core.project.ProjectServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistryBuilder
@@ -25,6 +26,7 @@ class MainApplication : Application() {
         globalServiceRegistry = ServiceRegistryBuilder
             .builder()
             .provider(ProjectServiceRegistry())
+            .provider(EventServiceRegistry())
             .displayName("global service")
             .build()
 

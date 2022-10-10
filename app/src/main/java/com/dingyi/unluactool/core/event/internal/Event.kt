@@ -1,11 +1,12 @@
-package com.dingyi.unluactool.core.event
+package com.dingyi.unluactool.core.event.internal
 
+import com.dingyi.unluactool.core.event.EventType
 import java.lang.reflect.Method
 
 data class Event(
-    private val targetMethod: Method,
-    private val callClass: Class<*>,
-    private val args: Array<Any?>?
+    val targetMethod: Method,
+    val eventType: EventType<*>,
+    val args: Array<Any?>?
 
 ) {
     override fun equals(other: Any?): Boolean {
@@ -15,7 +16,7 @@ data class Event(
         other as Event
 
         if (targetMethod != other.targetMethod) return false
-        if (callClass != other.callClass) return false
+        if (eventType != other.eventType) return false
         if (args != null) {
             if (other.args == null) return false
             if (!args.contentEquals(other.args)) return false
@@ -26,7 +27,7 @@ data class Event(
 
     override fun hashCode(): Int {
         var result = targetMethod.hashCode()
-        result = 31 * result + callClass.hashCode()
+        result = 31 * result + eventType.hashCode()
         result = 31 * result + (args?.contentHashCode() ?: 0)
         return result
     }
