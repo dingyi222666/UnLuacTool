@@ -1,12 +1,16 @@
 package com.dingyi.unluactool.ui.main
 
+import android.app.ProgressDialog
+import android.content.res.Configuration
 import android.os.Bundle
+import android.view.View
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,6 +20,7 @@ import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.getJavaClass
 import com.dingyi.unluactool.common.ktx.getStatusBarHeight
+import com.dingyi.unluactool.common.util.ScreenAdapter
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
 import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
@@ -32,6 +37,8 @@ class MainActivity : AppCompatActivity() {
 
     private val viewModel by viewModels<MainViewModel>()
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -41,6 +48,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(getToolBar())
+
 
 
         //toolbar set
@@ -57,6 +65,8 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             refreshData()
         }
+
+
     }
 
 
@@ -73,6 +83,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+
     private fun getToolBar(): Toolbar {
         return IncludeToolbarBinding.bind(binding.main.root).toolbar
     }
@@ -81,45 +92,40 @@ class MainActivity : AppCompatActivity() {
 
         val rootView = binding.root
 
-        if (rootView is DrawerLayout) {
-
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
-            rootView.apply {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-                val actionBarDrawerToggle =
-                    ActionBarDrawerToggle(this@MainActivity, this, getToolBar(), 0, 0)
 
-                addDrawerListener(actionBarDrawerToggle)
-                /*   addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
-                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-                    super.onDrawerSlide(drawerView, slideOffset)
-                    binding.main.root.translationX =
-                        binding.mainNavigationView.width.toFloat() * slideOffset
-                }
-            })
-            setDrawerShadow(null, 0)
-            setScrimColor(0)*/
+        rootView.apply {
 
-                actionBarDrawerToggle.apply {
-                    syncState()
-                    drawerArrowDrawable.color =
-                        getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
-                }
+            val actionBarDrawerToggle =
+                ActionBarDrawerToggle(this@MainActivity, this, getToolBar(), 0, 0)
 
+            addDrawerListener(actionBarDrawerToggle)
+            /*   addDrawerListener(object : DrawerLayout.SimpleDrawerListener() {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                super.onDrawerSlide(drawerView, slideOffset)
+                binding.main.root.translationX =
+                    binding.mainNavigationView.width.toFloat() * slideOffset
             }
-        } else {
+        })
+        setDrawerShadow(null, 0)
+        setScrimColor(0)*/
 
-
+            actionBarDrawerToggle.apply {
+                syncState()
+                drawerArrowDrawable.color =
+                    getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
+            }
 
         }
+
 
 
         val homePagerAdapter = MainViewPagerAdapter(this)
             .apply {
                 addFragments(getPagerFragments())
-
             }
 
         binding.main.homePager.apply {

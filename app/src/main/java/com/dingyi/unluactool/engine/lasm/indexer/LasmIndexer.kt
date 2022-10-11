@@ -1,5 +1,8 @@
 package com.dingyi.unluactool.engine.lasm.indexer
 
+import com.dingyi.unluactool.R
+import com.dingyi.unluactool.common.ktx.getString
+import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
@@ -7,6 +10,8 @@ import com.dingyi.unluactool.engine.lasm.data.LASMChunk
 import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
 import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.util.RandomAccessMode
 import unluac.Configuration
 import unluac.decompile.Output
@@ -15,50 +20,61 @@ import kotlin.io.path.toPath
 
 class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
-    override suspend fun index(project: Project): List<LASMChunk> {
-        val allProjectFileList = project.getProjectFileList()
+    override suspend fun index(project: Project, progressState: ProgressState?): List<LASMChunk> =
+        withContext(Dispatchers.IO) {
+            val allProjectFileList = project.getProjectFileList()
 
-        val projectSrcDir = project.getProjectPath(Project.PROJECT_SRC_NAME)
+            val projectSrcDir = project.getProjectPath(Project.PROJECT_SRC_NAME)
 
-        val projectIndexedDir = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
+            val projectIndexedDir = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
 
-        return allProjectFileList.map {
-            val originFile = it.uri.toPath().toFile()
-            val srcDirFile = projectSrcDir.uri.toPath().toFile()
-            //val indexedDirFile = projectIndexedDir.uri.toPath().toFile()
+            val size = allProjectFileList.size
 
-            val targetFile = projectIndexedDir.resolveFile(
-                originFile.absolutePath.substring(
+            allProjectFileList.mapIndexed { index, it ->
+
+
+                progressState?.progress = (index + 1 / size) * 100
+
+
+                val originFile = it.uri.toPath().toFile()
+                val srcDirFile = projectSrcDir.uri.toPath().toFile()
+                //val indexedDirFile = projectIndexedDir.uri.toPath().toFile()
+
+                val fileName = originFile.absolutePath.substring(
                     srcDirFile.absolutePath.lastIndex + 1
                 )
-            )
+                progressState?.text = getString(R.string.main_project_indexer_toast, fileName)
 
-            val header = BHeaderDecompiler.decompile(Configuration().apply {
-                this.rawstring = true
-                this.mode = Configuration.Mode.DECOMPILE
-                this.variable = Configuration.VariableMode.FINDER
-            } to targetFile.content.inputStream.use {
-                ByteBuffer.wrap(it.readBytes())
-            })
+                val targetFile = projectIndexedDir.resolveFile(
+                    fileName
+                )
 
-            val chunk = LasmDisassembler(header.main).decompile()
+                val header = BHeaderDecompiler.decompile(Configuration().apply {
+                    this.rawstring = true
+                    this.mode = Configuration.Mode.DECOMPILE
+                    this.variable = Configuration.VariableMode.FINDER
+                } to targetFile.content.inputStream.use {
+                    ByteBuffer.wrap(it.readBytes())
+                })
 
-            val provider = ByteArrayOutputProvider()
+                val chunk = LasmDisassembler(header.main).decompile()
 
-            val output = Output(provider)
+                val provider = ByteArrayOutputProvider()
 
-            val dumper = LasmDumper(output, chunk)
+                val output = Output(provider)
 
-            dumper.dump()
+                val dumper = LasmDumper(output, chunk)
 
-            val bytes = provider.getBytes()
+                dumper.dump()
 
-            targetFile.content.outputStream.use {
-                it.write(bytes)
+                val bytes = provider.getBytes()
+
+                targetFile.content.outputStream.use {
+                    it.write(bytes)
+                }
+                chunk
             }
-            chunk
+
+
         }
-
-
-    }
 }

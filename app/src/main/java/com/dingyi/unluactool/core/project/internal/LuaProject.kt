@@ -7,6 +7,7 @@ import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson
 import com.dingyi.unluactool.core.event.EventManager
+import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.CompositeProjectIndexer
 import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.core.project.ProjectManager
@@ -162,8 +163,8 @@ internal class LuaProject constructor(
         return indexer as ProjectIndexer<T>
     }
 
-    override suspend fun open() {
-        indexer.index(this)
+    override suspend fun open(progressState: ProgressState?) {
+        indexer.index(this, progressState)
     }
 
     companion object {
