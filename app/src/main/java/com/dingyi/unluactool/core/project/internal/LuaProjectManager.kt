@@ -1,9 +1,14 @@
 package com.dingyi.unluactool.core.project.internal
 
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.common.ktx.Paths
+import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.project.ProjectIndexer
+import com.dingyi.unluactool.core.project.ProjectManagerListener
+import com.dingyi.unluactool.core.service.ServiceRegistry
+import com.dingyi.unluactool.core.service.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
@@ -11,12 +16,21 @@ import org.apache.commons.vfs2.VFS
 import java.io.File
 import java.util.Collections
 
-class LuaProjectManager : ProjectManager {
+class LuaProjectManager(
+    private val serviceRegistry: ServiceRegistry
+) : ProjectManager {
 
     private var projectRootPath: FileObject
     private var allProject = mutableListOf<LuaProject>()
 
-    private lateinit var currentProject: Project
+    private var currentProject: Project = EmptyProject
+        set(value) {
+            field = value
+            serviceRegistry
+                .get<EventManager>()
+                .syncPublisher(ProjectManager.projectListenerType)
+                .projectOpened(value)
+        }
 
     init {
         projectRootPath = VFS.getManager().resolveFile(File(Paths.projectDir.value).toURI())
@@ -30,7 +44,7 @@ class LuaProjectManager : ProjectManager {
     override suspend fun resolveAllProject(): List<Project> = withContext(Dispatchers.IO) {
         val copyOfProject = projectRootPath.children.mapNotNull {
             runCatching {
-                LuaProject(it)
+                LuaProject(serviceRegistry,it)
             }.onFailure {
                 it.printStackTrace()
             }.getOrNull()
@@ -81,6 +95,9 @@ object EmptyProject : Project {
     override suspend fun resolveProjectFileCount(): Int = 0
 
     override suspend fun remove(): Boolean = false
+    override suspend fun close() {
+        TODO("Not yet implemented")
+    }
 
     override fun <T> getIndexer(): ProjectIndexer<T> {
         TODO("Not yet implemented")

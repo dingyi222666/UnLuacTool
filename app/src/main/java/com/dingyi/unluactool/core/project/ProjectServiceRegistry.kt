@@ -2,6 +2,7 @@ package com.dingyi.unluactool.core.project
 
 import com.dingyi.unluactool.core.project.internal.LuaProjectCreator
 import com.dingyi.unluactool.core.project.internal.LuaProjectManager
+import com.dingyi.unluactool.core.service.ServiceRegistry
 
 class ProjectServiceRegistry {
 
@@ -9,8 +10,8 @@ class ProjectServiceRegistry {
         return LuaProjectCreator()
     }
 
-    fun createProjectManager(): ProjectManager {
-        return LuaProjectManager()
+    fun createProjectManager(serviceRegistry: ServiceRegistry): ProjectManager {
+        return LuaProjectManager(serviceRegistry)
     }
 
 }

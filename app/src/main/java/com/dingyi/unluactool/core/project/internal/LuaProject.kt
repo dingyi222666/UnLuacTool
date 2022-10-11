@@ -6,8 +6,12 @@ import com.dingyi.unluactool.beans.ProjectInfo
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson
+import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.project.CompositeProjectIndexer
 import com.dingyi.unluactool.core.project.ProjectIndexer
+import com.dingyi.unluactool.core.project.ProjectManager
+import com.dingyi.unluactool.core.service.ServiceRegistry
+import com.dingyi.unluactool.core.service.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
@@ -15,6 +19,7 @@ import org.apache.commons.vfs2.FileSelectInfo
 import org.apache.commons.vfs2.FileSelector
 
 internal class LuaProject constructor(
+    val serviceRegistry: ServiceRegistry,
     override val projectPath: FileObject
 ) : Project {
 
@@ -125,6 +130,13 @@ internal class LuaProject constructor(
         runCatching {
             projectPath.deleteAll()
         }.isSuccess
+    }
+
+    override suspend fun close() = withContext(Dispatchers.IO) {
+        serviceRegistry
+            .get<EventManager>()
+            .syncPublisher(ProjectManager.projectListenerType)
+            .projectClosed(this@LuaProject)
     }
 
     override fun equals(other: Any?): Boolean {

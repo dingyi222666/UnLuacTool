@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.core.project
 
+import com.dingyi.unluactool.core.event.EventType
 import org.apache.commons.vfs2.FileObject
 
 interface ProjectManager {
@@ -17,4 +18,8 @@ interface ProjectManager {
 
 
     fun getCurrentProject(): Project
+
+    companion object {
+        val projectListenerType = EventType.create<ProjectManagerListener>()
+    }
 }

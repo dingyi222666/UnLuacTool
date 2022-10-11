@@ -15,8 +15,6 @@ import kotlin.io.path.toPath
 
 class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
-
-
     override suspend fun index(project: Project): List<LASMChunk> {
         val allProjectFileList = project.getProjectFileList()
 

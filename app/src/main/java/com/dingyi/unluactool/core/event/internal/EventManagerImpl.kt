@@ -103,24 +103,24 @@ class EventManagerImpl(private val parent: EventManagerImpl?) : EventManager {
     }
 
     private fun dispatchEvent(event: Event) {
-        ForkJoinPool.commonPool().submit {
-            val receivers = lock.read {
-                this.receivers[event.eventType]
-            }
-
-            receivers?.forEach {
-                event.targetMethod
-                    .invoke(it, *(event.args ?: EMPTY_ARRAY))
-            }
+        /* ForkJoinPool.commonPool().submit {*/
+        val receivers = lock.read {
+            this.receivers[event.eventType]
         }
+
+        receivers?.forEach {
+            event.targetMethod
+                .invoke(it, *(event.args ?: EMPTY_ARRAY))
+        }
+        /*}*/
     }
 
 
-    override fun close() {
-        if (parent == null) {
-            doClose()
+    override fun close(closeParent: Boolean) {
+        if (parent != null && closeParent) {
+            parent.close(true)
         } else {
-            parent.close()
+            doClose()
         }
     }
 
