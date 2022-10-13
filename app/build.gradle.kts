@@ -46,8 +46,8 @@ android {
     }
 
     packagingOptions {
-        resources.excludes.addAll(listOf("META-INF/**", "xsd/*", "license/*"))
-        resources.pickFirsts.add("kotlin/**")
+        resources.excludes.addAll(listOf( "xsd/*", "license/*"))
+        resources.pickFirsts.addAll(listOf("META-INF/**","kotlin/**"))
     }
 
     compileOptions {

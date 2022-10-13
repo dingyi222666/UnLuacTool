@@ -12,11 +12,16 @@ import com.dingyi.unluactool.common.ktx.Paths
 import com.dingyi.unluactool.common.ktx.encodeToJson
 import com.dingyi.unluactool.common.ktx.getString
 import com.dingyi.unluactool.common.ktx.isZipFile
+import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
+import org.apache.commons.vfs2.AllFileSelector
+import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
+import unluac.Configuration
 import java.io.File
+import java.nio.ByteBuffer
 
 class LuaProjectCreator : ProjectCreator {
 
@@ -104,6 +109,23 @@ class LuaProjectCreator : ProjectCreator {
 
             cacheFile.delete()
 
+            val allFiles = projectPath
+                .resolveFile(LuaProject.ORIGIN_DIR_NAME)
+                .findFiles(AllFileSelector())
+
+             val checkFiles = allFiles.mapNotNull {
+                    checkLuaFile(it)
+                }
+
+
+            if (checkFiles.isEmpty()) {
+                error(getString(R.string.main_project_import_file_fail))
+            }
+
+            if (allFiles.size != checkFiles.size) {
+                error(getString(R.string.main_project_import_some_file_fail))
+            }
+
             projectPath.resolveFile(LuaProject.PROJECT_CONFIG_JSON)
                 .content
                 .outputStream
@@ -123,5 +145,17 @@ class LuaProjectCreator : ProjectCreator {
     private fun getProjectName(): String {
         return getString(R.string.main_temporary_project_name) + "_" + MainApplication.instance.globalServiceRegistry.get<ProjectManager>()
             .getProjectCount()
+    }
+
+    private fun checkLuaFile(targetFile: FileObject):String? {
+        return kotlin.runCatching {
+            return BHeaderDecompiler.decompile(Configuration().apply {
+                this.rawstring = true
+                this.mode = Configuration.Mode.DECOMPILE
+                this.variable = Configuration.VariableMode.FINDER
+            } to targetFile.content.inputStream.use {
+                ByteBuffer.wrap(it.readBytes())
+            }).toString()
+        }.getOrNull()
     }
 }

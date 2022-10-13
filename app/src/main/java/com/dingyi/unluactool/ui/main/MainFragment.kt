@@ -22,6 +22,7 @@ import com.dingyi.unluactool.databinding.FragmentMainBinding
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.showSnackBar
 import com.dingyi.unluactool.common.ktx.startActivity
+import com.dingyi.unluactool.ui.dialog.showMessageDialog
 import com.dingyi.unluactool.ui.editor.EditorActivity
 import com.dingyi.unluactool.ui.main.adapter.ProjectListAdapter
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -60,7 +61,12 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
             it?.let { uri ->
                 doRefresh(Dispatchers.Main + coroutineHandler) {
 
-                    viewModel.createProject(uri)
+                    kotlin.runCatching {
+
+                        viewModel.createProject(uri)
+                    }.onFailure {
+                        showMessageDialog(requireContext(), it.message.toString())
+                    }
                     //createProject(requireContext().contentResolver, uri)
 
                     refreshProject()

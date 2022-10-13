@@ -111,7 +111,7 @@ public class Main {
       default:
         throw new IllegalStateException();
       }
-      System.exit(0);
+      //System.exit(0);
     }
   }
   
@@ -122,7 +122,7 @@ public class Main {
     if(usage) {
       System.err.println("  usage: java -jar unluac.jar [options] <file>");
     }
-    System.exit(1);
+    //System.exit(1);
   }
   
   private static LFunction file_to_function(String fn, Configuration config) throws IOException {

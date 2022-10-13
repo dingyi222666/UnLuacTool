@@ -16,6 +16,9 @@
     <string name="about_other_title">其他</string>
     <string name="app_version">1.0 (1)</string>
     <string name="main_project_import_fail">您要导入的文件不是lua或者zip(apk)文件</string>
+    <string name="main_project_import_file_fail">没有找到符合lua标准字节码（5.1–5.4）的文件</string>
+    <string name="main_project_import_some_file_fail">有一个或者多个lua文件不是标准lua字节码（5.1–5.4）文件</string>
+
     <string name="main_project_lua_file_count">%1$s 个Lua文件</string>
     <string name="about_author_summary">作者</string>
     <string name="main_temporary_project_name">临时工程</string>

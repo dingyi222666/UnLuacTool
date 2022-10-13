@@ -11,9 +11,10 @@ internal class RootEventManager : EventManagerImpl(null) {
     val selfConnection = connect()
 
     init {
-        val preLoadJsonString = this.javaClass
-            .getResourceAsStream("META-INF/global.json")
-            ?.readBytes()
+        val preLoadJsonString = this.javaClass.classLoader
+            .getResource("META-INF/global.json")
+            ?.openStream()
+            ?.use { it.readBytes() }
             ?.decodeToString()
             .toString()
 
@@ -23,7 +24,7 @@ internal class RootEventManager : EventManagerImpl(null) {
 
         runCatching {
             val element = JsonParser.parseString(preLoadJsonString).asJsonObject
-            element.entrySet().forEach { (listenerClassName, arrays) ->
+            element.getAsJsonObject("extensions").entrySet().forEach { (listenerClassName, arrays) ->
                 val listenerClass = Class.forName(listenerClassName)
                 //类型擦除
                 val targetEventType: EventType<Any> =
@@ -34,6 +35,8 @@ internal class RootEventManager : EventManagerImpl(null) {
                     selfConnection.subscribe(targetEventType, targetClass.newInstance())
                 }
             }
+        }.onFailure {
+            it.printStackTrace()
         }
 
     }

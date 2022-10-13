@@ -17,8 +17,10 @@ import org.apache.commons.vfs2.FileSelector
 import org.apache.commons.vfs2.util.RandomAccessMode
 import unluac.Configuration
 import unluac.decompile.Output
+import unluac.parse.BHeader
 import java.nio.ByteBuffer
 import java.util.Collections
+import kotlin.contracts.contract
 import kotlin.io.path.toPath
 
 class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
@@ -32,7 +34,9 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
             val projectIndexedDir = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
 
 
-            if (projectIndexedDir.isFolder && projectIndexedDir.findFiles(AllFileSelector()).isNotEmpty()) {
+            if (projectIndexedDir.isFolder && projectIndexedDir.findFiles(AllFileSelector())
+                    .isNotEmpty()
+            ) {
                 //indexed, use file system to open
                 return@withContext Collections.emptyList()
             }
@@ -41,9 +45,9 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
             val size = allProjectFileList.size
 
-            allProjectFileList.mapIndexed { index, it ->
 
-
+            for (index in 0 until allProjectFileList.size) {
+                val it = allProjectFileList.get(index)
                 progressState?.progress = (index + 1 / size) * 100
 
 
@@ -60,13 +64,20 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     fileName
                 )
 
-                val header = BHeaderDecompiler.decompile(Configuration().apply {
-                    this.rawstring = true
-                    this.mode = Configuration.Mode.DECOMPILE
-                    this.variable = Configuration.VariableMode.FINDER
-                } to targetFile.content.inputStream.use {
-                    ByteBuffer.wrap(it.readBytes())
-                })
+
+                val header: BHeader
+                try {
+                    header = BHeaderDecompiler.decompile(Configuration().apply {
+                        this.rawstring = true
+                        this.mode = Configuration.Mode.DECOMPILE
+                        this.variable = Configuration.VariableMode.FINDER
+                    } to targetFile.content.inputStream.use {
+                        ByteBuffer.wrap(it.readBytes())
+                    })
+                } catch (e: Exception) {
+                    continue
+                }
+
 
                 val chunk = LasmDisassembler(header.main).decompile()
 
@@ -83,8 +94,11 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 targetFile.content.outputStream.use {
                     it.write(bytes)
                 }
-                chunk
+
             }
+
+
+            return@withContext Collections.emptyList()
 
 
         }
