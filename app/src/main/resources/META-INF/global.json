@@ -1,0 +1,7 @@
+{
+  "extensions": {
+    "com.dingyi.unluactool.core.project.ProjectManagerListener":[
+      "com.dingyi.unluactool.engine.lasm.indexer.LasmIndexerProjectListener"
+    ]
+  }
+}

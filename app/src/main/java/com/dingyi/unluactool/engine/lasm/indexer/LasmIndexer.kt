@@ -12,10 +12,13 @@ import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.apache.commons.vfs2.AllFileSelector
+import org.apache.commons.vfs2.FileSelector
 import org.apache.commons.vfs2.util.RandomAccessMode
 import unluac.Configuration
 import unluac.decompile.Output
 import java.nio.ByteBuffer
+import java.util.Collections
 import kotlin.io.path.toPath
 
 class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
@@ -27,6 +30,14 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
             val projectSrcDir = project.getProjectPath(Project.PROJECT_SRC_NAME)
 
             val projectIndexedDir = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
+
+
+            if (projectIndexedDir.isFolder && projectIndexedDir.findFiles(AllFileSelector()).isNotEmpty()) {
+                //indexed, use file system to open
+                return@withContext Collections.emptyList()
+            }
+
+            projectIndexedDir.createFolder()
 
             val size = allProjectFileList.size
 

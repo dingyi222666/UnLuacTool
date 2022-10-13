@@ -14,7 +14,7 @@ import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.ui.main.MainViewPagerAdapter
 import kotlinx.coroutines.launch
 
-class EditorActivity: AppCompatActivity() {
+class EditorActivity : AppCompatActivity() {
 
 
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
@@ -45,12 +45,18 @@ class EditorActivity: AppCompatActivity() {
 
         initView()
 
-    }
 
+    }
 
 
     private fun initViewModel() {
 
+        lifecycleScope.launch {
+            viewModel.loadProject(intent.getStringExtra("path") ?: "")
+            val progressDialog = viewModel.openProject(this@EditorActivity, this@EditorActivity)
+
+            progressDialog.show()
+        }
     }
 
     private fun getToolBar(): Toolbar {
@@ -71,7 +77,6 @@ class EditorActivity: AppCompatActivity() {
             drawerArrowDrawable.color =
                 getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
         }
-
 
 
     }

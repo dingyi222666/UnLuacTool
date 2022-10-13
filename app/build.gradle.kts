@@ -5,12 +5,12 @@ plugins {
 
 android {
 
-    compileSdk = 32
+    compileSdk = 33
 
     defaultConfig {
         applicationId = "com.dingyi.unluactool"
         minSdk = 26
-        targetSdk = 31
+        targetSdk = 33
 
         versionCode = 1
         versionName = "1.0"
@@ -31,8 +31,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
 
@@ -59,10 +58,11 @@ android {
 
 dependencies {
 
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha01")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha01")
-    implementation("androidx.core:core-ktx:1.8.0")
-    implementation("androidx.appcompat:appcompat:1.4.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha02")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha02")
+    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("com.github.techinessoverloaded:progress-dialog:1.5.1")
+    implementation("androidx.appcompat:appcompat:1.5.1")
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
@@ -70,9 +70,9 @@ dependencies {
 
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
-    implementation ("com.google.code.gson:gson:2.9.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha01")
-    implementation("androidx.fragment:fragment-ktx:1.5.2")
+    implementation("com.google.code.gson:gson:2.9.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha02")
+    implementation("androidx.fragment:fragment-ktx:1.5.3")
 
     implementation("net.lingala.zip4j:zip4j:2.11.1")
 
@@ -82,6 +82,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     implementation(kotlin("reflect"))
+
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
     implementation("org.apache.commons:commons-vfs2:2.9.0") {

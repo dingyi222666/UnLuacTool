@@ -5,6 +5,7 @@ import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.common.ktx.Paths
 import com.dingyi.unluactool.core.event.EventManager
+import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.core.project.ProjectManagerListener
 import com.dingyi.unluactool.core.service.ServiceRegistry
@@ -109,8 +110,9 @@ object EmptyProject : Project {
         TODO("Not yet implemented")
     }
 
-    override suspend fun open() {
+    override suspend fun open(progressState: ProgressState?) {
         TODO("Not yet implemented")
     }
+
 
 }

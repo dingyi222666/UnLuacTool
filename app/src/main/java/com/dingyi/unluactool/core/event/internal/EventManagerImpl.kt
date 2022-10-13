@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-class EventManagerImpl(private val parent: EventManagerImpl?) : EventManager {
+open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManager {
 
     private val receivers = mutableMapOf<EventType<*>, MutableList<Any>>()
     private val lock = ReentrantReadWriteLock()

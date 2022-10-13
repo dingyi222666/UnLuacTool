@@ -20,7 +20,7 @@ class UnLuacFileSystem(
     rootFileName: FileName,
     rootFile: String,
     fileSystemOptions: FileSystemOptions?
-) : AbstractFileSystem(rootFileName, null, fileSystemOptions), ProjectManagerListener {
+) : AbstractFileSystem(rootFileName, null, fileSystemOptions) {
 
     private val allOpenedFile = mutableListOf<FileObject>()
 
@@ -29,25 +29,12 @@ class UnLuacFileSystem(
     }
 
     override fun init() {
-        MainApplication
-            .instance
-            .globalServiceRegistry
-            .get<EventManager>()
-            .subscribe(ProjectManager.projectListenerType, this)
+
     }
 
     override fun addCapabilities(caps: MutableCollection<Capability>) {
         caps.addAll(UnLuacFileProvider.allCapability);
     }
 
-    override fun projectOpened(project: Project) {
-        val indexer = project.getIndexer<Any>() as CompositeProjectIndexer
-        if (!indexer.hasIndexer<LasmIndexer>()) {
-            indexer.addIndexer(LasmIndexer())
-        }
-    }
 
-    override fun projectClosed(project: Project) {
-
-    }
 }
