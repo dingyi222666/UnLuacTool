@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.engine.lasm.indexer
 
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.ktx.getString
 import com.dingyi.unluactool.core.progress.ProgressState
@@ -11,16 +12,14 @@ import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
 import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import org.apache.commons.vfs2.AllFileSelector
-import org.apache.commons.vfs2.FileSelector
-import org.apache.commons.vfs2.util.RandomAccessMode
+import org.apache.commons.vfs2.Selectors
 import unluac.Configuration
 import unluac.decompile.Output
 import unluac.parse.BHeader
 import java.nio.ByteBuffer
 import java.util.Collections
-import kotlin.contracts.contract
 import kotlin.io.path.toPath
 
 class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
@@ -34,35 +33,68 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
             val projectIndexedDir = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
 
 
-            if (projectIndexedDir.isFolder && projectIndexedDir.findFiles(AllFileSelector())
+            val size = allProjectFileList.size
+
+            progressState?.text = getString(
+                R.string.editor_project_indexer_tips,
+                project.name,
+                0,
+                size,
+            )
+
+            if (projectIndexedDir.isFolder && projectIndexedDir.findFiles(Selectors.SELECT_FILES)
                     .isNotEmpty()
             ) {
                 //indexed, use file system to open
                 return@withContext Collections.emptyList()
             }
 
+
+
+            delay(2000)
+
             projectIndexedDir.createFolder()
 
-            val size = allProjectFileList.size
 
 
-            for (index in 0 until allProjectFileList.size) {
-                val it = allProjectFileList.get(index)
-                progressState?.progress = (index + 1 / size) * 100
+            for (index in 0 until size) {
+                val originFileObject = allProjectFileList[index]
+                val nowProgress = (index / size) * 100
+                val nextProgress = (index + 1 / size) * 100
+                val rangeProgress = nextProgress - nowProgress
 
 
-                val originFile = it.uri.toPath().toFile()
+                val originFile = originFileObject.uri.toPath().toFile()
                 val srcDirFile = projectSrcDir.uri.toPath().toFile()
                 //val indexedDirFile = projectIndexedDir.uri.toPath().toFile()
 
                 val fileName = originFile.absolutePath.substring(
                     srcDirFile.absolutePath.lastIndex + 1
                 )
-                progressState?.text = getString(R.string.main_project_indexer_toast, fileName)
 
-                val targetFile = projectIndexedDir.resolveFile(
-                    fileName
+
+                progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
+
+
+
+                progressState?.text = getString(
+                    R.string.editor_project_indexer_toast,
+                    fileName,
+                    index,
+                    size
                 )
+
+                delay(1000)
+
+                val targetFile = MainApplication
+                    .instance
+                    .fileSystemManager
+                    .resolveFile(
+                        projectIndexedDir.publicURIString.plus("/").plus(
+                            originFile
+                                .nameWithoutExtension
+                        ).plus(".lasm")
+                    )
 
 
                 val header: BHeader
@@ -71,13 +103,18 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                         this.rawstring = true
                         this.mode = Configuration.Mode.DECOMPILE
                         this.variable = Configuration.VariableMode.FINDER
-                    } to targetFile.content.inputStream.use {
+                    } to originFileObject.content.inputStream.use {
                         ByteBuffer.wrap(it.readBytes())
                     })
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     continue
                 }
 
+
+                progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
+
+                delay(1000)
 
                 val chunk = LasmDisassembler(header.main).decompile()
 
@@ -95,6 +132,9 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     it.write(bytes)
                 }
 
+                progressState?.progress = nextProgress
+
+
             }
 
 
@@ -102,4 +142,6 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
 
         }
+
+
 }

@@ -53,9 +53,9 @@ class EditorActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.loadProject(intent.getStringExtra("path") ?: "")
-            val progressDialog = viewModel.openProject(this@EditorActivity, this@EditorActivity)
-
+            val (progressDialog,func) = viewModel.openProject(this@EditorActivity, this@EditorActivity)
             progressDialog.show()
+            func()
         }
     }
 

@@ -1,13 +1,19 @@
 package com.dingyi.unluactool.core.progress
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
+import com.dingyi.unluactool.MainApplication
 
 class ProgressState : MutableLiveData<Pair<String, Int>>() {
 
 
+    private val mainHandler = Handler(Looper.getMainLooper())
     var text = "loading..."
         set(value) {
+
             setValue(value to progress)
+
             field = value
         }
 
@@ -20,7 +26,11 @@ class ProgressState : MutableLiveData<Pair<String, Int>>() {
             field = value
         }
 
-
+    override fun setValue(value: Pair<String, Int>?) {
+        mainHandler.post {
+            super.setValue(value)
+        }
+    }
 
 
 }

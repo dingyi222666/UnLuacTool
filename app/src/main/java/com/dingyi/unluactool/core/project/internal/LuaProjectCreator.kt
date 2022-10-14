@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
 import org.apache.commons.vfs2.AllFileSelector
 import org.apache.commons.vfs2.FileObject
+import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
 import unluac.Configuration
 import java.io.File
@@ -111,14 +112,15 @@ class LuaProjectCreator : ProjectCreator {
 
             val allFiles = projectPath
                 .resolveFile(LuaProject.ORIGIN_DIR_NAME)
-                .findFiles(AllFileSelector())
+                .findFiles(Selectors.SELECT_FILES)
 
-             val checkFiles = allFiles.mapNotNull {
-                    checkLuaFile(it)
-                }
+            val checkFiles = allFiles.mapNotNull {
+                checkLuaFile(it)
+            }
 
 
             if (checkFiles.isEmpty()) {
+                projectPath.delete(Selectors.SELECT_ALL)
                 error(getString(R.string.main_project_import_file_fail))
             }
 
@@ -147,7 +149,7 @@ class LuaProjectCreator : ProjectCreator {
             .getProjectCount()
     }
 
-    private fun checkLuaFile(targetFile: FileObject):String? {
+    private fun checkLuaFile(targetFile: FileObject): String? {
         return kotlin.runCatching {
             return BHeaderDecompiler.decompile(Configuration().apply {
                 this.rawstring = true
@@ -156,6 +158,8 @@ class LuaProjectCreator : ProjectCreator {
             } to targetFile.content.inputStream.use {
                 ByteBuffer.wrap(it.readBytes())
             }).toString()
+        }.onFailure {
+            targetFile.deleteAll()
         }.getOrNull()
     }
 }

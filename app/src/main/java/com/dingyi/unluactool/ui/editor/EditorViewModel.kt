@@ -11,11 +11,8 @@ import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get
-import com.dingyi.unluactool.ui.dialog.ProgressDialogWithState
-import com.techiness.progressdialoglibrary.ProgressDialog
-import kotlinx.coroutines.CoroutineScope
+import com.dingyi.unluactool.ui.dialog.progressDialogWithState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class EditorViewModel : ViewModel() {
@@ -43,18 +40,26 @@ class EditorViewModel : ViewModel() {
     }
 
 
-    suspend fun openProject(context: Context, lifecycleOwner: LifecycleOwner): ProgressDialog =
+    suspend fun openProject(context: Context, lifecycleOwner: LifecycleOwner) =
         withContext(Dispatchers.Main) {
-            val (dialog, state) = ProgressDialogWithState(
+            val (dialog, state) = progressDialogWithState(
                 context = context,
                 lifecycleOwner = lifecycleOwner
             )
             //launch in new CoroutineScope
-            launch {
-                openProject(state)
-                dialog.dismiss()
+            dialog to suspend {
+                withContext(Dispatchers.IO) {
+                    runCatching {
+                        openProject(state)
+                    }.onSuccess {
+                        withContext(Dispatchers.Main) {
+                            dialog.dismiss()
+                        }
+                    }.onFailure {
+                        it.printStackTrace()
+                    }
+                }
             }
-            dialog
         }
 
     private suspend fun openProject(progressState: ProgressState) {
