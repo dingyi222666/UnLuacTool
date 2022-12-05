@@ -68,14 +68,27 @@ class LuaProjectManager(
     }
 
     override fun getProjectByPath(path: FileObject): Project? {
-        return getAllProject().first { it.projectPath.uri == path.uri }.apply {
-            currentProject = this
+        return getAllProject().find { it.projectPath.uri == path.uri }.apply {
+            currentProject = this ?: EmptyProject
         }
     }
 
     override suspend fun resolveProjectByPath(path: FileObject): Project? {
         resolveAllProject()
         return getProjectByPath(path).apply {
+            currentProject = this ?: EmptyProject
+        }
+    }
+
+    override fun getProjectByName(name: String): Project? {
+        return getAllProject().find { it.name == name }.apply {
+            currentProject = this ?: EmptyProject
+        }
+    }
+
+    override suspend fun resolveProjectByName(name: String): Project? {
+        resolveAllProject()
+        return getProjectByName(name).apply {
             currentProject = this ?: EmptyProject
         }
     }

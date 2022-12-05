@@ -1,4 +1,4 @@
-package com.dingyi.unluactool.engine.lasm.data
+package com.dingyi.unluactool.engine.lasm.data.v1
 
 interface AbsFunction<T> {
 

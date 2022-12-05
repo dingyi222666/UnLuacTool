@@ -1,8 +1,8 @@
 package com.dingyi.unluactool.engine.lasm.disassemble
 
-import com.dingyi.unluactool.engine.lasm.data.AbsFunction
-import com.dingyi.unluactool.engine.lasm.data.LASMChunk
-import com.dingyi.unluactool.engine.lasm.data.LASMFunction
+import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
+import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
+import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import unluac.assemble.Directive
 import unluac.decompile.Code

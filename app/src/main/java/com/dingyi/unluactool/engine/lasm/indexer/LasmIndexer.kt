@@ -7,7 +7,7 @@ import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
-import com.dingyi.unluactool.engine.lasm.data.LASMChunk
+import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
 import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
@@ -69,7 +69,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 //val indexedDirFile = projectIndexedDir.uri.toPath().toFile()
 
                 val fileName = originFile.absolutePath.substring(
-                    srcDirFile.absolutePath.lastIndex + 1
+                    srcDirFile.absolutePath.length + 1
                 )
 
 

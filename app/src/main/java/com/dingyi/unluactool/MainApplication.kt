@@ -5,6 +5,8 @@ import com.dingyi.unluactool.core.event.EventServiceRegistry
 import com.dingyi.unluactool.core.project.ProjectServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistryBuilder
+import com.dingyi.unluactool.engine.filesystem.UnLuacFileProvider
+import com.dingyi.unluactool.engine.filesystem.UnLuacFileSystem
 import kotlinx.coroutines.CoroutineScope
 import org.apache.commons.vfs2.FileSystemManager
 import org.apache.commons.vfs2.VFS
@@ -34,7 +36,7 @@ class MainApplication : Application() {
 
         //need call init method
         fileSystemManager.init()
-
+        fileSystemManager.addProvider("unluac",UnLuacFileProvider())
         VFS.setManager(fileSystemManager)
 
 

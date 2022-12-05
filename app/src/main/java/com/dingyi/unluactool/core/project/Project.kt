@@ -28,6 +28,9 @@ interface Project {
     suspend fun getProjectFileList(): List<FileObject>
 
     fun getProjectPath(attr: String): FileObject
+
+    fun getProjectPath(attr: String,name:String):FileObject
+
     suspend fun open(progressState: ProgressState? = null)
 
     companion object {

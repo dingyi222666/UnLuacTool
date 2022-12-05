@@ -95,6 +95,10 @@ internal class LuaProject constructor(
         }
     }
 
+    override fun getProjectPath(attr: String, name: String): FileObject {
+        return getProjectPath(attr).resolveFile(name)
+    }
+
     private fun ProjectInfo.update() {
         //
         projectPath.resolveFile(PROJECT_CONFIG_JSON)

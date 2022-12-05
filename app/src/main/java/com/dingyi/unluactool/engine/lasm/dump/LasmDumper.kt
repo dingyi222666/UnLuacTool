@@ -1,11 +1,10 @@
 package com.dingyi.unluactool.engine.lasm.dump
 
 import com.dingyi.unluactool.common.ktx.toByteArray
-import com.dingyi.unluactool.engine.lasm.data.LASMChunk
-import com.dingyi.unluactool.engine.lasm.data.LASMFunction
+import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
+import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import unluac.decompile.Output
 import java.io.ByteArrayOutputStream
-import java.util.Arrays
 import java.util.zip.GZIPOutputStream
 
 class LasmDumper(
