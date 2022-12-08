@@ -1,19 +1,17 @@
 package com.dingyi.unluactool.engine.filesystem
 
-import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
-import org.apache.commons.vfs2.FileName
+import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
+import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.provider.AbstractFileName
 import org.apache.commons.vfs2.provider.AbstractFileObject
-import org.apache.commons.vfs2.provider.local.LocalFile
-import org.apache.commons.vfs2.provider.local.LocalFileSystem
 import java.io.InputStream
 import java.io.OutputStream
 
 class UnLuaCFileObject(
     private val proxyFileObject: FileObject,
-    private var parsedFileObject: UnLuacParsedFileObject? = null,
+    private var data: UnLuacFileObjectExtra? = null,
     name: AbstractFileName, fileSystem: UnLuacFileSystem
 ) :
     AbstractFileObject<UnLuacFileSystem>(name, fileSystem) {
@@ -22,21 +20,32 @@ class UnLuaCFileObject(
         private val emptyArray = arrayOf<String>()
     }
 
+
+    private fun isUnLuacParsedObject(): Boolean = data == null
+
+    private fun requireExtra(): UnLuacFileObjectExtra = checkNotNull(data)
+
     override fun doGetContentSize(): Long {
         return proxyFileObject.content.size
     }
 
     override fun refresh() {
-
+        if (isUnLuacParsedObject()) {
+            proxyFileObject.refresh()
+        } else requireExtra().fileObject.refresh()
     }
 
-
-    private fun checkReadContent() {
-
-    }
 
     override fun doGetInputStream(): InputStream {
-        return proxyFileObject.content.inputStream
+        return if (isUnLuacParsedObject()) {
+            requireExtra().let {
+                it.currentFunction?.data ?: it.fileObject.getAllData()
+            }.let {
+                requireExtra().fileObject.wrapDataToStream(it)
+            }
+        } else {
+            proxyFileObject.content.inputStream
+        }
     }
 
     override fun doGetType(): FileType {
@@ -45,7 +54,15 @@ class UnLuaCFileObject(
 
 
     override fun doGetOutputStream(bAppend: Boolean): OutputStream {
-        return proxyFileObject.content.outputStream
+        return if (isUnLuacParsedObject()) {
+            requireExtra().let {
+                if (it.currentFunction == null)
+                    it.fileObject.writeAllData()
+                else it.fileObject.writeData(it.requireFunction())
+            }
+        } else {
+            proxyFileObject.content.outputStream
+        }
     }
 
     override fun doListChildren(): Array<String> {
@@ -56,11 +73,13 @@ class UnLuaCFileObject(
                     it.name.friendlyURI.replace("file:", "unluac:")
                 }.toTypedArray()
             }
+
             else -> emptyArray
         }
     }
 
     override fun doDelete() {
-        super.doDelete()
+        proxyFileObject.delete()
     }
+
 }

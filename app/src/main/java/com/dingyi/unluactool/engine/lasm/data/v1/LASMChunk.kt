@@ -8,7 +8,7 @@ class LASMChunk(
 ) : AbsFunction<LASMFunction> {
 
 
-    val childFunctions = mutableListOf<LASMFunction>()
+    override val childFunctions = mutableListOf<LASMFunction>()
 
     override fun addChildFunction(func: LASMFunction) {
         childFunctions.add(func)
@@ -20,6 +20,26 @@ class LASMChunk(
 
     override fun removeChildFunctionByName(name: String) {
         childFunctions.removeIf { it.name == "name" }
+    }
+
+    override fun resolveFunction(path: String): LASMFunction? {
+        val paths = path.split("/").toMutableList()
+        var current:AbsFunction<LASMFunction> = this
+        while (paths.isNotEmpty()) {
+            val name = paths.removeAt(0)
+            val now = current.childFunctions.find { it.name == name  }
+            if (now is AbsFunction<LASMFunction>) {
+                current = now
+            } else {
+                return now
+            }
+        }
+        return null
+    }
+
+
+    override fun asFunction(): LASMFunction {
+        TODO("Not yet implemented")
     }
 
     fun getAllData(): String {

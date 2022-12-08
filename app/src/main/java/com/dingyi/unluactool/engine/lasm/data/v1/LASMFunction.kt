@@ -14,7 +14,7 @@ data class LASMFunction(
         parent?.addChildFunction(this)
     }
 
-    val childFunctions = mutableListOf<LASMFunction>()
+    override val childFunctions = mutableListOf<LASMFunction>()
 
 
     fun getDataWithChildFunctions(): String {
@@ -56,6 +56,12 @@ data class LASMFunction(
     override fun removeChildFunctionByName(name: String) {
         childFunctions.removeIf { it.name == "name" }
     }
+
+    override fun resolveFunction(path: String): LASMFunction {
+        TODO("Not yet implemented")
+    }
+
+    override fun asFunction(): LASMFunction  = this
 
 
 }

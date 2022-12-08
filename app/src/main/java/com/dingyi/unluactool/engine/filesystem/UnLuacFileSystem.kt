@@ -24,7 +24,6 @@ class UnLuacFileSystem(
     fileSystemOptions: FileSystemOptions?
 ) : AbstractFileSystem(rootFileName, null, fileSystemOptions) {
 
-    private val allOpenedFile = mutableListOf<FileObject>()
 
     private lateinit var serviceRegistry: ServiceRegistry
 
@@ -40,7 +39,6 @@ class UnLuacFileSystem(
 
         checkNotNull(project)
 
-
         val projectSourceSrc = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
 
         if (targetFilePaths.isEmpty()) {
@@ -50,7 +48,6 @@ class UnLuacFileSystem(
         var currentFileObject = projectSourceSrc
 
         // Loop through the detection until the file cannot be matched or until the path is matched
-
 
         while (targetFilePaths.isNotEmpty()) {
             val currentValue = targetFilePaths.removeAt(0)
@@ -73,8 +70,43 @@ class UnLuacFileSystem(
 
         val parsedFileObject = UnLuacParsedFileObject(currentFileObject)
 
+        val extra = UnLuacFileObjectExtra(
+            chunk = parsedFileObject.lasmChunk,
+            path = targetFilePaths.joinToString(separator = "/"),
+            fileObject = parsedFileObject,
+            currentFunction = null
+        )
+
+        if (targetFilePaths.isEmpty()) {
+            return createParsedFileObject(currentFileObject, extra)
+        }
+
+        val chunk = parsedFileObject.lasmChunk
+
+        // If it's not a directory and not a file object, we will try to parse the file to see if it's a function or an index
+        val findFunction = chunk.resolveFunction(extra.path)
+        if (findFunction != null) {
+            extra.currentFunction = findFunction
+            return createParsedFileObject(currentFileObject, extra)
+        }
+
+
+        // If the path does not match any of the above, then return an empty file object
+        return createEmptyFileObject(currentFileObject)
+
     }
 
+    private fun createParsedFileObject(
+        targetFileObject: FileObject,
+        extra: UnLuacFileObjectExtra
+    ): FileObject {
+        return UnLuaCFileObject(
+            proxyFileObject = targetFileObject,
+            name = targetFileObject.name as UrlFileName,
+            data = extra,
+            fileSystem = this
+        )
+    }
 
     private fun createEmptyFileObject(targetFileObject: FileObject): FileObject {
         return UnLuaCFileObject(
