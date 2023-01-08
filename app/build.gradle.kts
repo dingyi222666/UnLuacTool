@@ -6,15 +6,15 @@ plugins {
 android {
 
     compileSdk = 33
+    //compileSdkPreview = "TiramisuPrivacySandbox"
 
+    namespace = "com.dingyi.unluactool"
     defaultConfig {
-        applicationId = "com.dingyi.unluactool"
+       // applicationId =
         minSdk = 26
         targetSdk = 33
-
         versionCode = 1
         versionName = "1.0"
-        multiDexEnabled = true
     }
 
     sourceSets {
@@ -25,7 +25,6 @@ android {
             java.srcDirs("src/test/kotlin")
         }
     }
-
 
     buildTypes {
         release {
@@ -62,7 +61,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha03")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("com.github.techinessoverloaded:progress-dialog:1.5.1")
-    implementation("androidx.appcompat:appcompat:1.5.1")
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
     implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
