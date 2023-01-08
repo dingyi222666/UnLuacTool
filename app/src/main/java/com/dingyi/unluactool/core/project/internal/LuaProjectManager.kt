@@ -123,6 +123,10 @@ object EmptyProject : Project {
         TODO("Not yet implemented")
     }
 
+    override fun getProjectPath(attr: String, name: String): FileObject {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun open(progressState: ProgressState?) {
         TODO("Not yet implemented")
     }

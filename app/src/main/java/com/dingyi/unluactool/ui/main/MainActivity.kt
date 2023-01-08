@@ -1,31 +1,19 @@
 package com.dingyi.unluactool.ui.main
 
-import android.app.ProgressDialog
-import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
-import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
+import com.dingyi.unluactool.common.adapter.ViewPageFragmentAdapter
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.getJavaClass
-import com.dingyi.unluactool.common.ktx.getStatusBarHeight
-import com.dingyi.unluactool.common.util.ScreenAdapter
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
 import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
-import dev.chrisbanes.insetter.applyInsetter
-import dev.chrisbanes.insetter.applySystemWindowInsetsToMargin
 import kotlinx.coroutines.launch
 
 
@@ -123,7 +111,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        val homePagerAdapter = MainViewPagerAdapter(this)
+        val homePagerAdapter = ViewPageFragmentAdapter(this)
             .apply {
                 addFragments(getPagerFragments())
             }

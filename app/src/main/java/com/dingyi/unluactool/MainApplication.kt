@@ -2,6 +2,7 @@ package com.dingyi.unluactool
 
 import android.app.Application
 import com.dingyi.unluactool.core.event.EventServiceRegistry
+import com.dingyi.unluactool.core.file.FileManagerServiceRegistry
 import com.dingyi.unluactool.core.project.ProjectServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistryBuilder
@@ -29,12 +30,13 @@ class MainApplication : Application() {
             .builder()
             .provider(ProjectServiceRegistry())
             .provider(EventServiceRegistry())
+            .provider(FileManagerServiceRegistry())
             .displayName("global service")
             .build()
 
         fileSystemManager = StandardFileSystemManager()
 
-        //need call init method
+        // need call init method
         fileSystemManager.init()
         fileSystemManager.addProvider("unluac",UnLuacFileProvider())
         VFS.setManager(fileSystemManager)

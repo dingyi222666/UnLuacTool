@@ -19,10 +19,12 @@
     <string name="main_project_import_file_fail">没有找到符合lua标准字节码（5.1–5.4）的文件</string>
     <string name="main_project_import_some_file_fail">有一个或者多个lua文件不是标准lua字节码（5.1–5.4）文件</string>
     <string name="editor_project_indexer_tips">正在打开项目 %1$s (%2$s/%3$s)</string>
-
+    <string name="editor_main_viewer_tab_browse">浏览</string>
+    <string name="editor_main_viewer_tab_recent">最近</string>
+    <string name="editor_main_viewer_tab_search">搜索</string>
     <string name="main_project_lua_file_count">%1$s 个Lua文件</string>
     <string name="about_author_summary">作者</string>
     <string name="main_temporary_project_name">临时工程</string>
     <string name="toast_is_install_qq">打开QQ聊天窗口失败 请检查是否安装了QQ</string>
-    <string name="editor_project_indexer_toast">正在打开Lua文件 %1$s</string>
+    <string name="editor_project_indexer_toast">正在打开已编译的Lua文件 %1$s</string>
 </resources>

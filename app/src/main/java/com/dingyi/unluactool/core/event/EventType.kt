@@ -6,8 +6,6 @@ class EventType<T> private constructor(
     val listenerClass: Class<T>
 ) {
 
-
-
     companion object {
         fun <T> create(clazz: Class<T>): EventType<T> {
             return EventType(clazz)

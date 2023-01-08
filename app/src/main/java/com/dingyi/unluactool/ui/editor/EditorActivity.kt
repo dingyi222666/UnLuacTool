@@ -9,9 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.databinding.EditorBinding
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
-import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
 import com.dingyi.unluactool.common.ktx.getAttributeColor
-import com.dingyi.unluactool.ui.main.MainViewPagerAdapter
 import kotlinx.coroutines.launch
 
 class EditorActivity : AppCompatActivity() {

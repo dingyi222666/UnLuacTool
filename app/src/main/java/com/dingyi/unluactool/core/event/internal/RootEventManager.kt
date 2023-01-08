@@ -8,7 +8,7 @@ import com.google.gson.JsonParser
 internal class RootEventManager : EventManagerImpl(null) {
 
 
-    val selfConnection = connect()
+    private val selfConnection = connect()
 
     init {
         val preLoadJsonString = this.javaClass.classLoader
@@ -19,22 +19,26 @@ internal class RootEventManager : EventManagerImpl(null) {
             .toString()
 
 
-
-
-
         runCatching {
             val element = JsonParser.parseString(preLoadJsonString).asJsonObject
-            element.getAsJsonObject("extensions").entrySet().forEach { (listenerClassName, arrays) ->
-                val listenerClass = Class.forName(listenerClassName)
-                //类型擦除
-                val targetEventType: EventType<Any> =
-                    EventType.create(listenerClass) as EventType<Any>
-                arrays.asJsonArray.forEach {
-                    val targetClass = Class.forName(it.asString)
+            element.getAsJsonObject("extensions").entrySet()
+                .forEach { (listenerClassName, arrays) ->
+                    val listenerClass = Class.forName(listenerClassName)
+                    //类型擦除
+                    val targetEventType: EventType<Any> =
+                        EventType.create(listenerClass) as EventType<Any>
 
-                    selfConnection.subscribe(targetEventType, targetClass.newInstance())
+                    val serviceRegistry = MainApplication.instance.globalServiceRegistry
+
+                    arrays.asJsonArray.forEach {
+                        val targetClass = Class.forName(it.asString)
+
+                        val instance =
+                            serviceRegistry.find(targetClass) ?: targetClass.newInstance()
+
+                        selfConnection.subscribe(targetEventType, instance)
+                    }
                 }
-            }
         }.onFailure {
             it.printStackTrace()
         }

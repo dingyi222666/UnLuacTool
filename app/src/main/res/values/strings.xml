@@ -19,9 +19,11 @@
     <string name="main_project_import_some_file_fail">One or more lua files are not standard lua bytecode (5.1–5.4) file</string>
     <string name="main_project_lua_file_count">%1$s lua files</string>
     <string name="editor_project_indexer_tips">Opening project %1$s (%2$s/%3$s)</string>
-
+    <string name="editor_main_viewer_tab_browse">Browse</string>
+    <string name="editor_main_viewer_tab_recent">Recent</string>
+    <string name="editor_main_viewer_tab_search">Search</string>
     <string name="about_author_summary">作者</string>
     <string name="main_temporary_project_name">Temporary Project</string>
     <string name="toast_is_install_qq">打开QQ聊天窗口失败 请检查是否安装了QQ</string>
-    <string name="editor_project_indexer_toast">正在打开Lua文件 %1$s (%2$s/%3$s)</string>
+    <string name="editor_project_indexer_toast">Lua compiled file is opening %1$s (%2$s/%3$s)</string>
 </resources>

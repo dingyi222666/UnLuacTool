@@ -8,7 +8,6 @@ inline fun <reified T> String.decodeToBean(): T {
     return Gson().fromJson(this, T::class.java)
 }
 
-
 fun Any.encodeToJson(): String {
     return Gson().toJson(this)
 }
