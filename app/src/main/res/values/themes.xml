@@ -30,11 +30,11 @@
 
     <style name="Widget.Base.Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextColor">@color/white</item>
+        <item name="subtitleTextColor">@color/white</item>
     </style>
 
 
     <style name="alertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-
         <item name="android:backgroundDimAmount">0.4</item>
     </style>
 

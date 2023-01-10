@@ -18,8 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize" />
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/editor_main_fragment"
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/editor_main_viewpager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="?actionBarSize"

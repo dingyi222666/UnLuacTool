@@ -2,6 +2,8 @@ package com.dingyi.unluactool.ui.editor
 
 
 import android.content.Context
+import android.database.Observable
+import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,18 +25,22 @@ class EditorViewModel : ViewModel() {
     val project: LiveData<Project>
         get() = _project
 
-    suspend fun loadProject(uri: String) {
-        _project.value =
-            MainApplication
-                .instance
-                .globalServiceRegistry
-                .get<ProjectManager>()
-                .resolveProjectByPath(
-                    MainApplication
-                        .instance
-                        .fileSystemManager
-                        .resolveFile(uri)
-                )
+
+    val fragmentDataList = ObservableArrayList<EditorFragmentData>()
+
+    suspend fun loadProject(uri: String): Project {
+        val projectValue = MainApplication
+            .instance
+            .globalServiceRegistry
+            .get<ProjectManager>()
+            .resolveProjectByPath(
+                MainApplication
+                    .instance
+                    .fileSystemManager
+                    .resolveFile(uri)
+            ).let { checkNotNull(it) }
+        _project.setValue(projectValue)
+        return projectValue
 
     }
 
@@ -67,5 +73,5 @@ class EditorViewModel : ViewModel() {
 }
 
 data class EditorFragmentData(
-    val fileUri:String?
+    val fileUri: String?
 )

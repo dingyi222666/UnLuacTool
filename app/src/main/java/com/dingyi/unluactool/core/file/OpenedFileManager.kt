@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.core.file
 
+import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.internal.LuaProject
@@ -27,9 +28,8 @@ class OpenedFileManager internal constructor() : FileEventListener {
             }
 
 
-            val jsonString = cacheJsonFile.content.inputStream.readBytes().decodeToString()
-
-            val openedFileObject = gson.fromJson(jsonString, OpenedFileObject::class.java)
+            val openedFileObject = cacheJsonFile.content.inputStream.readBytes().decodeToString()
+                .decodeToBean<OpenedFileObject>()
 
             cacheOpenedFile[publicUri] = openedFileObject.openedFiles.map {
                 vfsManager.resolveFile(it.uri)

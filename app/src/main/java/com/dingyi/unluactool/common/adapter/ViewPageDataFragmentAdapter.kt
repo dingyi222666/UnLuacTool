@@ -1,5 +1,7 @@
 package com.dingyi.unluactool.common.adapter
 
+import androidx.databinding.ObservableArrayList
+import androidx.databinding.ObservableList
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -7,23 +9,99 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {
 
-    private val fragmentDataList = mutableListOf<T>()
+
+    private val currentFragmentDataList = mutableListOf<T>()
 
     lateinit var createFragmentFunc: (T) -> Fragment
 
+    private val currentListener = OnListChangedCallback()
+
     fun addData(data: T) {
-        fragmentDataList.add(data)
+        currentFragmentDataList.add(data)
     }
 
     fun removeData(data: T) {
-        fragmentDataList.remove(data)
+        currentFragmentDataList.remove(data)
     }
 
+    fun observableSource(source: ObservableList<T>) {
+        source.addOnListChangedCallback(currentListener)
+        // add all data
+        currentFragmentDataList.addAll(source)
+    }
+
+    fun removeObservable(source: ObservableList<T>) {
+        source.removeOnListChangedCallback(currentListener)
+    }
+
+
     override fun getItemCount(): Int {
-        return fragmentDataList.size
+        return currentFragmentDataList.size
     }
 
     override fun createFragment(position: Int): Fragment {
-        return createFragmentFunc(fragmentDataList[position])
+        return createFragmentFunc(currentFragmentDataList[position])
     }
+
+
+    inner class OnListChangedCallback : ObservableList.OnListChangedCallback<ObservableList<T>>() {
+        override fun onChanged(sender: ObservableList<T>) {
+            // ?
+        }
+
+        override fun onItemRangeChanged(
+            sender: ObservableList<T>,
+            positionStart: Int,
+            itemCount: Int
+        ) {
+
+            for (i in positionStart until positionStart + itemCount) {
+                currentFragmentDataList[i] = sender.get(i)
+            }
+
+            notifyItemRangeChanged(positionStart, itemCount)
+        }
+
+        override fun onItemRangeInserted(
+            sender: ObservableList<T>,
+            positionStart: Int,
+            itemCount: Int
+        ) {
+            for (i in positionStart until positionStart + itemCount) {
+                currentFragmentDataList.add(i, sender.get(i))
+            }
+
+            notifyItemRangeInserted(positionStart, itemCount)
+        }
+
+        override fun onItemRangeMoved(
+            sender: ObservableList<T>,
+            fromPosition: Int,
+            toPosition: Int,
+            itemCount: Int
+        ) {
+
+            val fromObj = currentFragmentDataList[fromPosition]
+            val toObj = currentFragmentDataList[toPosition]
+
+            currentFragmentDataList[toPosition] = fromObj
+            currentFragmentDataList[fromPosition] = toObj
+
+            notifyItemMoved(fromPosition, toPosition)
+        }
+
+        override fun onItemRangeRemoved(
+            sender: ObservableList<T>,
+            positionStart: Int,
+            itemCount: Int
+        ) {
+            for (i in positionStart until positionStart + itemCount) {
+                currentFragmentDataList.removeAt(i)
+            }
+
+            notifyItemRangeRemoved(positionStart, itemCount)
+        }
+
+    }
+
 }

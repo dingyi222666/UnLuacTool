@@ -22,6 +22,8 @@
     <string name="editor_main_viewer_tab_browse">浏览</string>
     <string name="editor_main_viewer_tab_recent">最近</string>
     <string name="editor_main_viewer_tab_search">搜索</string>
+    <string name="editor_toolbar_title">Lua字节码编辑器</string>
+    <string name="editor_toolbar_title_loading">加载中…</string>
     <string name="main_project_lua_file_count">%1$s 个Lua文件</string>
     <string name="about_author_summary">作者</string>
     <string name="main_temporary_project_name">临时工程</string>
