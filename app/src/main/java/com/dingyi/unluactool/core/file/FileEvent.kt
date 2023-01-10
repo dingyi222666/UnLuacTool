@@ -1,18 +1,22 @@
 package com.dingyi.unluactool.core.file
 
 open class FileEvent(
-    val targetFileUri: String
+    val targetFileUri: String,
+    val projectUri: String
 )
 
-class OpenFileEvent(uri: String) : FileEvent(uri)
+class OpenFileEvent(targetFileUri: String, projectUri: String) :
+    FileEvent(targetFileUri, projectUri)
 
-class CloseFileEvent(uri: String) : FileEvent(uri)
+class CloseFileEvent(targetFileUri: String, projectUri: String) :
+    FileEvent(targetFileUri, projectUri)
 
-class ChangeFileOrder(
+class ChangeFileOrderEvent(
     val newOrder: Int,
     val oldOrder: Int,
-    uri: String
-) : FileEvent(uri)
+    targetFileUri: String,
+    projectUri: String
+) : FileEvent(targetFileUri, projectUri)
 
 interface FileEventListener {
     fun onEvent(event: FileEvent)

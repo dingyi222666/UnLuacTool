@@ -23,7 +23,6 @@ class EditorViewModel : ViewModel() {
     val project: LiveData<Project>
         get() = _project
 
-
     suspend fun loadProject(uri: String) {
         _project.value =
             MainApplication
@@ -66,3 +65,7 @@ class EditorViewModel : ViewModel() {
         project.value?.open(progressState)
     }
 }
+
+data class EditorFragmentData(
+    val fileUri:String?
+)
