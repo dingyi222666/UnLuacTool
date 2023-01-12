@@ -97,5 +97,24 @@ class UnLuaCFileObject(
         return proxyFileObject.hashCode()
     }
 
+    fun getFileType(): FileObjectType {
+        if (proxyFileObject.isFolder) {
+            return FileObjectType.DIR
+        }
 
+        val currentFunc = data?.currentFunction ?: return FileObjectType.FILE
+
+        if (currentFunc.childFunctions.isNotEmpty()) {
+            return FileObjectType.FUNCTION_WITH_CHILD
+        }
+
+        return FileObjectType.FUNCTION
+
+    }
+
+
+}
+
+enum class FileObjectType {
+    FUNCTION, FILE, DIR, FUNCTION_WITH_CHILD
 }

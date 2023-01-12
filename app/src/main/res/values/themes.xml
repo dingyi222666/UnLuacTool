@@ -19,6 +19,7 @@
         <item name="android:windowTranslucentStatus">true</item><!--可以页面拉伸到状态栏顶部-->
         <item name="strokeColor">#E0E0E0</item>
         <item name="rippleColor">#14000000</item>
+        <item name="textColorImportant">@color/black</item>
         <item name="android:windowAnimationStyle">@style/alertDialogAnimation</item>
         <item name="dialogCornerRadius">6dp</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

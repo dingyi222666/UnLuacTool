@@ -7,9 +7,6 @@ import com.dingyi.unluactool.core.project.ProjectServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistryBuilder
 import com.dingyi.unluactool.engine.filesystem.UnLuacFileProvider
-import com.dingyi.unluactool.engine.filesystem.UnLuacFileSystem
-import kotlinx.coroutines.CoroutineScope
-import org.apache.commons.vfs2.FileSystemManager
 import org.apache.commons.vfs2.VFS
 import org.apache.commons.vfs2.impl.StandardFileSystemManager
 
