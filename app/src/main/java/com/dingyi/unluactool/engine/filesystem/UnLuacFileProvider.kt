@@ -59,7 +59,7 @@ class UnLuacFileProvider : LocalFileProvider,AbstractOriginatingFileProvider() {
     ): FileSystem {
         // Create the file system
         val rootName = name as LocalFileName
-        return UnLuacFileSystem(rootName, rootName.rootFile, fileSystemOptions).apply {
+        return UnLuacFileSystem(rootName, rootName.rootFile,this, fileSystemOptions).apply {
             init()
         }
     }
@@ -117,13 +117,14 @@ class UnLuacFileProvider : LocalFileProvider,AbstractOriginatingFileProvider() {
      */
 
     override fun findFile(
-        baseFileObject: FileObject,
+        baseFileObject: FileObject?,
         uri: String,
-        fileSystemOptions: FileSystemOptions
+        fileSystemOptions: FileSystemOptions?
     ): FileObject? {
+
         // Parse the URI
         val name = runCatching {
-            parseUri(baseFileObject.name, uri)
+            parseUri(baseFileObject?.name, uri)
         }.getOrElse {
             throw FileSystemException("vfs.provider/invalid-absolute-uri.error", uri, it)
         }

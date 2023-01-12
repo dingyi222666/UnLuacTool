@@ -16,23 +16,29 @@ import org.apache.commons.vfs2.FileSystemOptions
 import org.apache.commons.vfs2.provider.AbstractFileName
 import org.apache.commons.vfs2.provider.AbstractFileSystem
 import org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider
+import org.apache.commons.vfs2.provider.local.LocalFileName
 import org.apache.commons.vfs2.provider.url.UrlFileName
 
 class UnLuacFileSystem(
     rootFileName: FileName,
     rootFile: String,
+    private val provider: UnLuacFileProvider,
     fileSystemOptions: FileSystemOptions?
 ) : AbstractFileSystem(rootFileName, null, fileSystemOptions) {
 
 
     private lateinit var serviceRegistry: ServiceRegistry
 
+    private val selfCapabilities = mutableListOf<Capability>()
+
     //unluac://project/file (lasm)
     override fun createFile(name: AbstractFileName): FileObject {
-        val path = name.pathDecoded
-        val projectName = path.substringBefore("/")
-        val targetFilePaths = path.substringAfter("/")
-            .split("/").toMutableList()
+        val path = name.pathDecoded.substring(1)
+        val projectName = path.substringBefore("/", path)
+        val targetFilePaths = path.substringAfter("/", "")
+            .split("/")
+            .filter(String::isNotEmpty)
+            .toMutableList()
 
         val project = serviceRegistry.get<ProjectManager>()
             .getProjectByName(projectName)
@@ -96,13 +102,29 @@ class UnLuacFileSystem(
 
     }
 
+
+    override fun hasCapability(capability: Capability): Boolean {
+        return selfCapabilities.contains(capability)
+    }
+
+    override fun addCapabilities(caps: MutableCollection<Capability>) {
+        selfCapabilities.addAll(caps)
+    }
+
+    private fun convertFileName(fileName: FileName): AbstractFileName {
+        // ?
+        val uri = fileName.friendlyURI.replace("file:/", "unluac:/")
+        return provider.parseUri(null, uri) as AbstractFileName
+        // return fileName as AbstractFileName
+    }
+
     private fun createParsedFileObject(
         targetFileObject: FileObject,
         extra: UnLuacFileObjectExtra
     ): FileObject {
         return UnLuaCFileObject(
             proxyFileObject = targetFileObject,
-            name = targetFileObject.name as UrlFileName,
+            name = convertFileName(targetFileObject.name),
             data = extra,
             fileSystem = this
         )
@@ -111,17 +133,14 @@ class UnLuacFileSystem(
     private fun createEmptyFileObject(targetFileObject: FileObject): FileObject {
         return UnLuaCFileObject(
             proxyFileObject = targetFileObject,
-            name = targetFileObject.name as UrlFileName,
+            name = convertFileName(targetFileObject.name),
             fileSystem = this
         )
     }
 
     override fun init() {
         serviceRegistry = MainApplication.instance.globalServiceRegistry
-    }
-
-    override fun addCapabilities(caps: MutableCollection<Capability>) {
-        caps.addAll(UnLuacFileProvider.allCapability);
+        addCapabilities(UnLuacFileProvider.allCapability.toMutableList())
     }
 
 

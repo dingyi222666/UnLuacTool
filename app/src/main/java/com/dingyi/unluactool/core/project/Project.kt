@@ -33,6 +33,8 @@ interface Project {
 
     suspend fun open(progressState: ProgressState? = null)
 
+    fun isOpened():Boolean = false
+
     companion object {
         const val PROJECT_SRC_NAME = "srcDir"
         const val PROJECT_INDEXED_NAME = "indexedDir"

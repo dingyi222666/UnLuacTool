@@ -12,14 +12,17 @@ import java.io.OutputStream
 class UnLuaCFileObject(
     private val proxyFileObject: FileObject,
     private var data: UnLuacFileObjectExtra? = null,
-    name: AbstractFileName, fileSystem: UnLuacFileSystem
-) :
-    AbstractFileObject<UnLuacFileSystem>(name, fileSystem) {
+    name: AbstractFileName,
+    private val fileSystem: UnLuacFileSystem
+) : AbstractFileObject<UnLuacFileSystem>(name, fileSystem) {
 
     companion object {
         private val emptyArray = arrayOf<String>()
+        private val emptyFileObjectArray = arrayOf<FileObject>()
     }
 
+
+    private var currentFileType: FileObjectType? = null
 
     private fun isUnLuacParsedObject(): Boolean = data == null
 
@@ -30,9 +33,30 @@ class UnLuaCFileObject(
     }
 
     override fun refresh() {
+        // proxyFileObject.refresh()
         if (isUnLuacParsedObject()) {
             proxyFileObject.refresh()
         } else requireExtra().fileObject.refresh()
+
+        doGetFileType()
+
+    }
+
+    private fun doGetFileType() {
+        val func = func@{
+            if (proxyFileObject.isFolder) {
+                return@func FileObjectType.DIR
+            }
+
+            val currentFunc = data?.currentFunction ?: return@func FileObjectType.FILE
+
+            if (currentFunc.childFunctions.isNotEmpty()) {
+                return@func FileObjectType.FUNCTION_WITH_CHILD
+            }
+
+            FileObjectType.FUNCTION
+        }
+        currentFileType = func()
     }
 
 
@@ -48,16 +72,43 @@ class UnLuaCFileObject(
         }
     }
 
+    override fun doListChildrenResolved(): Array<FileObject> {
+        val fileType = getFileType()
+        return when {
+            proxyFileObject.isFolder -> {
+                proxyFileObject.children.map {
+                    val newUri =
+                        it.name.friendlyURI.replace(proxyFileObject.name.friendlyURI, "unluac:")
+                    fileSystem.resolveFile(newUri)
+                }.toTypedArray()
+            }
+
+            fileType == FileObjectType.FILE || fileType == FileObjectType.FUNCTION_WITH_CHILD -> {
+                val childFunctions = requireExtra().chunk.childFunctions
+                childFunctions.map {
+                    val newUri = proxyFileObject.name.friendlyURI + "/" + it.name
+                    fileSystem.resolveFile(newUri)
+                }.toTypedArray()
+            }
+
+
+            else -> emptyFileObjectArray
+        }
+    }
+
     override fun doGetType(): FileType {
-        return proxyFileObject.type
+        return when (getFileType()) {
+            FileObjectType.DIR -> FileType.FOLDER
+            FileObjectType.FUNCTION, FileObjectType.FILE -> FileType.FILE_OR_FOLDER
+            FileObjectType.FUNCTION_WITH_CHILD -> FileType.FILE
+        }
     }
 
 
     override fun doGetOutputStream(bAppend: Boolean): OutputStream {
         return if (isUnLuacParsedObject()) {
             requireExtra().let {
-                if (it.currentFunction == null)
-                    it.fileObject.writeAllData()
+                if (it.currentFunction == null) it.fileObject.writeAllData()
                 else it.fileObject.writeData(it.requireFunction())
             }
         } else {
@@ -66,17 +117,26 @@ class UnLuaCFileObject(
     }
 
     override fun doListChildren(): Array<String> {
-
+        val fileType = getFileType()
         return when {
             proxyFileObject.isFolder -> {
                 proxyFileObject.children.map {
-                    it.name.friendlyURI.replace("file:", "unluac:")
+                    it.name.friendlyURI.replace(proxyFileObject.name.friendlyURI, "unluac:")
+                }.toTypedArray()
+            }
+
+            fileType == FileObjectType.FILE || fileType == FileObjectType.FUNCTION_WITH_CHILD -> {
+                val childFunctions = requireExtra().chunk.childFunctions
+                childFunctions.map {
+                    proxyFileObject.name.friendlyURI + "/" + it.name
                 }.toTypedArray()
             }
 
             else -> emptyArray
         }
     }
+
+
 
     override fun doDelete() {
         proxyFileObject.delete()
@@ -98,18 +158,10 @@ class UnLuaCFileObject(
     }
 
     fun getFileType(): FileObjectType {
-        if (proxyFileObject.isFolder) {
-            return FileObjectType.DIR
+        if (currentFileType == null) {
+            doGetFileType()
         }
-
-        val currentFunc = data?.currentFunction ?: return FileObjectType.FILE
-
-        if (currentFunc.childFunctions.isNotEmpty()) {
-            return FileObjectType.FUNCTION_WITH_CHILD
-        }
-
-        return FileObjectType.FUNCTION
-
+        return currentFileType as FileObjectType
     }
 
 

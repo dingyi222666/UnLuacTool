@@ -30,6 +30,8 @@ internal class LuaProject constructor(
 
     private val indexer = CompositeProjectIndexer()
 
+    private var isOpened = false
+
     override val fileCount: Int
         get() = _fileCount
 
@@ -169,7 +171,10 @@ internal class LuaProject constructor(
 
     override suspend fun open(progressState: ProgressState?) {
         indexer.index(this, progressState)
+        isOpened = true
     }
+
+    override fun isOpened() = this.isOpened
 
     companion object {
 

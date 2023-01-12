@@ -27,6 +27,9 @@ class LuaProjectManager(
     private var currentProject: Project = EmptyProject
         set(value) {
             field = value
+            if (value.isOpened()) {
+                return
+            }
             serviceRegistry
                 .get<EventManager>()
                 .syncPublisher(ProjectManager.projectListenerType)
@@ -68,28 +71,29 @@ class LuaProjectManager(
     }
 
     override fun getProjectByPath(path: FileObject): Project? {
-        return getAllProject().find { it.projectPath.uri == path.uri }.apply {
-            currentProject = this ?: EmptyProject
+        return getAllProject().find { it.projectPath.uri == path.uri }.also {
+            currentProject = it ?: EmptyProject
         }
     }
 
+
     override suspend fun resolveProjectByPath(path: FileObject): Project? {
         resolveAllProject()
-        return getProjectByPath(path).apply {
-            currentProject = this ?: EmptyProject
+        return getProjectByPath(path).also {
+            currentProject = it ?: EmptyProject
         }
     }
 
     override fun getProjectByName(name: String): Project? {
-        return getAllProject().find { it.name == name }.apply {
-            currentProject = this ?: EmptyProject
+        return getAllProject().find { it.name == name }.also {
+            currentProject = it ?: EmptyProject
         }
     }
 
     override suspend fun resolveProjectByName(name: String): Project? {
         resolveAllProject()
-        return getProjectByName(name).apply {
-            currentProject = this ?: EmptyProject
+        return getProjectByName(name).also {
+            currentProject = it ?: EmptyProject
         }
     }
 

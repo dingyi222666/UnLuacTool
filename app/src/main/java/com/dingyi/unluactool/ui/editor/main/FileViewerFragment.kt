@@ -12,14 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isInvisible
 import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import com.dingyi.unluactool.R
 import com.dingyi.unluactool.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.dp
 import com.dingyi.unluactool.databinding.FragmentEditorFileViewerBinding
 import com.dingyi.unluactool.databinding.ItemEditorFileViewerListBinding
 import com.dingyi.unluactool.engine.filesystem.FileObjectType
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
-import com.dingyi.unluactool.engine.filesystem.UnLuacFileObjectExtra
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeNode
@@ -28,15 +29,15 @@ import io.github.dingyi222666.view.treeview.TreeNodeListener
 import io.github.dingyi222666.view.treeview.TreeView
 import io.github.dingyi222666.view.treeview.TreeViewBinder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
 
 class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
-    private val viewModel by viewModels<EditorViewModel>()
+    private val viewModel by activityViewModels<EditorViewModel>()
 
-    private val tree = Tree.createTree<UnLuaCFileObject>()
+    private val treeViewData = Tree.createTree<UnLuaCFileObject>()
 
     private val fsManager by lazy(LazyThreadSafetyMode.NONE) {
         VFS.getManager()
@@ -53,11 +54,19 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        tree.apply {
+        treeViewData.apply {
             generator = FileDataGenerator()
             initTree()
         }
 
+        binding.treeView.apply {
+            binder = FileNodeBinder() as TreeViewBinder<Any>
+            tree = treeViewData as Tree<Any>
+        }
+
+        lifecycleScope.launch {
+            binding.treeView.refresh()
+        }
 
     }
 
@@ -98,6 +107,28 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                 binding.title.text = node.name
             } else {
                 applyDir(binding, extra, node)
+            }
+
+            when (fileType) {
+                FileObjectType.DIR -> {
+                    binding.image.setImageResource(R.drawable.ic_baseline_folder_open_24)
+                }
+
+                FileObjectType.FILE -> {
+                    binding.image.setImageDrawable(
+                        CircleDrawable(
+                            "L", resources.getColor(R.color.blue_small_icon, null)
+                        )
+                    )
+                }
+
+                FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
+                    binding.image.setImageDrawable(
+                        CircleDrawable(
+                            "F", resources.getColor(R.color.blue_small_icon, null)
+                        )
+                    )
+                }
             }
 
         }
@@ -148,9 +179,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
         }
 
         override fun getItemViewType(node: TreeNode<UnLuaCFileObject>): Int {
-            return if (node.hasChild) {
-                1
-            } else 0
+            return 0
         }
 
     }
@@ -162,10 +191,18 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             withChild: Boolean,
             tree: Tree<UnLuaCFileObject>
         ): List<TreeNode<UnLuaCFileObject>> {
+
+            val targetNodeExtra = checkNotNull(targetNode.extra)
+
+            if (targetNodeExtra.isFile) {
+                targetNode.hasChild = false
+                return listOf()
+            }
+
             val oldNodes = tree.getNodes(oldNodeSet)
 
             val child =
-                withContext(Dispatchers.IO) { checkNotNull(targetNode.extra?.children).toMutableList() }
+                withContext(Dispatchers.IO) { checkNotNull(targetNodeExtra.children).toMutableList() }
 
             val result = mutableListOf<TreeNode<UnLuaCFileObject>>()
 
