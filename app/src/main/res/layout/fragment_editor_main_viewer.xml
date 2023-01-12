@@ -30,4 +30,10 @@
             android:layout_height="match_parent"
             android:text="@string/editor_main_viewer_tab_search" />
     </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/editor_main_viewer_fragment_pager"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
