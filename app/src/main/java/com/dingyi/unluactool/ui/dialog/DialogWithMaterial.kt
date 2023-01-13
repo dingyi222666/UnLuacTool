@@ -1,12 +1,13 @@
 package com.dingyi.unluactool.ui.dialog
 
 import android.content.Context
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 fun showMessageDialog(
     context: Context,
     message: String,
-) = MaterialAlertDialogBuilder(context)
+): AlertDialog = MaterialAlertDialogBuilder(context)
     .apply {
         setMessage(message)
         setNegativeButton(android.R.string.cancel) { _, _ -> }

@@ -45,10 +45,10 @@
                     android:ellipsize="start"
                     android:singleLine="true"
                     android:textColor="?colorOnPrimary"
-                    android:textSize="16sp" />
+                    android:textSize="20sp" />
 
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:layout_gravity="center"
@@ -60,7 +60,7 @@
                     app:tint="?colorOnPrimary" />
 
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:layout_gravity="center"
@@ -72,6 +72,11 @@
                     app:tint="?colorOnPrimary" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/editor_drawer_list" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </com.commit451.scriminsetslayout.ScrimInsetsFrameLayout>

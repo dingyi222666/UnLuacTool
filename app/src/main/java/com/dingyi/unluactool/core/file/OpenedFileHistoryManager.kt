@@ -4,7 +4,6 @@ import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.internal.LuaProject
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -38,6 +37,32 @@ class OpenedFileManager internal constructor() : FileEventListener {
             cacheOpenedFile.getValue(publicUri)
         }
 
+    suspend fun saveAllOpenedFileHistory(project: Project) = withContext(Dispatchers.IO) {
+        val publicUri = project.projectPath.publicURIString
+        val cacheJsonFile =
+            project.getProjectPath(LuaProject.CACHE_DIR_NAME).resolveFile("opened_file.json")
+
+        if (!cacheJsonFile.isFile) {
+            cacheJsonFile.createFile()
+        }
+
+        val openedFileList = cacheOpenedFile.getOrPut(publicUri) { mutableListOf() }
+            .map {
+                OpenedFileObject.OpenedFile(it.publicURIString)
+            }.toMutableList()
+
+        val openedFileObject = OpenedFileObject(openedFileList)
+
+        cacheJsonFile
+            .content
+            .outputStream
+            .bufferedWriter()
+            .use {
+                it.write(openedFileObject.encodeToJson())
+            }
+
+    }
+
     fun queryCacheOpenedFile(project: Project): List<FileObject> {
         val publicUri = project.projectPath.publicURIString
         return cacheOpenedFile.getOrPut(publicUri) { mutableListOf() }
@@ -47,7 +72,7 @@ class OpenedFileManager internal constructor() : FileEventListener {
         val projectOpenedFileList = cacheOpenedFile.getValue(event.projectUri)
         val targetUri = event.targetFileUri
         when (event) {
-            is OpenFileEvent -> {
+            is FileOpenEvent -> {
 
                 val isOpened = projectOpenedFileList
                     .find { it.publicURIString == targetUri } == null
@@ -59,13 +84,13 @@ class OpenedFileManager internal constructor() : FileEventListener {
                 projectOpenedFileList.add(vfsManager.resolveFile(targetUri))
             }
 
-            is CloseFileEvent -> {
+            is FileCloseEvent -> {
                 projectOpenedFileList.removeIf {
                     it.publicURIString == targetUri
                 }
             }
 
-            is ChangeFileOrderEvent -> {
+            is FileChangeOrderEvent -> {
                 val oldFile = projectOpenedFileList[event.newOrder]
                 val newFile = projectOpenedFileList[event.oldOrder]
                 projectOpenedFileList[event.newOrder] = newFile
@@ -76,8 +101,6 @@ class OpenedFileManager internal constructor() : FileEventListener {
 
 }
 
-
-private val gson = Gson()
 
 internal data class OpenedFileObject(
     @SerializedName("opened_files")

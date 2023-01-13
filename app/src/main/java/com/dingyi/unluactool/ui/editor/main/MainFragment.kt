@@ -23,7 +23,6 @@ class MainFragment : BaseFragment<FragmentEditorMainViewerBinding>() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val homePagerAdapter = ViewPageFragmentAdapter(requireActivity())
             .apply {
                 addFragments(getPagerFragments())

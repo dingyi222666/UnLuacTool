@@ -14,6 +14,7 @@ import com.dingyi.unluactool.common.ktx.getJavaClass
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.databinding.MainBinding
 import com.dingyi.unluactool.databinding.MainNavigationHeadBinding
+import com.google.android.material.elevation.SurfaceColors
 import kotlinx.coroutines.launch
 
 
@@ -37,14 +38,10 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(getToolBar())
 
-
-
         //toolbar set
         supportActionBar?.apply {
             title = getString(R.string.app_name)
         }
-
-
 
         initViewModel()
 
@@ -101,11 +98,8 @@ class MainActivity : AppCompatActivity() {
 
             actionBarDrawerToggle.apply {
                 syncState()
-                drawerArrowDrawable.color =
-                    getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
             }
         }
-
 
 
         val homePagerAdapter = ViewPageFragmentAdapter(this)
@@ -137,6 +131,11 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
 
+        val surfaceColor = getAttributeColor(com.google.android.material.R.attr.colorOnSurface)
+        window.apply {
+            statusBarColor = surfaceColor
+            navigationBarColor = surfaceColor
+        }
 
     }
 

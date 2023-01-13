@@ -62,7 +62,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 doRefresh(Dispatchers.Main + coroutineHandler) {
 
                     kotlin.runCatching {
-
                         viewModel.createProject(uri)
                     }.onFailure {
                         showMessageDialog(requireContext(), it.message.toString())
@@ -120,11 +119,7 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         }
     }
 
-    private fun refreshProject() {
-
-        doRefresh(block = viewModel::refreshProjectList)
-
-    }
+    private fun refreshProject() = doRefresh(block = viewModel::refreshProjectList)
 
 
     override fun onDestroy() {

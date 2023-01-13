@@ -53,7 +53,6 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
         return FragmentEditorFileViewerBinding.inflate(inflater, container, false)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

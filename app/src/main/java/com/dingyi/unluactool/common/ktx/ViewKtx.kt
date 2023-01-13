@@ -7,12 +7,7 @@ import com.dingyi.unluactool.MainApplication
 import com.google.android.material.snackbar.Snackbar
 import kotlin.math.roundToInt
 
-fun Context.getAttributeColor(resId: Int): Int {
-    val typedArray = obtainStyledAttributes(intArrayOf(resId))
-    val color = typedArray.getColor(0, 0)
-    typedArray.recycle()
-    return color
-}
+
 
 fun String.showSnackBar(view: View) =
     Snackbar.make(view, this, Snackbar.LENGTH_LONG)

@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/circleImageShapeAppearance" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,7 +34,7 @@
         app:layout_constraintRight_toRightOf="@id/title"
         app:layout_constraintTop_toTopOf="@id/image" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

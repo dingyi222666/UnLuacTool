@@ -26,14 +26,27 @@ class EditorViewModel : ViewModel() {
     val project: LiveData<Project>
         get() = _project
 
+    private val _currentSelectEditorFragmentData = MutableLiveData<EditorFragmentData>()
+
+    val currentSelectEditorFragmentData: LiveData<EditorFragmentData>
+        get() = _currentSelectEditorFragmentData
+
 
     val fragmentDataList = ObservableArrayList<EditorFragmentData>()
 
     suspend fun loadProject(uri: String): Project {
         val projectValue = EditorRepository.loadProject(uri)
-        _project.setValue(projectValue)
+        _project.value = projectValue
         return projectValue
+    }
 
+    fun initFragmentDataList() {
+        addMainFragmentData()
+        _currentSelectEditorFragmentData.value = fragmentDataList[0]
+    }
+
+    fun addMainFragmentData() {
+        fragmentDataList.add(0, EditorFragmentData(""))
     }
 
 
@@ -65,5 +78,5 @@ class EditorViewModel : ViewModel() {
 }
 
 data class EditorFragmentData(
-    val fileUri: String?
+    val fileUri: String
 )

@@ -1,6 +1,7 @@
 package com.dingyi.unluactool.common.ktx
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import androidx.fragment.app.Fragment
@@ -11,6 +12,12 @@ fun getString(resId: Int): String = MainApplication.instance.getString(resId)
 fun getString(resId: Int, vararg formatArgs: Any): String =
     MainApplication.instance.getString(resId, *formatArgs)
 
+fun Context.getAttributeColor(resId: Int): Int {
+    val typedArray = obtainStyledAttributes(intArrayOf(resId))
+    val color = typedArray.getColor(0, 0)
+    typedArray.recycle()
+    return color
+}
 
 inline fun <reified T> Activity.startActivity(block: Intent.() -> Unit = {}) {
     startActivity(Intent(this, getJavaClass<T>()).apply(block))
