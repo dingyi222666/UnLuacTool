@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?selectableItemBackground"
     android:clickable="true">
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/editor_drawer_list_highlight_card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        app:cardBackgroundColor="#00000000"
-        app:cardCornerRadius="4dp"
+        android:layout_margin="12dp"
+        android:clickable="true"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="?colorSurface"
+        app:cardCornerRadius="28dp"
         app:cardElevation="0dp">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -29,7 +30,7 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="16dp"
                 android:src="@drawable/ic_twotone_home_24"
-                app:tint="?textColorImportant" />
+                app:tint="?colorOnSurface" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/title"
@@ -40,8 +41,7 @@
                 android:ellipsize="start"
                 android:singleLine="true"
                 android:text="@string/editor_toolbar_title"
-                android:textColor="?textColorImportant"
-                android:textSize="16sp" />
+                style="@style/TextAppearance.Material3.TitleMedium"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </androidx.appcompat.widget.LinearLayoutCompat>

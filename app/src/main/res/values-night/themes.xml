@@ -1,7 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!--TODO 添加夜间主题 -->
-    <style name="Theme.UnLuacTool" parent="Theme.MaterialComponents.NoActionBar">
-        <!-- Primary brand color. -->
+
+    <style name="Theme.UnLuacTool" parent="Theme.Material3.Dark.NoActionBar">
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
         <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
         <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
@@ -28,16 +27,19 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
+
+
         <!-- Customize your theme here. -->
-        <item name="android:windowTranslucentStatus">false</item><!--可以页面拉伸到状态栏顶部-->
-        <item name="strokeColor">#E0E0E0</item>
-        <item name="rippleColor">#14000000</item>
-        <item name="android:windowAnimationStyle">@style/alertDialogAnimation</item>
+        <item name="android:windowTranslucentStatus">true</item><!--可以页面拉伸到状态栏顶部-->
+
+
+        <!-- <item name="android:windowAnimationStyle">@style/alertDialogAnimation</item>-->
         <item name="dialogCornerRadius">6dp</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
+
         <item name="iconTint">#8f000000</item>
-       <!-- <item name="toolbarStyle">@style/Widget.Base.Toolbar</item>-->
+        <!-- <item name="toolbarStyle">@style/Widget.Base.Toolbar</item>-->
         <item name="alertDialogTheme">@style/alertDialogTheme</item>
+        <item name="android:windowContentTransitions">true</item>
         <item name="android:windowLightStatusBar">true</item>
     </style>
 </resources>

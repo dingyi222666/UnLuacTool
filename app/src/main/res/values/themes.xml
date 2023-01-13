@@ -59,13 +59,10 @@
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
 
-        <item name="textColorPrimary">#212121</item>
-        <item name="textColorSecondary">#757575</item>
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item><!--可以页面拉伸到状态栏顶部-->
         <item name="strokeColor">#E0E0E0</item>
         <item name="rippleColor">#14000000</item>
-        <item name="textColorImportant">@color/black</item>
         <!-- <item name="android:windowAnimationStyle">@style/alertDialogAnimation</item>-->
         <item name="dialogCornerRadius">6dp</item>
 

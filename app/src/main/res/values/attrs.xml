@@ -1,7 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="textColorPrimary" format="color|reference" />
-    <attr name="textColorSecondary" format="color|reference" />
-    <attr name="strokeColor" format="color|reference" />
-    <attr name="textColorImportant" format="color|reference" />
 </resources>

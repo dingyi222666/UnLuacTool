@@ -66,6 +66,8 @@ dependencies {
     implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
+
+
     implementation("dev.chrisbanes.insetter:insetter:0.6.1")
 
 

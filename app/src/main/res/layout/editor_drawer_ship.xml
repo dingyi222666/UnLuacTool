@@ -7,6 +7,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        app:insetForeground="@null"
         android:fitsSystemWindows="true">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -14,29 +15,28 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
 
-            android:background="?colorOnPrimary"
+            android:background="?android:colorBackground"
             android:orientation="vertical">
 
             <View
                 android:id="@+id/editor_drawer_status_bar"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="?colorPrimary"
+                android:background="?colorSurface"
                 android:fitsSystemWindows="true" />
-
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/editor_drawer_toolbar_root"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
-                android:background="?colorPrimary"
+                android:background="?colorSurface"
                 android:orientation="horizontal"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/editor_drawer_toolbar_title"
-                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                    style="@style/TextAppearance.Material3.TitleLarge"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -44,7 +44,7 @@
                     android:layout_weight="1"
                     android:ellipsize="start"
                     android:singleLine="true"
-                    android:textColor="?colorOnPrimary"
+                    android:textColor="?colorOnSurface"
                     android:textSize="20sp" />
 
 
@@ -57,7 +57,7 @@
                     android:clickable="true"
                     android:padding="3dp"
                     android:src="@drawable/ic_baseline_expand_more_24"
-                    app:tint="?colorOnPrimary" />
+                    app:tint="?colorOnSurface" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -69,7 +69,7 @@
                     android:clickable="true"
                     android:padding="3dp"
                     android:src="@drawable/ic_outline_more_vert_24"
-                    app:tint="?colorOnPrimary" />
+                    app:tint="?colorOnSurface" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

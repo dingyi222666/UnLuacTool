@@ -131,12 +131,6 @@ class MainActivity : AppCompatActivity() {
             return@setNavigationItemSelectedListener true
         }
 
-        val surfaceColor = getAttributeColor(com.google.android.material.R.attr.colorOnSurface)
-        window.apply {
-            statusBarColor = surfaceColor
-            navigationBarColor = surfaceColor
-        }
-
     }
 
     private fun getPagerFragments(): List<Class<*>> {

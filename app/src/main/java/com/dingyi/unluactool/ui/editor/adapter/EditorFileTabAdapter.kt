@@ -141,8 +141,8 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
     private fun unSelectItem(itemType: Int, holder: ViewHolder) {
         val context = holder.itemView.context
 
-        val textColorImportant = context.getAttributeColor(
-            R.attr.textColorImportant
+        val textColorPrimary  = context.getAttributeColor(
+            com.google.android.material.R.attr.colorOnSurface
         )
 
         // val colorPrimary = context.getAttributeColor(androidx.appcompat.R.attr.colorPrimary)
@@ -150,13 +150,13 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         if (itemType == 1) {
             val binding = ItemEditorDrawerListHomeItemBinding.bind(holder.itemView)
 
-            binding.icon.imageTintList = ColorStateList.valueOf(textColorImportant)
+            binding.icon.imageTintList = ColorStateList.valueOf(textColorPrimary)
 
             binding.editorDrawerListHighlightCard.setCardBackgroundColor(
                 0x0000000
             )
 
-            binding.title.setTextColor(textColorImportant)
+            binding.title.setTextColor(textColorPrimary)
 
         }
     }
