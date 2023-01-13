@@ -3,7 +3,7 @@ package com.dingyi.unluactool.engine.lasm.data.v1
 /**
  * 代表一个lasm函数，所有信息都存在data里面，还包含一个函数名
  */
-data class LASMFunction(
+ class LASMFunction(
     override var data: String,
     override val name: String,
     override val fullName: String,
@@ -11,11 +11,12 @@ data class LASMFunction(
 ) : AbsFunction<LASMFunction> {
 
     init {
-        parent?.addChildFunction(this)
+        if (parent?.hasChildFunction(this) != true) {
+            parent?.addChildFunction(this)
+        }
     }
 
     override val childFunctions = mutableListOf<LASMFunction>()
-
 
     fun getDataWithChildFunctions(): String {
         val buffer = StringBuilder()
@@ -54,14 +55,52 @@ data class LASMFunction(
     }
 
     override fun removeChildFunctionByName(name: String) {
-        childFunctions.removeIf { it.name == "name" }
+        childFunctions.removeIf { it.name == name }
     }
 
-    override fun resolveFunction(path: String): LASMFunction {
-        TODO("Not yet implemented")
+    override fun hasChildFunction(func: LASMFunction): Boolean {
+        return childFunctions.contains(func)
     }
 
-    override fun asFunction(): LASMFunction  = this
+    override fun resolveFunction(path: String): LASMFunction? {
+        val paths = path.split("/").toMutableList()
+        var current: AbsFunction<LASMFunction> = this
+        while (paths.isNotEmpty()) {
+            val name = paths.removeAt(0)
+            val now = current.childFunctions.find { it.name == name }
+            if (now is AbsFunction<LASMFunction>) {
+                current = now
+            } else {
+                return now
+            }
+        }
+        return null
+    }
+
+    override fun asFunction(): LASMFunction = this
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as LASMFunction
+
+        if (data != other.data) return false
+        if (name != other.name) return false
+        if (fullName != other.fullName) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = data.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + fullName.hashCode()
+        return result
+    }
+
+    override fun toString(): String {
+        return "LASMFunction(name='$name', fullName='$fullName', parent=$parent, childFunctions=$childFunctions)"
+    }
 
 
 }

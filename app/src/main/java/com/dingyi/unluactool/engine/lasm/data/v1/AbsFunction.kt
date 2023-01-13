@@ -10,6 +10,8 @@ interface AbsFunction<T> {
 
     fun removeChildFunctionByName(name: String)
 
+    fun hasChildFunction(func:T):Boolean
+
     fun resolveFunction(path:String): LASMFunction?
 
     fun asFunction():T

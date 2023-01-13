@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.ui.editor.main
 
+import android.animation.ValueAnimator
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.ColorFilter
@@ -10,7 +11,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -59,13 +62,18 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             initTree()
         }
 
-        binding.treeView.apply {
-            binder = FileNodeBinder() as TreeViewBinder<Any>
+        binding.editorFileViewerFragmentTreeView.apply {
+            val nodeBinder = FileNodeBinder()
+            binder = nodeBinder as TreeViewBinder<Any>
             tree = treeViewData as Tree<Any>
+            nodeClickListener = nodeBinder
+            bindCoroutineScope(lifecycleScope)
         }
 
         lifecycleScope.launch {
-            binding.treeView.refresh()
+            binding.editorFileViewerFragmentTreeView.refresh()
+            binding.editorFileViewerFragmentTreeView.isVisible = true
+            binding.editorFileViewerFragmentProgressBar.isVisible = false
         }
 
     }
@@ -117,7 +125,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                 FileObjectType.FILE -> {
                     binding.image.setImageDrawable(
                         CircleDrawable(
-                            "L", resources.getColor(R.color.blue_small_icon, null)
+                            "L", ContextCompat.getColor(requireContext(), R.color.blue_small_icon)
                         )
                     )
                 }
@@ -125,7 +133,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                 FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
                     binding.image.setImageDrawable(
                         CircleDrawable(
-                            "F", resources.getColor(R.color.blue_small_icon, null)
+                            "F", ContextCompat.getColor(requireContext(), R.color.blue_small_icon)
                         )
                     )
                 }
@@ -145,17 +153,17 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                 .arrow
                 .animate()
                 .rotation(if (node.expand) 90f else 0f)
-                .setDuration(0)
+                .setDuration(100)
                 .start()
         }
 
 
         override fun onClick(node: TreeNode<UnLuaCFileObject>, holder: TreeView.ViewHolder) {
             val extra = checkNotNull(node.extra)
-            val binding = ItemEditorFileViewerListBinding.bind(holder.itemView)
+            // val binding = ItemEditorFileViewerListBinding.bind(holder.itemView)
 
-            if (extra.isFolder && !node.hasChild) {
-                applyDir(binding, extra, node)
+            if (extra.getFileType() != FileObjectType.FUNCTION && !node.hasChild) {
+                onToggle(node, !node.expand, holder)
             }
         }
 
@@ -167,9 +175,11 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             val extra = checkNotNull(node.extra)
             val binding = ItemEditorFileViewerListBinding.bind(holder.itemView)
 
-            if (extra.isFolder) {
+            if (extra.getFileType() != FileObjectType.FUNCTION) {
                 applyDir(binding, extra, node)
             }
+
+            node.expand = isExpand
         }
 
         override fun createView(parent: ViewGroup, viewType: Int): View {
@@ -193,8 +203,9 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
         ): List<TreeNode<UnLuaCFileObject>> {
 
             val targetNodeExtra = checkNotNull(targetNode.extra)
+            val friendlyURI = targetNodeExtra.name.friendlyURI
 
-            if (targetNodeExtra.isFile) {
+            if (targetNodeExtra.getFileType() == FileObjectType.FUNCTION) {
                 targetNode.hasChild = false
                 return listOf()
             }
@@ -202,12 +213,17 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             val oldNodes = tree.getNodes(oldNodeSet)
 
             val child =
-                withContext(Dispatchers.IO) { checkNotNull(targetNodeExtra.children).toMutableList() }
+                withContext(Dispatchers.IO) {
+                    checkNotNull(targetNodeExtra.children)
+                        // .filter { it.name.friendlyURI != friendlyURI }
+                        .toMutableList()
+                }
 
             val result = mutableListOf<TreeNode<UnLuaCFileObject>>()
 
             oldNodes.forEach { node ->
-                val virtualFile = child.find { it.name == node.extra?.name }
+                val virtualFile =
+                    child.find { it.name.friendlyURI == node.extra?.name?.friendlyURI }
                 if (virtualFile != null) {
                     result.add(node)
                 }
@@ -220,16 +236,17 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
             child.forEach {
                 val unLuaCFileObject = it as UnLuaCFileObject
-                val hasChild = if (unLuaCFileObject.isFile) false else {
-                    withContext(Dispatchers.IO) { unLuaCFileObject.children }.isEmpty()
-                }
+                val hasChild =
+                    if (unLuaCFileObject.getFileType() != FileObjectType.FUNCTION) false else {
+                        withContext(Dispatchers.IO) { unLuaCFileObject.children }.isEmpty()
+                    }
                 result.add(
                     TreeNode(
                         unLuaCFileObject,
                         targetNode.level + 1,
-                        unLuaCFileObject.name.baseName,
+                        unLuaCFileObject.name.baseName.replace(".lasm", ".lua"),
                         tree.generateId(),
-                        unLuaCFileObject.isFolder && hasChild,
+                        unLuaCFileObject.getFileType() != FileObjectType.FUNCTION && hasChild,
                         false
                     )
                 )
@@ -255,14 +272,15 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
     internal class CircleDrawable(
         private val mDrawText: String,
-        private val mDrawColor: Int
+        private val mDrawBackgroundColor: Int,
+        private val mDrawTextColor: Int = mDrawBackgroundColor,
     ) :
         Drawable() {
         private val mPaint = Paint().apply {
             isAntiAlias = true
-            color = mDrawColor
-            strokeWidth = Resources.getSystem()
-                .displayMetrics.density * 2
+            color = mDrawBackgroundColor
+            strokeWidth = (Resources.getSystem()
+                .displayMetrics.density * 1.5).toFloat()
             strokeJoin = Paint.Join.ROUND
             style = Paint.Style.STROKE
         }
@@ -270,8 +288,9 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             color = -0x1
             isAntiAlias = true
             textSize = Resources.getSystem()
-                .displayMetrics.density * 14
+                .displayMetrics.density * 10
             textAlign = Paint.Align.CENTER
+            color = mDrawTextColor
         }
 
 
@@ -281,8 +300,11 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
             // canvas.drawCircle(width / 2, height / 2, width / 2, mPaint)
 
-            //  canvas.drawRect(0f, 0f, width, height, mPaint)
-            canvas.drawArc(0f, 0f, width, height, 0f, 360f, false, mPaint)
+            // canvas.drawRect(0f, 0f, width, height, mPaint)
+            canvas.drawArc(
+                0f + mPaint.strokeWidth, 0f + mPaint.strokeWidth, width
+                        - mPaint.strokeWidth, height - mPaint.strokeWidth, 0f, 360f, false, mPaint
+            )
             canvas.save()
             canvas.translate(width / 2f, height / 2f)
             val textCenter = -(mTextPaint.descent() + mTextPaint.ascent()) / 2f

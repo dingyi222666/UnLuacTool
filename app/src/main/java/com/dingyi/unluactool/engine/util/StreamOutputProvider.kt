@@ -30,8 +30,6 @@ class StreamOutputProvider(
     }
 
 
-
-
     override fun close() {
         out.close();
     }

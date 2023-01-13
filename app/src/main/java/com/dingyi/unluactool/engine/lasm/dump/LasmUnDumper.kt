@@ -5,6 +5,7 @@ import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.zip.GZIPInputStream
 
@@ -12,7 +13,6 @@ class LasmUnDumper {
 
 
     fun unDump(stream: InputStream): LASMChunk {
-
 
         unDumpHeader(stream)
 
@@ -32,12 +32,11 @@ class LasmUnDumper {
 
         val chunk = LASMChunk(data, version, name, fullName)
 
-
         val childSize = readInt(stream)
 
         for (i in 1..childSize) {
-            val func = unDumpFunction(stream, chunk)
-            chunk.addChildFunction(func)
+            unDumpFunction(stream, chunk)
+            //chunk.addChildFunction(func)
         }
 
         stream.close()
@@ -56,10 +55,8 @@ class LasmUnDumper {
         //full name
         val fullName = readString(stream)
 
-
         //data
         val data = readString(stream)
-
 
         val func = LASMFunction(data, name, fullName, parent)
 
@@ -78,15 +75,21 @@ class LasmUnDumper {
 
         val byteArray = readByteArray(stream, arraySize)
 
-
         val zipInputStream = GZIPInputStream(ByteArrayInputStream(byteArray))
 
+        val builder = StringBuilder()
 
-        val targetString = zipInputStream.readBytes().decodeToString()
+        zipInputStream.bufferedReader().use {
+            val cArray = CharArray(1024)
+            var len = it.read(cArray, 0, cArray.size)
+            while (len > 0) {
+                builder.append(cArray, 0, len)
+                len = it.read(cArray, 0, cArray.size)
+            }
 
-        zipInputStream.close()
+        }
 
-        return targetString
+        return builder.toString()
 
     }
 
@@ -100,7 +103,6 @@ class LasmUnDumper {
         stream.read(array)
 
         return array
-
     }
 
     private fun unDumpHeader(stream: InputStream) {

@@ -56,7 +56,6 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
             projectIndexedDir.createFolder()
 
 
-
             for (index in 0 until size) {
                 val originFileObject = allProjectFileList[index]
                 val nowProgress = (index / size) * 100
@@ -72,9 +71,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     srcDirFile.absolutePath.length + 1
                 )
 
-
                 progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
-
 
 
                 progressState?.text = getString(
@@ -96,6 +93,11 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                         ).plus(".lasm")
                     )
 
+                if (targetFile.exists()) {
+                    progressState?.progress = nextProgress
+                    continue
+                }
+
 
                 val header: BHeader
                 try {
@@ -110,7 +112,6 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     e.printStackTrace()
                     continue
                 }
-
 
                 progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
 
@@ -133,7 +134,6 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 }
 
                 progressState?.progress = nextProgress
-
 
             }
 

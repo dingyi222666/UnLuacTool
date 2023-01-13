@@ -19,27 +19,31 @@ class LASMChunk(
     }
 
     override fun removeChildFunctionByName(name: String) {
-        childFunctions.removeIf { it.name == "name" }
+        childFunctions.removeIf { it.name == name }
+    }
+
+    override fun hasChildFunction(func: LASMFunction): Boolean {
+        return childFunctions.contains(func)
     }
 
     override fun resolveFunction(path: String): LASMFunction? {
         val paths = path.split("/").toMutableList()
-        var current:AbsFunction<LASMFunction> = this
+        var current: AbsFunction<LASMFunction> = this
         while (paths.isNotEmpty()) {
             val name = paths.removeAt(0)
-            val now = current.childFunctions.find { it.name == name  }
+            val now = current.childFunctions.find { it.name == name }
             if (now is AbsFunction<LASMFunction>) {
                 current = now
             } else {
                 return now
             }
         }
-        return null
+        return if (current != this) (current as LASMFunction) else null
     }
 
 
     override fun asFunction(): LASMFunction {
-        TODO("Not yet implemented")
+        error("Not support this method")
     }
 
     fun getAllData(): String {

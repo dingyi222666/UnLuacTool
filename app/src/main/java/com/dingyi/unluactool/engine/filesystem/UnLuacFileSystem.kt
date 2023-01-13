@@ -1,23 +1,16 @@
 package com.dingyi.unluactool.engine.filesystem
 
 import com.dingyi.unluactool.MainApplication
-import com.dingyi.unluactool.core.event.EventManager
-import com.dingyi.unluactool.core.project.CompositeProjectIndexer
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
-import com.dingyi.unluactool.core.project.ProjectManagerListener
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.get
-import com.dingyi.unluactool.engine.lasm.indexer.LasmIndexer
 import org.apache.commons.vfs2.Capability
 import org.apache.commons.vfs2.FileName
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemOptions
 import org.apache.commons.vfs2.provider.AbstractFileName
 import org.apache.commons.vfs2.provider.AbstractFileSystem
-import org.apache.commons.vfs2.provider.local.DefaultLocalFileProvider
-import org.apache.commons.vfs2.provider.local.LocalFileName
-import org.apache.commons.vfs2.provider.url.UrlFileName
 
 class UnLuacFileSystem(
     rootFileName: FileName,
@@ -31,14 +24,20 @@ class UnLuacFileSystem(
 
     private val selfCapabilities = mutableListOf<Capability>()
 
+    private val cacheParsedFileObject = mutableMapOf<String, UnLuacParsedFileObject>()
+
+    private val bindParsedFileObject =
+        mutableMapOf<UnLuacParsedFileObject, MutableList<UnLuaCFileObject>>()
+
     //unluac://project/file (lasm)
     override fun createFile(name: AbstractFileName): FileObject {
         val path = name.pathDecoded.substring(1)
         val projectName = path.substringBefore("/", path)
-        val targetFilePaths = path.substringAfter("/", "")
+        val targetFilePaths = path.replace(projectName + "/", "")
             .split("/")
             .filter(String::isNotEmpty)
             .toMutableList()
+
 
         val project = serviceRegistry.get<ProjectManager>()
             .getProjectByName(projectName)
@@ -48,8 +47,9 @@ class UnLuacFileSystem(
         val projectSourceSrc = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
 
         if (targetFilePaths.isEmpty()) {
-            return createEmptyFileObject(projectSourceSrc)
+            return createEmptyFileObject(projectSourceSrc, projectSourceSrc, projectName)
         }
+
 
         var currentFileObject = projectSourceSrc
 
@@ -62,29 +62,35 @@ class UnLuacFileSystem(
                 kotlin.runCatching { projectSourceSrc.resolveFile(currentValue) }
                     .getOrNull()
 
-            if (forEachFileObject == null) {
+            if (forEachFileObject == null || !forEachFileObject.exists()) {
+                targetFilePaths.add(0, currentValue)
                 break
             } else {
                 currentFileObject = forEachFileObject
             }
 
+
         }
 
         if (currentFileObject.isFolder) {
-            return createEmptyFileObject(currentFileObject)
+            return createEmptyFileObject(currentFileObject, projectSourceSrc, projectName)
         }
 
-        val parsedFileObject = UnLuacParsedFileObject(currentFileObject)
+        val parsedFileObject = cacheParsedFileObject.getOrPut(currentFileObject.name.friendlyURI)
+        { UnLuacParsedFileObject(currentFileObject) }
+
+        parsedFileObject.init()
 
         val extra = UnLuacFileObjectExtra(
             chunk = parsedFileObject.lasmChunk,
             path = targetFilePaths.joinToString(separator = "/"),
             fileObject = parsedFileObject,
-            currentFunction = null
+            currentFunction = null,
+            project = project
         )
 
         if (targetFilePaths.isEmpty()) {
-            return createParsedFileObject(currentFileObject, extra)
+            return createParsedFileObject(currentFileObject, projectSourceSrc, extra, projectName)
         }
 
         val chunk = parsedFileObject.lasmChunk
@@ -93,12 +99,12 @@ class UnLuacFileSystem(
         val findFunction = chunk.resolveFunction(extra.path)
         if (findFunction != null) {
             extra.currentFunction = findFunction
-            return createParsedFileObject(currentFileObject, extra)
+            return createParsedFileObject(currentFileObject, projectSourceSrc, extra, projectName)
         }
 
 
         // If the path does not match any of the above, then return an empty file object
-        return createEmptyFileObject(currentFileObject)
+        return createEmptyFileObject(currentFileObject, projectSourceSrc, projectName)
 
     }
 
@@ -111,29 +117,60 @@ class UnLuacFileSystem(
         selfCapabilities.addAll(caps)
     }
 
-    private fun convertFileName(fileName: FileName): AbstractFileName {
+
+    internal fun refresh(fileObject: UnLuaCFileObject) {
+        val proxyFileObject = fileObject.proxyFileObject
+        cacheParsedFileObject[proxyFileObject.name.friendlyURI] =
+            UnLuacParsedFileObject(proxyFileObject).apply {
+                init()
+            }
+    }
+
+    private fun convertFileName(
+        fileName: FileName,
+        projectSourceSrc: FileObject,
+        projectName: String,
+        extraPath: String? = null
+    ): AbstractFileName {
         // ?
-        val uri = fileName.friendlyURI.replace("file:/", "unluac:/")
+        var uri = fileName.friendlyURI.replace(
+            projectSourceSrc.name.friendlyURI/* "file:/"*/,
+            "unluac://$projectName"
+        )
+        if (extraPath != null) {
+            uri = "$uri/$extraPath"
+        }
         return provider.parseUri(null, uri) as AbstractFileName
         // return fileName as AbstractFileName
     }
 
     private fun createParsedFileObject(
         targetFileObject: FileObject,
-        extra: UnLuacFileObjectExtra
+        projectSourceSrc: FileObject,
+        extra: UnLuacFileObjectExtra,
+        projectName: String
     ): FileObject {
         return UnLuaCFileObject(
             proxyFileObject = targetFileObject,
-            name = convertFileName(targetFileObject.name),
+            name = convertFileName(
+                targetFileObject.name,
+                projectSourceSrc,
+                projectName,
+                extra.path
+            ),
             data = extra,
             fileSystem = this
         )
     }
 
-    private fun createEmptyFileObject(targetFileObject: FileObject): FileObject {
+    private fun createEmptyFileObject(
+        targetFileObject: FileObject,
+        projectSourceSrc: FileObject,
+        projectName: String
+    ): FileObject {
         return UnLuaCFileObject(
             proxyFileObject = targetFileObject,
-            name = convertFileName(targetFileObject.name),
+            name = convertFileName(targetFileObject.name, projectSourceSrc, projectName),
             fileSystem = this
         )
     }

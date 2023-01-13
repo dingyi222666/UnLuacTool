@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.engine.filesystem
 
+import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.engine.lasm.assemble.Assembler
 import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
@@ -25,7 +26,15 @@ class UnLuacParsedFileObject(
         private set
 
     private lateinit var assembler: Assembler
+
+    private val chunkChangeListeners = mutableListOf<(LASMChunk) -> Unit>()
+
     fun init() {
+
+        if (this::lasmChunk.isInitialized) {
+            return
+        }
+
         lasmChunk =
             LasmUnDumper().unDump(
                 proxyFileObject.content.inputStream
@@ -35,7 +44,20 @@ class UnLuacParsedFileObject(
     }
 
 
+    fun addChunkChangeListener(listener: (LASMChunk) -> Unit) {
+        chunkChangeListeners.add(listener)
+    }
+
     fun refresh() {
+        lasmChunk =
+            LasmUnDumper().unDump(
+                proxyFileObject.content.inputStream
+            )
+
+        assembler = Assembler(lasmChunk)
+    }
+
+    fun refreshFlush() {
         val outputProvider = StreamOutputProvider(
             proxyFileObject.content.outputStream
         )
@@ -68,7 +90,7 @@ class UnLuacParsedFileObject(
         return ParsedObjectOutputStream()
     }
 
-    fun writeData(func:LASMFunction):OutputStream {
+    fun writeData(func: LASMFunction): OutputStream {
         return ParsedObjectOutputStream(func)
     }
 
@@ -81,31 +103,39 @@ class UnLuacParsedFileObject(
         private val currentFunction: LASMFunction? = null
     ) : OutputStream() {
 
-
-        private val buffer = StringBuilder()
+        private val outputStream = ByteArrayOutputStream()
 
         override fun write(b: Int) {
-            buffer.append(b)
+            outputStream.write(b)
         }
 
         override fun close() {
             super.close()
 
-            if (currentFunction!=null) {
-                currentFunction.data = buffer.toString()
+
+            val data = outputStream.toByteArray().decodeToString()
+
+            if (currentFunction != null) {
+                currentFunction.data = data
                 return
             }
 
             val assembler = unluac.assemble.Assembler(
-                ByteArrayInputStream(buffer.toString().encodeToByteArray()),
+                ByteArrayInputStream(outputStream.toByteArray()),
 
-            )
+                )
 
             val chunk = assembler.chunk
 
             val mainFunction = chunk.convertToFunction(chunk.main)
 
             lasmChunk = LasmDisassembler(mainFunction).decompile()
+
+            chunkChangeListeners.forEach {
+                it(lasmChunk)
+            }
+
+            refreshFlush()
 
         }
 
@@ -118,8 +148,18 @@ data class UnLuacFileObjectExtra(
     var chunk: LASMChunk,
     var currentFunction: LASMFunction?,
     var path: String,
-    var fileObject: UnLuacParsedFileObject
+    var fileObject: UnLuacParsedFileObject,
+    var project: Project
 ) {
-    fun requireFunction():LASMFunction = checkNotNull(currentFunction)
+    fun requireFunction(): LASMFunction = checkNotNull(currentFunction)
+
+    init {
+        fileObject.addChunkChangeListener {
+            chunk = it
+            if (currentFunction != null) {
+                currentFunction = it.resolveFunction(currentFunction?.fullName ?: "")
+            }
+        }
+    }
 }
 

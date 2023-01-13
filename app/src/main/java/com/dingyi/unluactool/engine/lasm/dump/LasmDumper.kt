@@ -12,7 +12,6 @@ class LasmDumper(
     private val chunk: LASMChunk
 ) {
 
-
     companion object {
         val lasmHeader = "unluac".toByteArray() + byteArrayOf(53) + "luaasm".toByteArray()
     }
@@ -36,7 +35,11 @@ class LasmDumper(
         //chunk func size
         dumpInt(chunk.childFunctions.size)
 
-        chunk.childFunctions.sortedBy { it.name }.forEach(this::dumpFunction)
+        chunk.childFunctions.sortedBy {
+            val name = it.name
+            val fIndex = name.substring(1)
+            fIndex.toInt()
+        }.forEach(this::dumpFunction)
 
     }
 
@@ -53,8 +56,11 @@ class LasmDumper(
         //chunk func size
         dumpInt(chunk.childFunctions.size)
 
-
-        chunk.childFunctions.sortedBy { it.name }.forEach(this::dumpFunction)
+        chunk.childFunctions.sortedBy {
+            val name = it.name
+            val fIndex = name.substring(1)
+            fIndex.toInt()
+        }.forEach(this::dumpFunction)
     }
 
 
