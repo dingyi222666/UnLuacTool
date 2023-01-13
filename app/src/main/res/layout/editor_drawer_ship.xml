@@ -1,6 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.commit451.scriminsetslayout.ScrimInsetsFrameLayout
+        android:id="@+id/editor_drawer_insets"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/editor_drawer_linear_root"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+
+            android:background="?colorOnPrimary"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/editor_drawer_status_bar"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="?colorPrimary"
+                android:fitsSystemWindows="true" />
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/editor_drawer_toolbar_root"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="?colorPrimary"
+                android:orientation="horizontal"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/editor_drawer_toolbar_title"
+                    style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:ellipsize="start"
+                    android:singleLine="true"
+                    android:textColor="?colorOnPrimary"
+                    android:textSize="16sp" />
+
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="12dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:padding="3dp"
+                    android:src="@drawable/ic_baseline_expand_more_24"
+                    app:tint="?colorOnPrimary" />
+
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="12dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:padding="3dp"
+                    android:src="@drawable/ic_outline_more_vert_24"
+                    app:tint="?colorOnPrimary" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.commit451.scriminsetslayout.ScrimInsetsFrameLayout>
+
+</merge>

@@ -1,11 +1,10 @@
-package com.dingyi.unluactool.engine.lasm.dump
+package com.dingyi.unluactool.engine.lasm.dump.v1
 
 import com.dingyi.unluactool.common.ktx.getIntAt
 import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.util.zip.GZIPInputStream
 

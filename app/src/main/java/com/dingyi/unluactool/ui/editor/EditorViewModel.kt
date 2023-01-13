@@ -13,6 +13,7 @@ import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.dialog.progressDialogWithState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -29,16 +30,7 @@ class EditorViewModel : ViewModel() {
     val fragmentDataList = ObservableArrayList<EditorFragmentData>()
 
     suspend fun loadProject(uri: String): Project {
-        val projectValue = MainApplication
-            .instance
-            .globalServiceRegistry
-            .get<ProjectManager>()
-            .resolveProjectByPath(
-                MainApplication
-                    .instance
-                    .fileSystemManager
-                    .resolveFile(uri)
-            ).let { checkNotNull(it) }
+        val projectValue = EditorRepository.loadProject(uri)
         _project.setValue(projectValue)
         return projectValue
 

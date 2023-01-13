@@ -1,8 +1,8 @@
 package com.dingyi.unluactool
 
 import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
-import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
-import com.dingyi.unluactool.engine.lasm.dump.LasmUnDumper
+import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
+import com.dingyi.unluactool.engine.lasm.dump.v1.LasmUnDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import org.junit.Test
 import unluac.Configuration

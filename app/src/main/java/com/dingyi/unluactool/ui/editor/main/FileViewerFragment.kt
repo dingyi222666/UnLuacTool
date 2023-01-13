@@ -40,7 +40,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
     private val viewModel by activityViewModels<EditorViewModel>()
 
-    private val treeViewData = Tree.createTree<UnLuaCFileObject>()
+    private val treeViewData by lazy(LazyThreadSafetyMode.NONE) { Tree.createTree<UnLuaCFileObject>() }
 
     private val fsManager by lazy(LazyThreadSafetyMode.NONE) {
         VFS.getManager()
@@ -274,8 +274,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
         private val mDrawText: String,
         private val mDrawBackgroundColor: Int,
         private val mDrawTextColor: Int = mDrawBackgroundColor,
-    ) :
-        Drawable() {
+    ) : Drawable() {
         private val mPaint = Paint().apply {
             isAntiAlias = true
             color = mDrawBackgroundColor
@@ -292,7 +291,6 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             textAlign = Paint.Align.CENTER
             color = mDrawTextColor
         }
-
 
         override fun draw(canvas: Canvas) {
             val width = bounds.right.toFloat()

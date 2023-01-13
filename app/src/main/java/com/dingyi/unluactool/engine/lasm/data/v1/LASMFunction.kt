@@ -21,7 +21,6 @@ package com.dingyi.unluactool.engine.lasm.data.v1
     fun getDataWithChildFunctions(): String {
         val buffer = StringBuilder()
 
-
         buffer
             .append(data)
             .append("\n")

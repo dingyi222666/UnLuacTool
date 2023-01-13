@@ -9,7 +9,7 @@ import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
-import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
+import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

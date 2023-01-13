@@ -1,4 +1,4 @@
-package com.dingyi.unluactool.engine.lasm.dump
+package com.dingyi.unluactool.engine.lasm.dump.v1
 
 import com.dingyi.unluactool.common.ktx.toByteArray
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
@@ -82,7 +82,6 @@ class LasmDumper(
         dumpInt(dumpBytes.size)
 
         dumpByteArray(dumpBytes)
-
 
     }
 

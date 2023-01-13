@@ -77,7 +77,7 @@ dependencies {
 
 
     implementation("net.lingala.zip4j:zip4j:2.11.1")
-
+    implementation ("com.github.Commit451:ScrimInsetsLayout:1.1.0")
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     testImplementation("junit:junit:4.13.2")

@@ -80,8 +80,6 @@ class MainActivity : AppCompatActivity() {
 
         val rootView = binding.root
 
-
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
 
@@ -106,7 +104,6 @@ class MainActivity : AppCompatActivity() {
                 drawerArrowDrawable.color =
                     getAttributeColor(com.google.android.material.R.attr.colorOnPrimary)
             }
-
         }
 
 
@@ -122,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        binding.mainNavigationView.setNavigationItemSelectedListener { it ->
+        binding.mainNavigationView.setNavigationItemSelectedListener {
             if (it.groupId == R.id.navigation_default) {
                 it.isChecked = true
                 it.isCheckable = true
@@ -136,13 +133,7 @@ class MainActivity : AppCompatActivity() {
                 binding.main.homePager.setCurrentItem(index, true)
             }
 
-
-
-
-
-            if (rootView is DrawerLayout) {
-                rootView.closeDrawers()
-            }
+            rootView.closeDrawers()
             return@setNavigationItemSelectedListener true
         }
 

@@ -6,8 +6,8 @@ import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
-import com.dingyi.unluactool.engine.lasm.dump.LasmDumper
-import com.dingyi.unluactool.engine.lasm.dump.LasmUnDumper
+import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
+import com.dingyi.unluactool.engine.lasm.dump.v1.LasmUnDumper
 import com.dingyi.unluactool.engine.util.StreamOutputProvider
 import org.apache.commons.vfs2.FileObject
 import unluac.decompile.Output
@@ -15,8 +15,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
-import java.io.StringBufferInputStream
-import java.nio.ByteBuffer
 
 class UnLuacParsedFileObject(
     private val proxyFileObject: FileObject

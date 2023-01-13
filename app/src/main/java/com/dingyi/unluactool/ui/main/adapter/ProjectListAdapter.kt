@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.core.project.Project
 
-import com.dingyi.unluactool.databinding.ItemMainFragmentListBinding
+import com.dingyi.unluactool.databinding.ItemMainProjectListBinding
 import com.dingyi.unluactool.common.ktx.getString
 import com.dingyi.unluactool.common.ktx.toFile
 
@@ -21,7 +21,7 @@ class ProjectListAdapter :
     var listClickEvent = { _: Project -> }
 
     data class ViewHolder(
-        val binding: ItemMainFragmentListBinding
+        val binding: ItemMainProjectListBinding
     ) : RecyclerView.ViewHolder(binding.root)
 
 
@@ -45,7 +45,7 @@ class ProjectListAdapter :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding =
-            ItemMainFragmentListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemMainProjectListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
     }
 
