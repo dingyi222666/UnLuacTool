@@ -27,10 +27,12 @@
             android:focusable="true" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include
-        android:layout_gravity="start"
-        layout="@layout/editor_drawer_ship"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/editor_drawer_fragment_container"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true" />
+
 
 </androidx.drawerlayout.widget.DrawerLayout>

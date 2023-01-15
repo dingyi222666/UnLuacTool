@@ -54,8 +54,6 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
     }
 
     override fun <T : Any> subscribe(eventType: EventType<T>, target: T) {
-
-
         val receivers = lock.read { receivers.getOrDefault(eventType, mutableListOf()) }
 
         lock.write {
@@ -71,8 +69,6 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
                 this.receivers.put(eventType, receivers)
             }
         }
-
-
     }
 
     override fun <T : Any> clearListener(eventType: EventType<T>) {

@@ -1,6 +1,5 @@
 package com.dingyi.unluactool.ui.editor.main
 
-import android.animation.ValueAnimator
 import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.ColorFilter
@@ -12,7 +11,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
@@ -22,13 +20,15 @@ import com.dingyi.unluactool.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.dp
 import com.dingyi.unluactool.databinding.FragmentEditorFileViewerBinding
 import com.dingyi.unluactool.databinding.ItemEditorFileViewerListBinding
+import com.dingyi.unluactool.databinding.ItemEditorFileViewerListDirBinding
 import com.dingyi.unluactool.engine.filesystem.FileObjectType
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.ui.editor.EditorViewModel
+import io.github.dingyi222666.view.treeview.AbstractTree
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeNode
+import io.github.dingyi222666.view.treeview.TreeNodeEventListener
 import io.github.dingyi222666.view.treeview.TreeNodeGenerator
-import io.github.dingyi222666.view.treeview.TreeNodeListener
 import io.github.dingyi222666.view.treeview.TreeView
 import io.github.dingyi222666.view.treeview.TreeViewBinder
 import kotlinx.coroutines.Dispatchers
@@ -46,6 +46,10 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
         VFS.getManager()
     }
 
+    private val projectUri by lazy(LazyThreadSafetyMode.NONE) {
+        viewModel.project.value?.projectPath?.name?.friendlyURI ?: ""
+    }
+
     override fun getViewBinding(
         inflater: LayoutInflater,
         container: ViewGroup?
@@ -61,68 +65,96 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             initTree()
         }
 
-        binding.editorFileViewerFragmentTreeView.apply {
+        (binding.editorFileViewerFragmentTreeView as TreeView<UnLuaCFileObject>).apply {
             val nodeBinder = FileNodeBinder()
-            binder = nodeBinder as TreeViewBinder<Any>
-            tree = treeViewData as Tree<Any>
-            nodeClickListener = nodeBinder
+            binder = nodeBinder
+            tree = treeViewData
+            nodeEventListener = nodeBinder
             bindCoroutineScope(lifecycleScope)
         }
 
         lifecycleScope.launch {
-            binding.editorFileViewerFragmentTreeView.refresh()
-            binding.editorFileViewerFragmentTreeView.isVisible = true
-            binding.editorFileViewerFragmentProgressBar.isVisible = false
+            refresh()
         }
 
     }
 
+    private suspend fun refresh() {
+        binding.editorFileViewerFragmentTreeView.isVisible = false
+        binding.editorFileViewerFragmentProgressBar.isVisible = true
+        binding.editorFileViewerFragmentTreeView.refresh()
+        binding.editorFileViewerFragmentTreeView.isVisible = true
+        binding.editorFileViewerFragmentProgressBar.isVisible = false
+    }
+
+    private fun openFileObject(fileObject: UnLuaCFileObject) {
+        viewModel.openFileObject(fileObject)
+    }
+
     inner class FileNodeBinder : TreeViewBinder<UnLuaCFileObject>(),
-        TreeNodeListener<UnLuaCFileObject> {
+        TreeNodeEventListener<UnLuaCFileObject> {
         override fun areContentsTheSame(
             oldItem: TreeNode<UnLuaCFileObject>,
             newItem: TreeNode<UnLuaCFileObject>
         ): Boolean {
-            return oldItem.extra?.publicURIString == newItem.extra?.publicURIString
+            return oldItem.data?.publicURIString == newItem.data?.publicURIString
         }
 
         override fun areItemsTheSame(
             oldItem: TreeNode<UnLuaCFileObject>,
             newItem: TreeNode<UnLuaCFileObject>
         ): Boolean {
-            return oldItem.extra?.publicURIString == newItem.extra?.publicURIString
+            return oldItem.data?.publicURIString == newItem.data?.publicURIString
         }
 
         override fun bindView(
             holder: TreeView.ViewHolder,
             node: TreeNode<UnLuaCFileObject>,
-            listener: TreeNodeListener<UnLuaCFileObject>
+            listener: TreeNodeEventListener<UnLuaCFileObject>
         ) {
             val itemView = holder.itemView
-            val extra = checkNotNull(node.extra)
-            val binding = ItemEditorFileViewerListBinding.bind(holder.itemView)
+            val extra = checkNotNull(node.data)
+            // val binding = ItemEditorFileViewerListBinding.bind(holder.currentItemView)
 
-            itemView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                leftMargin = node.level * 7.dp
+
+            val binding =
+                if (extra.isFile) ItemEditorFileViewerListBinding.bind(holder.itemView)
+                else ItemEditorFileViewerListDirBinding.bind(holder.itemView)
+
+            val space = if (binding is ItemEditorFileViewerListDirBinding) binding.space else
+                (binding as ItemEditorFileViewerListBinding).space
+
+            space.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                val leftMargin = if (!node.isChild) {
+                    node.depth * 24.dp + 28.dp
+                } else {
+                    node.depth * 24.dp
+                }
+                this.width = leftMargin
             }
 
-            binding.arrow.isInvisible = extra.isFile
+
+            val titleTextView = if (binding is ItemEditorFileViewerListDirBinding) binding.title
+            else (binding as ItemEditorFileViewerListBinding).title
+
+            val imageView = if (binding is ItemEditorFileViewerListDirBinding) binding.image
+            else (binding as ItemEditorFileViewerListBinding).image
 
             val fileType = extra.getFileType()
 
             if (fileType == FileObjectType.FUNCTION) {
-                binding.title.text = node.name
+                titleTextView.text = node.name
             } else {
-                applyDir(binding, extra, node)
+                applyDir(binding as ItemEditorFileViewerListDirBinding, extra, node)
             }
 
             when (fileType) {
                 FileObjectType.DIR -> {
-                    binding.image.setImageResource(R.drawable.ic_baseline_folder_open_24)
+                    imageView.setImageResource(R.drawable.ic_baseline_folder_open_24)
                 }
 
                 FileObjectType.FILE -> {
-                    binding.image.setImageDrawable(
+                    imageView.setImageDrawable(
                         CircleDrawable(
                             "L", ContextCompat.getColor(requireContext(), R.color.blue_small_icon)
                         )
@@ -130,7 +162,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                 }
 
                 FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
-                    binding.image.setImageDrawable(
+                    imageView.setImageDrawable(
                         CircleDrawable(
                             "F", ContextCompat.getColor(requireContext(), R.color.blue_small_icon)
                         )
@@ -142,7 +174,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
 
         private fun applyDir(
-            binding: ItemEditorFileViewerListBinding,
+            binding: ItemEditorFileViewerListDirBinding,
             extra: UnLuaCFileObject,
             node: TreeNode<UnLuaCFileObject>
         ) {
@@ -158,12 +190,18 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
 
         override fun onClick(node: TreeNode<UnLuaCFileObject>, holder: TreeView.ViewHolder) {
-            val extra = checkNotNull(node.extra)
+            val extra = checkNotNull(node.data)
             // val binding = ItemEditorFileViewerListBinding.bind(holder.itemView)
 
-            if (extra.getFileType() != FileObjectType.FUNCTION && !node.hasChild) {
-                onToggle(node, !node.expand, holder)
+            if (!node.isChild) {
+                openFileObject(extra)
+                return
             }
+
+            /*if (extra.getFileType() != FileObjectType.FUNCTION && !node.hasChild) {
+                onToggle(node, !node.expand, holder)
+            }*/
+
         }
 
         override fun onToggle(
@@ -171,45 +209,52 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             isExpand: Boolean,
             holder: TreeView.ViewHolder
         ) {
-            val extra = checkNotNull(node.extra)
-            val binding = ItemEditorFileViewerListBinding.bind(holder.itemView)
+            val extra = checkNotNull(node.data)
+            val binding = ItemEditorFileViewerListDirBinding.bind(holder.itemView)
+            // if (extra.getFileType() != FileObjectType.FUNCTION) {
+            applyDir(binding, extra, node)
+            // }
 
-            if (extra.getFileType() != FileObjectType.FUNCTION) {
-                applyDir(binding, extra, node)
-            }
-
-            node.expand = isExpand
+            // node.expand = isExpand
         }
 
         override fun createView(parent: ViewGroup, viewType: Int): View {
+            if (viewType == 1) {
+                return ItemEditorFileViewerListDirBinding.inflate(
+                    layoutInflater,
+                    parent,
+                    false
+                ).root
+            }
             return ItemEditorFileViewerListBinding.inflate(
                 layoutInflater, parent, false
             ).root
         }
 
         override fun getItemViewType(node: TreeNode<UnLuaCFileObject>): Int {
-            return 0
+            val extra = checkNotNull(node.data)
+            return if (extra.isFile) 0 else 1
         }
 
     }
 
     inner class FileDataGenerator : TreeNodeGenerator<UnLuaCFileObject> {
+
         override suspend fun refreshNode(
             targetNode: TreeNode<UnLuaCFileObject>,
-            oldNodeSet: Set<Int>,
-            withChild: Boolean,
-            tree: Tree<UnLuaCFileObject>
-        ): List<TreeNode<UnLuaCFileObject>> {
+            oldChildNodeSet: Set<Int>,
+            tree: AbstractTree<UnLuaCFileObject>
+        ): Set<TreeNode<UnLuaCFileObject>> {
 
-            val targetNodeExtra = checkNotNull(targetNode.extra)
-            val friendlyURI = targetNodeExtra.name.friendlyURI
+            val targetNodeExtra = checkNotNull(targetNode.data)
+            // val friendlyURI = targetNodeExtra.name.friendlyURI
 
             if (targetNodeExtra.getFileType() == FileObjectType.FUNCTION) {
-                targetNode.hasChild = false
-                return listOf()
+                targetNode.isChild = false
+                return setOf()
             }
 
-            val oldNodes = tree.getNodes(oldNodeSet)
+            val oldNodes = tree.getNodes(oldChildNodeSet)
 
             val child =
                 withContext(Dispatchers.IO) {
@@ -218,11 +263,11 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                         .toMutableList()
                 }
 
-            val result = mutableListOf<TreeNode<UnLuaCFileObject>>()
+            val result = mutableSetOf<TreeNode<UnLuaCFileObject>>()
 
             oldNodes.forEach { node ->
                 val virtualFile =
-                    child.find { it.name.friendlyURI == node.extra?.name?.friendlyURI }
+                    child.find { it.name.friendlyURI == node.data?.name?.friendlyURI }
                 if (virtualFile != null) {
                     result.add(node)
                 }
@@ -242,10 +287,11 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                 result.add(
                     TreeNode(
                         unLuaCFileObject,
-                        targetNode.level + 1,
+                        targetNode.depth + 1,
                         unLuaCFileObject.name.baseName.replace(".lasm", ".lua"),
                         tree.generateId(),
-                        unLuaCFileObject.getFileType() != FileObjectType.FUNCTION && hasChild,
+                        hasChild,
+                        unLuaCFileObject.getFileType() != FileObjectType.FUNCTION,
                         false
                     )
                 )
@@ -254,20 +300,23 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
             return result
         }
 
+
         override fun createRootNode(): TreeNode<UnLuaCFileObject> {
             val project = checkNotNull(viewModel.project.value)
             val rootFileObject = fsManager.resolveFile("unluac://${project.name}")
             return TreeNode(
-                extra = rootFileObject as UnLuaCFileObject,
-                level = 0,
+                data = rootFileObject as UnLuaCFileObject,
+                depth = -1,
                 name = project.name,
                 id = 0,
                 hasChild = true,
+                isChild = true,
                 expand = true
             )
         }
 
     }
+
 
     internal class CircleDrawable(
         private val mDrawText: String,

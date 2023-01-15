@@ -124,29 +124,29 @@ class UnLuaCFileObject(
     }
 
     override fun doListChildren(): Array<String> {
-       /* val fileType = getFileType()
-        val friendlyURI = name.friendlyURI
-        val proxyFriendlyURI = proxyFileObject.name.friendlyURI
-        return when {
-            proxyFileObject.isFolder -> {
-                proxyFileObject.children.map {
-                    it.name.friendlyURI.replace(
-                        proxyFriendlyURI,
-                        friendlyURI
-                    )
-                }.toTypedArray()
+        /* val fileType = getFileType()
+         val friendlyURI = name.friendlyURI
+         val proxyFriendlyURI = proxyFileObject.name.friendlyURI
+         return when {
+             proxyFileObject.isFolder -> {
+                 proxyFileObject.children.map {
+                     it.name.friendlyURI.replace(
+                         proxyFriendlyURI,
+                         friendlyURI
+                     )
+                 }.toTypedArray()
 
-            }
+             }
 
-            fileType == FileObjectType.FILE || fileType == FileObjectType.FUNCTION_WITH_CHILD -> {
-                val childFunctions = requireExtra().chunk.childFunctions
-                childFunctions.map {
-                    friendlyURI + "/" + it.name
-                }.toTypedArray()
-            }
+             fileType == FileObjectType.FILE || fileType == FileObjectType.FUNCTION_WITH_CHILD -> {
+                 val childFunctions = requireExtra().chunk.childFunctions
+                 childFunctions.map {
+                     friendlyURI + "/" + it.name
+                 }.toTypedArray()
+             }
 
-            else -> emptyArray
-        }*/
+             else -> emptyArray
+         }*/
         return emptyArray
     }
 
@@ -183,6 +183,30 @@ class UnLuaCFileObject(
         data?.fileObject?.refreshFlush()
     }
 
+
+    fun getFunctionFullName(): String? {
+        return when (getFileType()) {
+            FileObjectType.FILE -> name.baseName
+            FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
+                val extra = requireExtra()
+                extra.currentFunction?.fullName
+            }
+
+            else -> null
+        }
+    }
+
+    fun getFunctionName(): String? {
+        return when (getFileType()) {
+            FileObjectType.FILE -> name.baseName
+            FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
+                val extra = requireExtra()
+                extra.currentFunction?.name
+            }
+
+            else -> null
+        }
+    }
 
 }
 

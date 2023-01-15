@@ -1,5 +1,8 @@
 package com.dingyi.unluactool.core.file
 
+import android.app.usage.UsageEvents.Event
+import com.dingyi.unluactool.core.event.EventType
+
 open class FileEvent(
     val targetFileUri: String,
     val projectUri: String
@@ -13,7 +16,7 @@ class FileCloseEvent(targetFileUri: String, projectUri: String) :
 
 class FileSaveEvent(
     targetFileUri: String, projectUri: String,
-    val saveContent: (() -> String?)? = null
+    val saveContent: (() -> String?)? = null,
 ) : FileEvent(targetFileUri, projectUri)
 
 class FileChangeOrderEvent(
@@ -23,7 +26,10 @@ class FileChangeOrderEvent(
     projectUri: String
 ) : FileEvent(targetFileUri, projectUri)
 
-
 interface FileEventListener {
     fun onEvent(event: FileEvent)
+
+    companion object {
+        val EVENT_TYPE = EventType.create<FileEventListener>()
+    }
 }

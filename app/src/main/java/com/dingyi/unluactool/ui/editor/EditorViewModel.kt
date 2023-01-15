@@ -2,24 +2,21 @@ package com.dingyi.unluactool.ui.editor
 
 
 import android.content.Context
-import android.database.Observable
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
-import com.dingyi.unluactool.core.project.ProjectManager
-import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.dialog.progressDialogWithState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.apache.commons.vfs2.FileObject
 
 class EditorViewModel : ViewModel() {
-
 
     private val _project = MutableLiveData<Project>()
 
@@ -42,11 +39,14 @@ class EditorViewModel : ViewModel() {
 
     fun initFragmentDataList() {
         addMainFragmentData()
+
         _currentSelectEditorFragmentData.value = fragmentDataList[0]
     }
 
-    fun addMainFragmentData() {
-        fragmentDataList.add(0, EditorFragmentData(""))
+    private fun addMainFragmentData() {
+        if (!fragmentDataList.contains(EditorFragmentData.EMPTY)) {
+            fragmentDataList.add(0, EditorFragmentData.EMPTY)
+        }
     }
 
 
@@ -75,8 +75,53 @@ class EditorViewModel : ViewModel() {
     private suspend fun openProject(progressState: ProgressState) {
         project.value?.open(progressState)
     }
+
+
+    fun indexOfEditorFragmentData(data: EditorFragmentData): Int {
+        if (!fragmentDataList.contains(data)) {
+            putAndSetFragmentData(data)
+        }
+        return fragmentDataList.indexOfFirst { it.fileUri == data.fileUri }
+    }
+
+
+    private fun putAndSetFragmentData(fragmentData: EditorFragmentData) {
+        if (!fragmentDataList.contains(fragmentData)) {
+            fragmentDataList.add(fragmentData)
+        }
+        _currentSelectEditorFragmentData.value = fragmentData
+    }
+
+    fun setCurrentSelectEditorFragmentData(value: EditorFragmentData) {
+        _currentSelectEditorFragmentData.value = value
+    }
+
+    fun openFileObject(fileObject: UnLuaCFileObject) {
+
+        val fileUri = fileObject.name.friendlyURI
+
+        EditorRepository.openFileObject(
+            fileObject.name.friendlyURI, project.value
+                ?.projectPath?.name?.friendlyURI ?: "/???"
+        )
+
+        val currentData =
+            fragmentDataList.find { it.fileUri == fileUri } ?: EditorFragmentData(
+                fileUri = fileUri,
+                functionName = fileObject.getFunctionName(),
+                fullFunctionName = fileObject.getFunctionFullName()
+            )
+
+        putAndSetFragmentData(currentData)
+    }
 }
 
 data class EditorFragmentData(
-    val fileUri: String
-)
+    val fileUri: String,
+    val functionName: String? = null,
+    val fullFunctionName: String? = null
+) {
+    companion object {
+        val EMPTY = EditorFragmentData("")
+    }
+}

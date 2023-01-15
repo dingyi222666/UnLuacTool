@@ -55,8 +55,8 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
             itemCount: Int
         ) {
 
-            for (i in positionStart until positionStart + itemCount) {
-                currentFragmentDataList[i] = sender.get(i)
+            for (i in positionStart until  positionStart + itemCount) {
+                currentFragmentDataList[i] = sender[i]
             }
 
             notifyItemRangeChanged(positionStart, itemCount)
@@ -67,8 +67,8 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
             positionStart: Int,
             itemCount: Int
         ) {
-            for (i in positionStart until positionStart + itemCount) {
-                currentFragmentDataList.add(i, sender.get(i))
+            for (i in positionStart until  positionStart + itemCount) {
+                currentFragmentDataList.add(i, sender[i])
             }
 
             notifyItemRangeInserted(positionStart, itemCount)
@@ -95,8 +95,8 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
             positionStart: Int,
             itemCount: Int
         ) {
-            for (i in positionStart until positionStart + itemCount) {
-                currentFragmentDataList.removeAt(i)
+            for (i in positionStart until  positionStart + itemCount) {
+                currentFragmentDataList.removeAt(positionStart)
             }
 
             notifyItemRangeRemoved(positionStart, itemCount)

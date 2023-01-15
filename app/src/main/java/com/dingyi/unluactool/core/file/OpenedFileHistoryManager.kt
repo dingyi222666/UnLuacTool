@@ -11,7 +11,7 @@ import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
 
 
-class OpenedFileManager internal constructor() : FileEventListener {
+class OpenedFileHistoryManager internal constructor() : FileEventListener {
 
     private val cacheOpenedFile = mutableMapOf<String, MutableList<FileObject>>()
 

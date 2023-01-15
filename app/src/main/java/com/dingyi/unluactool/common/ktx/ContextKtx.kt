@@ -19,6 +19,10 @@ fun Context.getAttributeColor(resId: Int): Int {
     return color
 }
 
+fun Fragment.getAttributeColor(resId: Int): Int {
+    return requireContext().getAttributeColor(resId)
+}
+
 inline fun <reified T> Activity.startActivity(block: Intent.() -> Unit = {}) {
     startActivity(Intent(this, getJavaClass<T>()).apply(block))
 }
