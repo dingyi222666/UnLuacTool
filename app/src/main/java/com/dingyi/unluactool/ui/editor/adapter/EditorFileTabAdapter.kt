@@ -124,11 +124,14 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
           }*/
 
         if (data.fileUri != currentSelectData.fileUri) {
-            unSelectItem(itemViewType, holder)
+            holder.itemView.post {
+                unSelectItem(itemViewType, holder)
+            }
             return
         }
-
-        selectItem(itemViewType, holder)
+        holder.itemView.post {
+            selectItem(itemViewType, holder)
+        }
 
     }
 
@@ -180,13 +183,16 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         val colorOnSurfaceVariant =
             context.getAttributeColor(com.google.android.material.R.attr.colorOnSurfaceVariant)
 
+        val colorSurface =
+            context.getAttributeColor(android.R.attr.colorBackground)
+
         // val colorPrimary = context.getAttributeColor(androidx.appcompat.R.attr.colorPrimary)
 
         if (itemType == 1) {
             val binding = ItemEditorDrawerListHomeItemBinding.bind(holder.itemView)
 
             binding.editorDrawerListHighlightCard.setCardBackgroundColor(
-                0x0000000
+                0x00000000
             )
 
             binding.icon.imageTintList = ColorStateList.valueOf(colorOnSurfaceVariant)
@@ -200,7 +206,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         val binding = ItemEditorDrawerListItemBinding.bind(holder.itemView)
 
         binding.editorDrawerListHighlightCard.setCardBackgroundColor(
-            0x0000000
+            0x00000000
         )
 
         binding.icon.imageTintList = ColorStateList.valueOf(colorOnSurfaceVariant)

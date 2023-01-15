@@ -208,6 +208,17 @@ class UnLuaCFileObject(
         }
     }
 
+    fun getFullFunctionNameWithPath(): String? {
+        val fullName = getFunctionFullName()
+        if (fullName == null) {
+            return fullName
+        }
+        val path =
+            name.pathDecoded.substring(requireExtra().project.name.length + 2)
+                .replace(".lasm", ".lua(/main)")
+        return path
+    }
+
 }
 
 enum class FileObjectType {

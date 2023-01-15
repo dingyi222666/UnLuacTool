@@ -109,7 +109,7 @@ class EditorViewModel : ViewModel() {
             fragmentDataList.find { it.fileUri == fileUri } ?: EditorFragmentData(
                 fileUri = fileUri,
                 functionName = fileObject.getFunctionName(),
-                fullFunctionName = fileObject.getFunctionFullName()
+                fullFunctionName = fileObject.getFullFunctionNameWithPath()
             )
 
         putAndSetFragmentData(currentData)
