@@ -2,7 +2,7 @@ package com.dingyi.unluactool.core.file
 
 class FileManagerServiceRegistry {
 
-    fun createOpenedFileHistoryManager() = OpenedFileHistoryManager()
+    fun createOpenedFileHistoryManager() = OpenedFileManager()
 
     fun createOpenFileManager() = OpenFileManager()
 

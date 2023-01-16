@@ -93,7 +93,10 @@ internal class LuaProject constructor(
     override fun getProjectPath(attr: String): FileObject {
         return when (attr) {
             Project.PROJECT_SRC_NAME -> projectPath.resolveFile(ORIGIN_DIR_NAME)
-            else -> projectPath.resolveFile(LASM_DIR_NAME)
+            CACHE_DIR_NAME -> projectPath.resolveFile(CACHE_DIR_NAME)
+            Project.PROJECT_INDEXED_NAME -> projectPath.resolveFile(LASM_DIR_NAME)
+            BACKUP_DIR_NAME -> projectPath.resolveFile(BACKUP_DIR_NAME)
+            else -> projectPath.resolveFile(PROJECT_CONFIG_JSON)
         }
     }
 

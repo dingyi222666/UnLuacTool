@@ -3,7 +3,7 @@ package com.dingyi.unluactool.core.file
 import android.app.usage.UsageEvents.Event
 import com.dingyi.unluactool.core.event.EventType
 
-open class FileEvent(
+abstract class FileEvent(
     val targetFileUri: String,
     val projectUri: String
 )

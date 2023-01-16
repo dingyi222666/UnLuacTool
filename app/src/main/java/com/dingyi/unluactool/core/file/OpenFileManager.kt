@@ -1,7 +1,9 @@
 package com.dingyi.unluactool.core.file
 
+import com.dingyi.unluactool.common.ktx.encodeToJson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.VFS
 
@@ -11,7 +13,7 @@ class OpenFileManager internal constructor() : FileEventListener {
 
     private val vfsManager = VFS.getManager()
 
-    private lateinit var coroutineScope: CoroutineScope
+    private var coroutineScope: CoroutineScope? = null
 
     suspend fun openFile(uri: String): String = withContext(Dispatchers.IO) {
         val fileObject = vfsManager.resolveFile(uri)
@@ -48,17 +50,31 @@ class OpenFileManager internal constructor() : FileEventListener {
         return cacheContent?.content ?: openFile(uri)
     }
 
-    suspend fun bindCoroutineScope(coroutineScope: CoroutineScope) {
+    fun bindCoroutineScope(coroutineScope: CoroutineScope) {
         this.coroutineScope = coroutineScope
     }
 
 
     fun close() {
         cacheOpenedFile.clear()
+        coroutineScope = null
     }
 
     override fun onEvent(event: FileEvent) {
+        val cacheContent = cacheOpenedFile.get(event.targetFileUri)
 
+        when (event) {
+            is FileOpenEvent -> {
+
+                if (cacheContent == null) {
+                    coroutineScope?.launch {
+                        loadFileInCache(event.targetFileUri)
+                    }
+                }
+            }
+
+
+        }
     }
 }
 

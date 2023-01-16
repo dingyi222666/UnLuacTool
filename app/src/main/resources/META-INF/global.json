@@ -4,7 +4,7 @@
       "com.dingyi.unluactool.engine.lasm.indexer.LasmIndexerProjectListener"
     ],
     "com.dingyi.unluactool.core.file.FileEventListener": [
-      "com.dingyi.unluactool.core.file.OpenedFileHistoryManager",
+      "com.dingyi.unluactool.core.file.OpenedFileManager",
       "com.dingyi.unluactool.core.file.OpenFileManager"
     ]
   }

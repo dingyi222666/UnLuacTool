@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/editor_file_viewer_fragment_progress_bar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

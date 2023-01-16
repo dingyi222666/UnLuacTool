@@ -11,7 +11,7 @@ import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
 
 
-class OpenedFileHistoryManager internal constructor() : FileEventListener {
+class OpenedFileManager internal constructor() : FileEventListener {
 
     private val cacheOpenedFile = mutableMapOf<String, MutableList<FileObject>>()
 
@@ -37,10 +37,14 @@ class OpenedFileHistoryManager internal constructor() : FileEventListener {
             cacheOpenedFile.getValue(publicUri)
         }
 
-    suspend fun saveAllOpenedFileHistory(project: Project) = withContext(Dispatchers.IO) {
+    suspend fun saveAllOpenedFile(project: Project) = withContext(Dispatchers.IO) {
         val publicUri = project.projectPath.publicURIString
         val cacheJsonFile =
-            project.getProjectPath(LuaProject.CACHE_DIR_NAME).resolveFile("opened_file.json")
+            project.getProjectPath(LuaProject.CACHE_DIR_NAME)
+                .apply {
+                    createFolder()
+                }
+                .resolveFile("opened_file.json")
 
         if (!cacheJsonFile.isFile) {
             cacheJsonFile.createFile()
@@ -74,10 +78,10 @@ class OpenedFileHistoryManager internal constructor() : FileEventListener {
         when (event) {
             is FileOpenEvent -> {
 
-                val isOpened = projectOpenedFileList
-                    .find { it.publicURIString == targetUri } == null
+                val isOpenedFile = projectOpenedFileList
+                    .find { it.publicURIString == targetUri } != null
 
-                if (isOpened) {
+                if (isOpenedFile) {
                     return
                 }
 

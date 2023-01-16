@@ -7,13 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import androidx.fragment.app.transaction
 import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.adapter.ViewPageDataFragmentAdapter
 import com.dingyi.unluactool.common.ktx.getJavaClass
-import com.dingyi.unluactool.core.file.OpenedFileHistoryManager
+import com.dingyi.unluactool.core.file.OpenedFileManager
 import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.databinding.EditorBinding
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
@@ -59,28 +58,39 @@ class EditorActivity : AppCompatActivity() {
             binding.editorMainViewpager.adapter as ViewPageDataFragmentAdapter<EditorFragmentData>
 
         editorMainViewAdapter.removeObservable(viewModel.fragmentDataList)
+
+    }
+
+
+    override fun onStop() {
+        super.onStop()
+
+        lifecycleScope.launch {
+            viewModel.saveAllOpenedFile()
+        }
     }
 
     private fun initViewModel() {
 
         lifecycleScope.launch {
-            val project = viewModel.loadProject(intent.getStringExtra("path") ?: "")
+            viewModel.loadProject(intent.getStringExtra("path") ?: "")
+
             val (progressDialog, func) = viewModel.openProject(
                 this@EditorActivity, this@EditorActivity
             )
+
             progressDialog.show()
             func()
 
-            val openedFileHistoryManager = globalServiceRegistry.get<OpenedFileHistoryManager>()
 
             viewModel.fragmentDataList.clear()
 
-            openedFileHistoryManager.queryAllOpenedFile(project)
-                .map { EditorFragmentData(it.publicURIString) }.let {
-                    viewModel.fragmentDataList.addAll(it)
-                }
+            viewModel.bindCoroutineScope(lifecycleScope)
+
+            viewModel.queryAllOpenedFile()
 
             viewModel.initFragmentDataList()
+
 
             initView()
         }
@@ -132,7 +142,7 @@ class EditorActivity : AppCompatActivity() {
 
         viewModel.currentSelectEditorFragmentData.observe(this) {
             val currentIndex = viewModel.indexOfEditorFragmentData(it)
-            binding.editorMainViewpager.setCurrentItem(currentIndex,true)
+            binding.editorMainViewpager.setCurrentItem(currentIndex, true)
             binding.root.closeDrawers()
         }
 
@@ -141,9 +151,9 @@ class EditorActivity : AppCompatActivity() {
 
     private fun createPagerFragment(editorFragmentData: EditorFragmentData): Fragment {
         if (editorFragmentData.fileUri.isNotEmpty()) {
-           val fragment = EditFragment()
+            val fragment = EditFragment()
             fragment.arguments = Bundle().apply {
-                putString("fileUri",editorFragmentData.fileUri)
+                putString("fileUri", editorFragmentData.fileUri)
             }
             return fragment
         }

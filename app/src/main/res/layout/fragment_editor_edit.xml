@@ -12,12 +12,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/editor_edit_editor_info_panel"
         android:layout_width="match_parent"
         android:layout_height="18dp"
         android:background="?colorSurface"
-        android:orientation="horizontal"
         android:gravity="start|center"
-        android:id="@+id/editor_edit_editor_info_panel"
+        android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/divider">
 
@@ -25,39 +25,53 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:text="f1/f2/f3/f4"
-            android:textColor="?colorOnSurfaceVariant"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:text="f1/f2/f3/f4"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?colorOnSurfaceVariant" />
 
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textColor="?colorOnSurfaceVariant"
+            android:layout_marginEnd="16dp"
+            android:maxLines="1"
             android:text="(row 23,column 24) offset: 233"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            android:layout_marginEnd="16dp"
 
-            android:maxLines="1" />
+            android:textColor="?colorOnSurfaceVariant" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
-   <!-- <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editor_edit_editor_info_panel" />
--->
+    <!-- <com.google.android.material.divider.MaterialDivider
+         android:id="@+id/divider2"
+         android:layout_width="match_parent"
+         android:layout_height="1dp"
+         app:layout_constraintLeft_toLeftOf="parent"
+         app:layout_constraintTop_toBottomOf="@id/editor_edit_editor_info_panel" />
+ -->
 
-    <io.github.rosemoe.sora.widget.CodeEditor
-        android:id="@+id/editor"
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editor_edit_editor_info_panel"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toBottomOf="@id/editor_edit_editor_info_panel">
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/editor_edit_fragment_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true" />
+
+        <io.github.rosemoe.sora.widget.CodeEditor
+            android:id="@+id/editor"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.constraintlayout.widget.ConstraintLayout>

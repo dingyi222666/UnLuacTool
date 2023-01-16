@@ -25,6 +25,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         val editor = binding.editor
+        val fileUri = arguments?.getString("fileUri") ?: ""
 
         editor.colorScheme.apply {
             setColor(
@@ -33,5 +34,13 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>() {
             )
             editor.colorScheme = this
         }
+
+        openFile(fileUri)
     }
+
+    private fun openFile(fileUri: String) {
+
+    }
+
+
 }

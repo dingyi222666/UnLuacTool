@@ -12,6 +12,7 @@ import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.dialog.progressDialogWithState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
@@ -95,6 +96,43 @@ class EditorViewModel : ViewModel() {
     fun setCurrentSelectEditorFragmentData(value: EditorFragmentData) {
         _currentSelectEditorFragmentData.value = value
     }
+
+    fun requireProject(): Project {
+        return checkNotNull(_project.value)
+    }
+
+
+    fun bindCoroutineScope(co: CoroutineScope) {
+        EditorRepository.getOpenFileManager().bindCoroutineScope(co)
+        addCloseable {
+            EditorRepository.getOpenFileManager().close()
+        }
+    }
+
+    suspend fun queryAllOpenedFile(): List<FileObject> {
+        return EditorRepository.queryAllOpenedFile(requireProject())
+            .apply {
+                map {
+                    val fileObject = it as UnLuaCFileObject
+                    EditorFragmentData(
+                        functionName = fileObject.getFunctionName(),
+                        fullFunctionName = fileObject.getFullFunctionNameWithPath(),
+                        fileUri = fileObject.name.friendlyURI
+                    )
+                }.let {
+                    fragmentDataList.addAll(it)
+                }
+            }
+    }
+
+    fun queryCacheOpenedFile(): List<FileObject> {
+        return EditorRepository.queryCacheOpenedFile(requireProject())
+    }
+
+    suspend fun saveAllOpenedFile() {
+        EditorRepository.saveAllOpenedFile(requireProject())
+    }
+
 
     fun openFileObject(fileObject: UnLuaCFileObject) {
 

@@ -30,7 +30,7 @@ class UnLuacFileSystem(
         mutableMapOf<UnLuacParsedFileObject, MutableList<UnLuaCFileObject>>()
 
     //unluac://project/file (lasm)
-    override fun createFile(name: AbstractFileName): FileObject {
+    override fun createFile(name: AbstractFileName): FileObject? {
         val path = name.pathDecoded.substring(1)
         val projectName = path.substringBefore("/", path)
         val targetFilePaths = path.replace(projectName + "/", "")
