@@ -17,7 +17,7 @@ class UnLuaCFileObject(
     private var data: UnLuacFileObjectExtra? = null,
     private val name: AbstractFileName,
     private val fileSystem: UnLuaCFileSystem
-) : AbstractFileObject<UnLuaCFileSystem>(name, fileSystem), ChunkChangeListener, FileListener {
+) : AbstractFileObject<UnLuaCFileSystem>(name, fileSystem), ChunkChangeListener {
 
     companion object {
         private val emptyArray = arrayOf<String>()
@@ -35,12 +35,10 @@ class UnLuaCFileObject(
 
     override fun doAttach() {
         data?.fileObject?.addChunkChangeListener(this)
-        proxyFileObject.fileSystem.addListener(proxyFileObject, this)
     }
 
     override fun doDetach() {
         data?.fileObject?.removeChunkChangeListener(this)
-        proxyFileObject.fileSystem.removeListener(proxyFileObject, this)
     }
 
     override fun onChunkChange(newChunk: LASMChunk, oldChunk: LASMChunk) {
@@ -73,7 +71,7 @@ class UnLuaCFileObject(
     override fun refresh() {
         proxyFileObject.refresh()
 
-        requireExtra().fileObject.refresh()
+        data?.fileObject?.refresh()
 
         doGetFileType()
 
@@ -189,19 +187,6 @@ class UnLuaCFileObject(
 
     override fun hashCode(): Int {
         return proxyFileObject.hashCode()
-    }
-
-    override fun fileCreated(event: FileChangeEvent) {
-        // noop
-    }
-
-    override fun fileDeleted(event: FileChangeEvent?) {
-        isDelete = true
-        fileSystem.fireFileDeleted(this)
-    }
-
-    override fun fileChanged(event: FileChangeEvent?) {
-        fileSystem.fireFileChanged(this)
     }
 
     fun getFileType(): FileObjectType {

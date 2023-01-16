@@ -167,6 +167,10 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
                         )
                     )
                 }
+
+                else -> {
+                    // The file was deleted.
+                }
             }
 
         }
