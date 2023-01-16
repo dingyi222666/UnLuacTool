@@ -8,16 +8,16 @@ import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectIndexer
-import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
+import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
-import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler2
+import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembleService
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
+import com.dingyi.unluactool.engine.lua.decompile.DecompileService
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.Selectors
-import java.nio.ByteBuffer
 import java.util.Collections
 import kotlin.io.path.toPath
 
@@ -31,6 +31,10 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
             val projectIndexedDir = project.getProjectPath(Project.PROJECT_INDEXED_NAME)
 
+            val globalServiceRegistry = MainApplication.instance.globalServiceRegistry
+
+            val decompileService = globalServiceRegistry.get<DecompileService>()
+            val lasmDisassembleService = globalServiceRegistry.get<LasmDisassembleService>()
 
             val size = allProjectFileList.size
 
@@ -98,25 +102,18 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 }
 
 
-                val header: unluac.parse.BHeader
-                try {
-                    header = BHeaderDecompiler.decompile(unluac.Configuration().apply {
-                        this.rawstring = true
-                        this.mode = unluac.Configuration.Mode.DECOMPILE
-                        this.variable = unluac.Configuration.VariableMode.FINDER
-                    } to originFileObject.inputStream.use {
-                        ByteBuffer.wrap(it.readBytes())
-                    })
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    continue
-                }
+                val header = decompileService.decompile(
+                    input = originFileObject.inputStream.use {
+                        it.readBytes()
+                    },
+                    configuration = null,
+                ) ?: continue
 
                 progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
 
                 delay(1000)
 
-                val chunk = LasmDisassembler2(header.main).decompile()
+                val chunk = lasmDisassembleService.disassemble(header) ?: continue
 
                 val provider = ByteArrayOutputProvider()
 

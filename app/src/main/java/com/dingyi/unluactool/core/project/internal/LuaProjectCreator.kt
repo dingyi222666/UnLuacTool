@@ -13,7 +13,7 @@ import com.dingyi.unluactool.common.ktx.getString
 import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.isZipFile
 import com.dingyi.unluactool.common.ktx.outputStream
-import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
+import com.dingyi.unluactool.engine.lua.decompile.DecompileService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -145,17 +145,14 @@ class LuaProjectCreator : ProjectCreator {
             .getProjectCount()
     }
 
-    private fun checkLuaFile(targetFile: FileObject): String? {
-        return kotlin.runCatching {
-            return BHeaderDecompiler.decompile(unluac.Configuration().apply {
-                this.rawstring = true
-                this.mode = unluac.Configuration.Mode.DECOMPILE
-                this.variable = unluac.Configuration.VariableMode.FINDER
-            } to targetFile.inputStream.use {
-                ByteBuffer.wrap(it.readBytes())
-            }).toString()
-        }.onFailure {
-            targetFile.deleteAll()
-        }.getOrNull()
+    private fun checkLuaFile(targetFile: FileObject): Any? {
+        return MainApplication.instance
+            .globalServiceRegistry
+            .get<DecompileService>()
+            .decompile(
+                input = targetFile.inputStream.use {
+                    it.readBytes()
+                }
+            )
     }
 }

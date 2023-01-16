@@ -4,7 +4,9 @@ import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.service.BaseServiceContainer
 
 class LasmDisassembleService : BaseServiceContainer<AbstractLasmDisassembler>() {
-    override val globalConfigPath = "lasm-disassemble-service.json"
+
+    override val globalConfigPath
+        get() = "lasm-disassemble-service.json"
 
     fun disassemble(input: Any): LASMChunk? {
         for (disassembler in allService) {
@@ -13,6 +15,8 @@ class LasmDisassembleService : BaseServiceContainer<AbstractLasmDisassembler>() 
             }
             val result = kotlin.runCatching {
                 disassembler.disassemble(input)
+            }.onFailure {
+                it.printStackTrace()
             }.getOrNull()
 
             if (result != null) {
