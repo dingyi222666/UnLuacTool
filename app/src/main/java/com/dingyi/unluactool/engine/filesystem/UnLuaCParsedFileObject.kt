@@ -25,8 +25,6 @@ class UnLuacParsedFileObject(
     lateinit var lasmChunk: LASMChunk
         private set
 
-    private lateinit var assembler: Assembler
-
     private val chunkChangeListeners = mutableListOf<(LASMChunk) -> Unit>()
 
     fun init() {
@@ -40,7 +38,6 @@ class UnLuacParsedFileObject(
                 proxyFileObject.inputStream
             )
 
-        assembler = Assembler(lasmChunk)
     }
 
 
@@ -54,7 +51,6 @@ class UnLuacParsedFileObject(
                 proxyFileObject.inputStream
             )
 
-        assembler = Assembler(lasmChunk)
     }
 
     fun refreshFlush() {

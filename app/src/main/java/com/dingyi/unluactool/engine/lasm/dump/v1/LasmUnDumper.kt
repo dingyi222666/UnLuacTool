@@ -10,7 +10,6 @@ import java.util.zip.GZIPInputStream
 
 class LasmUnDumper {
 
-
     fun unDump(stream: InputStream): LASMChunk {
 
         unDumpHeader(stream)

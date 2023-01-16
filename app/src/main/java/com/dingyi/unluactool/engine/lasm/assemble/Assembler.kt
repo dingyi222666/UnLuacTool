@@ -9,45 +9,38 @@ import unluac.parse.LFunction
 import java.io.ByteArrayInputStream
 import java.io.OutputStream
 
+@Deprecated(message = "???")
 class Assembler(
     val main: LASMChunk,
 ) {
 
-    fun assemble(output: OutputStream) {
-        unluac.assemble.Assembler(
-            ByteArrayInputStream(main.getAllData().encodeToByteArray()),
-            output
-        ).assemble()
-
-    }
-
     /**
      * @return the main function and current assemble  function
      */
-    fun assemble(assembleFunction: LASMFunction): Pair<unluac.parse.LFunction, unluac.parse.LFunction> {
-        val inputStream = ByteArrayInputStream(main.getAllData().encodeToByteArray())
-        val assembler = unluac.assemble.Assembler(
-            inputStream,
-            null
-        )
-        val chunk = assembler.chunk
+    /* fun assemble(assembleFunction: LASMFunction): Pair<LFunction, LFunction> {
+         val inputStream = ByteArrayInputStream(main.getAllData().encodeToByteArray())
+         val assembler = Assembler(
+             inputStream,
+             null
+         )
+         val chunk = assembler.chunk
 
-        val mainAssembleFunction = chunk.main
-        val part = assembleFunction.fullName.split("/").toTypedArray()
+         val mainAssembleFunction = chunk.main
+         val part = assembleFunction.fullName.split("/").toTypedArray()
 
-        val currentASMFunction = mainAssembleFunction.getInnerChild(
-            part, 1
-        )
+         val currentASMFunction = mainAssembleFunction.getInnerChild(
+             part, 1
+         )
 
-        val mainFunction = chunk.convertToFunction(mainAssembleFunction)
+         val mainFunction = chunk.convertToFunction(mainAssembleFunction)
 
-        val currentFunction = chunk.convertToFunction(currentASMFunction)
-        mainFunction.header.config = unluac.Configuration().apply {
-            variable = unluac.Configuration.VariableMode.FINDER
-        }
+         val currentFunction = chunk.convertToFunction(currentASMFunction)
+         mainFunction.header.config = Configuration().apply {
+             variable = Configuration.VariableMode.FINDER
+         }
 
-        inputStream.close()
-        return Pair(mainFunction, currentFunction)
-    }
+         inputStream.close()
+         return Pair(mainFunction, currentFunction)
+     }*/
 
 }
