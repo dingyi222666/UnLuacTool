@@ -1,18 +1,33 @@
-package com.dingyi.unluactool.engine.lasm.assemble
+package com.dingyi.unluactool.engine.lasm.assemble.unluac
 
-
+import com.dingyi.unluactool.engine.lasm.assemble.AbstractLasmAssembler
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
-import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
-import unluac.Configuration
 import unluac.assemble.Assembler
-import unluac.parse.LFunction
 import java.io.ByteArrayInputStream
 import java.io.OutputStream
 
-@Deprecated(message = "???")
-class Assembler(
-    val main: LASMChunk,
-) {
+class UnLuaCLasmAssembler : AbstractLasmAssembler {
+    override fun assemble(mainChunk: LASMChunk, output: OutputStream):Boolean {
+        return kotlin.runCatching {
+            Assembler(
+                ByteArrayInputStream(mainChunk.getAllData().encodeToByteArray()),
+                output
+            ).assemble()
+        }.isSuccess
+    }
+
+    override fun assemble(mainChunk: LASMChunk): Any {
+        val inputStream = ByteArrayInputStream(mainChunk.getAllData().encodeToByteArray())
+        val assembler = Assembler(
+            inputStream,
+            null
+        )
+        val chunk = assembler.chunk
+
+        val mainAssembleFunction = chunk.main
+
+        return chunk.convertToFunction(mainAssembleFunction)
+    }
 
     /**
      * @return the main function and current assemble  function
@@ -42,5 +57,4 @@ class Assembler(
          inputStream.close()
          return Pair(mainFunction, currentFunction)
      }*/
-
 }

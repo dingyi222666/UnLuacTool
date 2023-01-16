@@ -35,7 +35,6 @@ class UnLuaCFileSystem(
             .filter(String::isNotEmpty)
             .toMutableList()
 
-
         val project = serviceRegistry.get<ProjectManager>()
             .getProjectByName(projectName)
 

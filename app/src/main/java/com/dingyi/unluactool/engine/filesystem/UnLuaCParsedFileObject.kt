@@ -5,6 +5,7 @@ import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.engine.lasm.assemble.LasmAssembleService
 import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
@@ -14,6 +15,8 @@ import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmUnDumper
 import com.dingyi.unluactool.engine.util.StreamOutputProvider
 import org.apache.commons.vfs2.FileObject
+import unluac.assemble.Assembler
+import unluac.decompile.Output
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -29,7 +32,11 @@ class UnLuacParsedFileObject(
     private val chunkChangeListeners = mutableListOf<(LASMChunk) -> Unit>()
 
     private val lasmDisassembleService by lazy(LazyThreadSafetyMode.NONE) {
-        MainApplication.instance.globalServiceRegistry.get<AbstractLasmDisassembler>()
+        MainApplication.instance.globalServiceRegistry.get<LasmDisassembleService>()
+    }
+
+    private val lasmAssembleService by lazy(LazyThreadSafetyMode.NONE) {
+        MainApplication.instance.globalServiceRegistry.get<LasmAssembleService>()
     }
 
     fun init() {
@@ -50,6 +57,14 @@ class UnLuacParsedFileObject(
         chunkChangeListeners.add(listener)
     }
 
+    fun removeChunkChangeListener(listener: (LASMChunk) -> Unit) {
+        chunkChangeListeners.remove(listener)
+    }
+
+    fun clearChunkChangeListener(listener: (LASMChunk) -> Unit) {
+        chunkChangeListeners.clear()
+    }
+
     fun refresh() {
         lasmChunk =
             LasmUnDumper().unDump(
@@ -63,7 +78,7 @@ class UnLuacParsedFileObject(
             proxyFileObject.outputStream
         )
         LasmDumper(
-            unluac.decompile.Output(outputProvider), lasmChunk
+            Output(outputProvider), lasmChunk
         ).dump()
         outputProvider.close()
     }
@@ -119,18 +134,15 @@ class UnLuacParsedFileObject(
                 currentFunction.data = data
             }
 
-            val assembler =
-                unluac.assemble.Assembler(ByteArrayInputStream(outputStream.toByteArray()))
+            val byteCode = checkNotNull(lasmAssembleService.assemble(lasmChunk))
 
-            val chunk = assembler.chunk
-
-            val mainFunction = chunk.convertToFunction(chunk.main)
-
-            lasmChunk = lasmDisassembleService.disassemble(mainFunction)
+            lasmChunk = checkNotNull(lasmDisassembleService.disassemble(byteCode))
 
             chunkChangeListeners.forEach {
                 it(lasmChunk)
             }
+
+            System.gc()
 
             refreshFlush()
 
