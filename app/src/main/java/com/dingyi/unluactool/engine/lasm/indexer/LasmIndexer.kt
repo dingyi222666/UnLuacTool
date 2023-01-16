@@ -10,16 +10,13 @@ import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
-import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
+import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler2
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.Selectors
-import unluac.Configuration
-import unluac.decompile.Output
-import unluac.parse.BHeader
 import java.nio.ByteBuffer
 import java.util.Collections
 import kotlin.io.path.toPath
@@ -119,7 +116,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
                 delay(1000)
 
-                val chunk = LasmDisassembler(header.main).decompile()
+                val chunk = LasmDisassembler2(header.main).decompile()
 
                 val provider = ByteArrayOutputProvider()
 

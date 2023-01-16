@@ -1,14 +1,10 @@
 package com.dingyi.unluactool
 
-import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
+import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler2
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmUnDumper
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
 import org.junit.Test
-import unluac.Configuration
-import unluac.decompile.Output
-import unluac.parse.BHeader
-import unluac.parse.LFunction
 import java.io.ByteArrayInputStream
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
@@ -76,7 +72,7 @@ class LASMTest {
             this.variable = unluac.Configuration.VariableMode.DEFAULT
         }))
 
-        val chunk = LasmDisassembler(header.main).decompile()
+        val chunk = LasmDisassembler2(header.main).decompile()
 
 
         println(chunk.getAllData())

@@ -4,14 +4,8 @@ import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import com.dingyi.unluactool.engine.util.ByteArrayOutputProvider
-import unluac.assemble.Directive
-import unluac.decompile.Code
-import unluac.decompile.Op
-import unluac.decompile.Output
-import unluac.parse.LFunction
-import unluac.util.StringUtils
 
-class LasmDisassembler(
+class LasmDisassembler2(
     private val mainFunction: unluac.parse.LFunction
 ) {
 

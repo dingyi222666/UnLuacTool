@@ -3,16 +3,14 @@ package com.dingyi.unluactool.engine.filesystem
 import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.project.Project
-import com.dingyi.unluactool.engine.lasm.assemble.Assembler
 import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
-import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler
+import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembler2
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmUnDumper
 import com.dingyi.unluactool.engine.util.StreamOutputProvider
 import org.apache.commons.vfs2.FileObject
-import unluac.decompile.Output
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -121,7 +119,7 @@ class UnLuacParsedFileObject(
 
             val mainFunction = chunk.convertToFunction(chunk.main)
 
-            lasmChunk = LasmDisassembler(mainFunction).decompile()
+            lasmChunk = LasmDisassembler2(mainFunction).decompile()
 
             chunkChangeListeners.forEach {
                 it(lasmChunk)
