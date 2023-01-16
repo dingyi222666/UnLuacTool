@@ -56,6 +56,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
 
             for (index in 0 until size) {
+
                 val originFileObject = allProjectFileList[index]
                 val nowProgress = (index / size) * 100
                 val nextProgress = (index + 1 / size) * 100
@@ -71,7 +72,6 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 )
 
                 progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
-
 
                 progressState?.text = getString(
                     R.string.editor_project_indexer_toast,

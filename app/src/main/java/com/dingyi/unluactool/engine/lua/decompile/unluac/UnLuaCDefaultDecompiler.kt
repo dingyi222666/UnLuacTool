@@ -1,4 +1,4 @@
-package com.dingyi.unluactool.engine.lua.decompile.internal
+package com.dingyi.unluactool.engine.lua.decompile.unluac
 
 import com.dingyi.unluactool.engine.lua.decompile.Decompiler
 import com.dingyi.unluactool.engine.lua.decompile.DecompilerGetter
@@ -20,9 +20,9 @@ class UnLuaCDefaultDecompiler : Decompiler {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         val unLuacConfig = (configuration as Configuration?) ?: Configuration().apply {
             rawstring = true
-            mode = unluac.Configuration.Mode.DECOMPILE
-            variable = unluac.Configuration.VariableMode.FINDER
+            mode = Configuration.Mode.DECOMPILE
+            variable = Configuration.VariableMode.FINDER
         }
-        return BHeader(buffer, configuration)
+        return BHeader(buffer, unLuacConfig)
     }
 }
