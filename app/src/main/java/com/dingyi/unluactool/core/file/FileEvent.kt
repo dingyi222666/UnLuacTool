@@ -19,6 +19,14 @@ class FileSaveEvent(
     val saveContent: (() -> String?)? = null,
 ) : FileEvent(targetFileUri, projectUri)
 
+class FileContentChangeEvent(
+    val newContent: String,
+    val oldContent: String,
+    targetFileUri: String,
+    projectUri: String
+) : FileEvent(targetFileUri, projectUri)
+
+
 class FileChangeOrderEvent(
     val newOrder: Int,
     val oldOrder: Int,

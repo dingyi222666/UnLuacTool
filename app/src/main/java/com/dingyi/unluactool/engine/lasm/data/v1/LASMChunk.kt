@@ -7,7 +7,6 @@ class LASMChunk(
     override val fullName: String,
 ) : AbsFunction<LASMFunction> {
 
-
     override val childFunctions = mutableListOf<LASMFunction>()
 
     override fun addChildFunction(func: LASMFunction) {

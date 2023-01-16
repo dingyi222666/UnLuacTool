@@ -6,5 +6,4 @@ fun interface ProjectIndexer<T>  {
 
     suspend fun index(project: Project,progressState: ProgressState?): T
 
-
 }

@@ -13,7 +13,6 @@ class Assembler(
     val main: LASMChunk,
 ) {
 
-
     fun assemble(output: OutputStream) {
         Assembler(
             ByteArrayInputStream(main.getAllData().encodeToByteArray()),

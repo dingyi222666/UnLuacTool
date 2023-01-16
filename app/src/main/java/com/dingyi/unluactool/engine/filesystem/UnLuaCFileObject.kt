@@ -1,5 +1,7 @@
 package com.dingyi.unluactool.engine.filesystem
 
+import com.dingyi.unluactool.common.ktx.inputStream
+import com.dingyi.unluactool.common.ktx.outputStream
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.provider.AbstractFileName
@@ -11,8 +13,8 @@ class UnLuaCFileObject(
     internal val proxyFileObject: FileObject,
     private var data: UnLuacFileObjectExtra? = null,
     private val name: AbstractFileName,
-    private val fileSystem: UnLuacFileSystem
-) : AbstractFileObject<UnLuacFileSystem>(name, fileSystem) {
+    private val fileSystem: UnLuaCFileSystem
+) : AbstractFileObject<UnLuaCFileSystem>(name, fileSystem) {
 
     companion object {
         private val emptyArray = arrayOf<String>()
@@ -64,13 +66,13 @@ class UnLuaCFileObject(
 
     override fun doGetInputStream(): InputStream {
         return if (isNotUnLuacParsedObject()) {
+            proxyFileObject.inputStream
+        } else {
             requireExtra().let {
                 it.currentFunction?.data ?: it.fileObject.getAllData()
             }.let {
                 requireExtra().fileObject.wrapDataToStream(it)
             }
-        } else {
-            proxyFileObject.content.inputStream
         }
     }
 
@@ -114,12 +116,12 @@ class UnLuaCFileObject(
 
     override fun doGetOutputStream(bAppend: Boolean): OutputStream {
         return if (isNotUnLuacParsedObject()) {
+            proxyFileObject.outputStream
+        } else {
             requireExtra().let {
                 if (it.currentFunction == null) it.fileObject.writeAllData()
                 else it.fileObject.writeData(it.requireFunction())
             }
-        } else {
-            proxyFileObject.content.outputStream
         }
     }
 

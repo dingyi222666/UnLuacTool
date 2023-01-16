@@ -35,10 +35,9 @@ interface Project {
 
     fun isOpened():Boolean = false
 
+
     companion object {
         const val PROJECT_SRC_NAME = "srcDir"
         const val PROJECT_INDEXED_NAME = "indexedDir"
-
-
     }
 }

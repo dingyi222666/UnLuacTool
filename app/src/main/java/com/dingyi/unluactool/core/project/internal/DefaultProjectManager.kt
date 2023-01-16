@@ -1,15 +1,15 @@
 package com.dingyi.unluactool.core.project.internal
 
-import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.common.ktx.Paths
 import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.ProjectIndexer
-import com.dingyi.unluactool.core.project.ProjectManagerListener
+import com.dingyi.unluactool.core.project.ProjectInstanceCreator
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.core.util.JsonConfigReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
@@ -17,12 +17,13 @@ import org.apache.commons.vfs2.VFS
 import java.io.File
 import java.util.Collections
 
-class LuaProjectManager(
+class DefaultProjectManager(
     private val serviceRegistry: ServiceRegistry
 ) : ProjectManager {
 
     private var projectRootPath: FileObject
-    private var allProject = mutableListOf<LuaProject>()
+    private var allProject = mutableListOf<Project>()
+    private val allProjectInstanceCreator = mutableListOf<ProjectInstanceCreator>()
 
     private var currentProject: Project = EmptyProject
         set(value) {
@@ -43,18 +44,33 @@ class LuaProjectManager(
             projectRootPath.createFolder()
         }
 
+        readGlobalProjectInstanceCreator()
+
+    }
+
+    private fun readGlobalProjectInstanceCreator() {
+
+        val jsonArray = JsonConfigReader.readConfig("project-instance-creator.json")
+            .asJsonArray
+
+        jsonArray.forEach {
+            val className = it.asString
+            addProjectInstanceCreator(
+                Class.forName(className).newInstance() as ProjectInstanceCreator
+            )
+        }
     }
 
     override suspend fun resolveAllProject(): List<Project> = withContext(Dispatchers.IO) {
         val copyOfProject = projectRootPath.children.mapNotNull {
             runCatching {
-                LuaProject(serviceRegistry,it)
+                createProject(it)
             }.onFailure {
                 it.printStackTrace()
             }.getOrNull()
-        }.toMutableList()
+        }
 
-        allProject = copyOfProject
+        allProject = copyOfProject.toMutableList()
         allProject
     }
 
@@ -100,6 +116,26 @@ class LuaProjectManager(
     override fun getCurrentProject(): Project {
         return currentProject
     }
+
+    private fun createProject(projectPath: FileObject): Project? {
+        for (creator in allProjectInstanceCreator) {
+            val result = creator.createProject(projectPath, serviceRegistry)
+            if (result != null) {
+                return result
+            }
+
+        }
+        return null
+    }
+
+    override fun addProjectInstanceCreator(creator: ProjectInstanceCreator) {
+        allProjectInstanceCreator.add(creator)
+    }
+
+    override fun removeProjectInstanceCreator(creator: ProjectInstanceCreator) {
+        allProjectInstanceCreator.remove(creator)
+    }
+
 }
 
 object EmptyProject : Project {
@@ -109,6 +145,7 @@ object EmptyProject : Project {
         get() = TODO("Not yet implemented")
     override var projectIconPath: String? = ""
     override var name = "1"
+
 
     override suspend fun resolveProjectFileCount(): Int = 0
 

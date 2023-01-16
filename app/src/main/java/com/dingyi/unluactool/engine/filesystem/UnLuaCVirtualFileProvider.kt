@@ -1,10 +1,8 @@
 package com.dingyi.unluactool.engine.filesystem
 
-import com.dingyi.unluactool.core.event.internal.EventConnectionImpl
 import org.apache.commons.lang3.SystemUtils
 import org.apache.commons.vfs2.*
 import org.apache.commons.vfs2.FileSystemException
-import org.apache.commons.vfs2.provider.AbstractFileProvider
 import org.apache.commons.vfs2.provider.AbstractOriginatingFileProvider
 import org.apache.commons.vfs2.provider.LocalFileProvider
 import org.apache.commons.vfs2.provider.UriParser
@@ -14,7 +12,7 @@ import org.apache.commons.vfs2.provider.local.LocalFileNameParser
 import org.apache.commons.vfs2.provider.local.WindowsFileNameParser
 import java.io.File
 
-class UnLuacFileProvider : LocalFileProvider,AbstractOriginatingFileProvider() {
+class UnLuaCVirtualFileProvider : LocalFileProvider,AbstractOriginatingFileProvider() {
 
     init {
         //Compatible with windows
@@ -59,7 +57,7 @@ class UnLuacFileProvider : LocalFileProvider,AbstractOriginatingFileProvider() {
     ): FileSystem {
         // Create the file system
         val rootName = name as LocalFileName
-        return UnLuacFileSystem(rootName, rootName.rootFile,this, fileSystemOptions).apply {
+        return UnLuaCFileSystem(rootName, rootName.rootFile,this, fileSystemOptions).apply {
             init()
         }
     }

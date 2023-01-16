@@ -1,10 +1,12 @@
 package com.dingyi.unluactool.core.file
 
 import com.dingyi.unluactool.common.ktx.encodeToJson
+import com.dingyi.unluactool.common.ktx.inputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
 
 class OpenFileManager internal constructor() : FileEventListener {
@@ -15,10 +17,10 @@ class OpenFileManager internal constructor() : FileEventListener {
 
     private var coroutineScope: CoroutineScope? = null
 
-    suspend fun openFile(uri: String): String = withContext(Dispatchers.IO) {
-        val fileObject = vfsManager.resolveFile(uri)
+    suspend fun openFile(fileObject: FileObject): String = withContext(Dispatchers.IO) {
+        val uri = fileObject.publicURIString
         val fileContent = kotlin.runCatching {
-            fileObject.content.inputStream
+            fileObject.inputStream
                 .readBytes()
                 .decodeToString()
         }.getOrNull()
@@ -31,7 +33,8 @@ class OpenFileManager internal constructor() : FileEventListener {
         cacheContent.content ?: ""
     }
 
-    suspend fun saveFile(uri: String, content: String?) = withContext(Dispatchers.IO) {
+    suspend fun saveFile(fileObject: FileObject, content: String?) = withContext(Dispatchers.IO) {
+        val uri  = fileObject.publicURIString
         val saveContent = cacheOpenedFile[uri]?.content ?: content ?: return@withContext
 
         val fileObject = vfsManager.resolveFile(uri)
@@ -45,9 +48,10 @@ class OpenFileManager internal constructor() : FileEventListener {
 
     }
 
-    suspend fun loadFileInCache(uri: String): String {
+    suspend fun loadFileInCache(fileObject: FileObject): String {
+        val uri = fileObject.publicURIString
         val cacheContent = cacheOpenedFile[uri]
-        return cacheContent?.content ?: openFile(uri)
+        return cacheContent?.content ?: openFile(fileObject)
     }
 
     fun bindCoroutineScope(coroutineScope: CoroutineScope) {
@@ -68,9 +72,13 @@ class OpenFileManager internal constructor() : FileEventListener {
 
                 if (cacheContent == null) {
                     coroutineScope?.launch {
-                        loadFileInCache(event.targetFileUri)
+                        loadFileInCache(vfsManager.resolveFile(event.targetFileUri))
                     }
                 }
+            }
+
+            is FileContentChangeEvent -> {
+
             }
 
 

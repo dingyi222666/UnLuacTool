@@ -4,14 +4,15 @@ import android.content.ContentResolver
 import android.net.Uri
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
-import com.dingyi.unluactool.beans.ProjectInfo
 import com.dingyi.unluactool.core.project.ProjectCreator
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.common.ktx.Paths
 import com.dingyi.unluactool.common.ktx.encodeToJson
 import com.dingyi.unluactool.common.ktx.getString
+import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.isZipFile
+import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -30,7 +31,6 @@ class LuaProjectCreator : ProjectCreator {
         withContext(Dispatchers.IO) {
             val inputStream = contentResolver
                 .openInputStream(uri)
-
 
             val importPath = uri.path ?: "?.lua"
 
@@ -75,7 +75,6 @@ class LuaProjectCreator : ProjectCreator {
                     createFile()
                     content.outputStream.use { outputStream ->
                         cacheFile.inputStream().use { inputStream ->
-
                             inputStream.copyTo(outputStream)
                         }
                     }
@@ -96,7 +95,7 @@ class LuaProjectCreator : ProjectCreator {
                                 targetFile.parent.createFolder()
                                 targetFile.createFile()
                                 zipFile.getInputStream(it).use { inputStream ->
-                                    targetFile.content.outputStream.use { outStream ->
+                                    targetFile.outputStream.use { outStream ->
                                         inputStream.copyTo(outStream)
                                     }
                                 }
@@ -129,11 +128,10 @@ class LuaProjectCreator : ProjectCreator {
             }
 
             projectPath.resolveFile(LuaProject.PROJECT_CONFIG_JSON)
-                .content
                 .outputStream
                 .use {
                     it.write(
-                        ProjectInfo(
+                        LuaProject.ProjectInfo(
                             iconPath = null,
                             name = projectName,
                             path = projectPath.publicURIString
@@ -142,7 +140,6 @@ class LuaProjectCreator : ProjectCreator {
                 }
 
         }
-
 
     private fun getProjectName(): String {
         return getString(R.string.main_temporary_project_name) + "_" + MainApplication.instance.globalServiceRegistry.get<ProjectManager>()
@@ -155,7 +152,7 @@ class LuaProjectCreator : ProjectCreator {
                 this.rawstring = true
                 this.mode = Configuration.Mode.DECOMPILE
                 this.variable = Configuration.VariableMode.FINDER
-            } to targetFile.content.inputStream.use {
+            } to targetFile.inputStream.use {
                 ByteBuffer.wrap(it.readBytes())
             }).toString()
         }.onFailure {

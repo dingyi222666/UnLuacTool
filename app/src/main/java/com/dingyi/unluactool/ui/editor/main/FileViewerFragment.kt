@@ -34,7 +34,6 @@ import io.github.dingyi222666.view.treeview.TreeViewBinder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.apache.commons.vfs2.VFS
 
 class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
@@ -42,8 +41,8 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
     private val treeViewData by lazy(LazyThreadSafetyMode.NONE) { Tree.createTree<UnLuaCFileObject>() }
 
-    private val fsManager by lazy(LazyThreadSafetyMode.NONE) {
-        VFS.getManager()
+    private val vfsManager by lazy(LazyThreadSafetyMode.NONE) {
+       viewModel.vfsManager
     }
 
     private val projectUri by lazy(LazyThreadSafetyMode.NONE) {
@@ -303,7 +302,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
         override fun createRootNode(): TreeNode<UnLuaCFileObject> {
             val project = checkNotNull(viewModel.project.value)
-            val rootFileObject = fsManager.resolveFile("unluac://${project.name}")
+            val rootFileObject = vfsManager.resolveFile("unluac://${project.name}")
             return TreeNode(
                 data = rootFileObject as UnLuaCFileObject,
                 depth = -1,

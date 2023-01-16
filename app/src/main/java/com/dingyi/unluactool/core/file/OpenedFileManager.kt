@@ -2,6 +2,7 @@ package com.dingyi.unluactool.core.file
 
 import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson
+import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.internal.LuaProject
 import com.google.gson.annotations.SerializedName
@@ -27,7 +28,7 @@ class OpenedFileManager internal constructor() : FileEventListener {
             }
 
 
-            val openedFileObject = cacheJsonFile.content.inputStream.readBytes().decodeToString()
+            val openedFileObject = cacheJsonFile.inputStream.readBytes().decodeToString()
                 .decodeToBean<OpenedFileObject>()
 
             cacheOpenedFile[publicUri] = openedFileObject.openedFiles.map {

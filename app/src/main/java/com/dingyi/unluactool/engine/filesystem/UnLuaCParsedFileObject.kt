@@ -1,5 +1,7 @@
 package com.dingyi.unluactool.engine.filesystem
 
+import com.dingyi.unluactool.common.ktx.inputStream
+import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.engine.lasm.assemble.Assembler
 import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
@@ -35,7 +37,7 @@ class UnLuacParsedFileObject(
 
         lasmChunk =
             LasmUnDumper().unDump(
-                proxyFileObject.content.inputStream
+                proxyFileObject.inputStream
             )
 
         assembler = Assembler(lasmChunk)
@@ -49,7 +51,7 @@ class UnLuacParsedFileObject(
     fun refresh() {
         lasmChunk =
             LasmUnDumper().unDump(
-                proxyFileObject.content.inputStream
+                proxyFileObject.inputStream
             )
 
         assembler = Assembler(lasmChunk)
@@ -57,7 +59,7 @@ class UnLuacParsedFileObject(
 
     fun refreshFlush() {
         val outputProvider = StreamOutputProvider(
-            proxyFileObject.content.outputStream
+            proxyFileObject.outputStream
         )
         LasmDumper(
             Output(outputProvider), lasmChunk
@@ -110,18 +112,14 @@ class UnLuacParsedFileObject(
         override fun close() {
             super.close()
 
-
             val data = outputStream.toByteArray().decodeToString()
 
             if (currentFunction != null) {
                 currentFunction.data = data
-                return
             }
 
-            val assembler = unluac.assemble.Assembler(
-                ByteArrayInputStream(outputStream.toByteArray()),
-
-                )
+            val assembler =
+                unluac.assemble.Assembler(ByteArrayInputStream(outputStream.toByteArray()))
 
             val chunk = assembler.chunk
 
@@ -151,13 +149,5 @@ data class UnLuacFileObjectExtra(
 ) {
     fun requireFunction(): LASMFunction = checkNotNull(currentFunction)
 
-    init {
-        fileObject.addChunkChangeListener {
-            chunk = it
-            if (currentFunction != null) {
-                currentFunction = it.resolveFunction(currentFunction?.fullName ?: "")
-            }
-        }
-    }
 }
 

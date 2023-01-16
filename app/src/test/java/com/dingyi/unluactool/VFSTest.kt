@@ -26,7 +26,7 @@ class VFSTest {
 
         println(fileObject.uri.path)
 
-        /*fileObject.content.inputStream.use {
+        /*fileObject.inputStream.use {
             it.readBytes().decodeToString()
         }.let {
             println(it)

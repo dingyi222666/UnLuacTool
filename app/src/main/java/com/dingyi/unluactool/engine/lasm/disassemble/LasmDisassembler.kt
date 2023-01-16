@@ -19,7 +19,6 @@ class LasmDisassembler(
         return decompileMain(mainFunction)
     }
 
-
     private fun decompile(
         function: LFunction,
         parent: AbsFunction<LASMFunction>?,

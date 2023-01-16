@@ -12,10 +12,10 @@ import org.apache.commons.vfs2.FileSystemOptions
 import org.apache.commons.vfs2.provider.AbstractFileName
 import org.apache.commons.vfs2.provider.AbstractFileSystem
 
-class UnLuacFileSystem(
+class UnLuaCFileSystem(
     rootFileName: FileName,
     rootFile: String,
-    private val provider: UnLuacFileProvider,
+    private val provider: UnLuaCVirtualFileProvider,
     fileSystemOptions: FileSystemOptions?
 ) : AbstractFileSystem(rootFileName, null, fileSystemOptions) {
 
@@ -25,9 +25,6 @@ class UnLuacFileSystem(
     private val selfCapabilities = mutableListOf<Capability>()
 
     private val cacheParsedFileObject = mutableMapOf<String, UnLuacParsedFileObject>()
-
-    private val bindParsedFileObject =
-        mutableMapOf<UnLuacParsedFileObject, MutableList<UnLuaCFileObject>>()
 
     //unluac://project/file (lasm)
     override fun createFile(name: AbstractFileName): FileObject? {
@@ -177,7 +174,7 @@ class UnLuacFileSystem(
 
     override fun init() {
         serviceRegistry = MainApplication.instance.globalServiceRegistry
-        addCapabilities(UnLuacFileProvider.allCapability.toMutableList())
+        addCapabilities(UnLuaCVirtualFileProvider.allCapability.toMutableList())
     }
 
 

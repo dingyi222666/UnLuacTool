@@ -2,6 +2,7 @@ package com.dingyi.unluactool.core.event.internal
 
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.core.event.EventType
+import com.dingyi.unluactool.core.util.JsonConfigReader
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 
@@ -11,16 +12,8 @@ internal class RootEventManager : EventManagerImpl(null) {
     private val selfConnection = connect()
 
     init {
-        val preLoadJsonString = this.javaClass.classLoader
-            .getResource("META-INF/global.json")
-            ?.openStream()
-            ?.use { it.readBytes() }
-            ?.decodeToString()
-            .toString()
-
-
         runCatching {
-            val element = JsonParser.parseString(preLoadJsonString).asJsonObject
+            val element = JsonConfigReader.readConfig("event-global.json").asJsonObject
             element.getAsJsonObject("extensions").entrySet()
                 .forEach { (listenerClassName, arrays) ->
                     val listenerClass = Class.forName(listenerClassName)
@@ -42,7 +35,6 @@ internal class RootEventManager : EventManagerImpl(null) {
         }.onFailure {
             it.printStackTrace()
         }
-
     }
 
     override fun close(closeParent: Boolean) {

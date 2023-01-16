@@ -91,7 +91,6 @@ class LasmDumper(
 
 
     private fun dumpByteArray(bytearray: ByteArray) {
-
         bytearray.forEach(output::print)
     }
 

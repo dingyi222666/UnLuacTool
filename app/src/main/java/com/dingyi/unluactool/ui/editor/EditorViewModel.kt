@@ -16,6 +16,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
+import org.apache.commons.vfs2.FileSystemManager
+import org.apache.commons.vfs2.VFS
 
 class EditorViewModel : ViewModel() {
 
@@ -31,6 +33,10 @@ class EditorViewModel : ViewModel() {
 
 
     val fragmentDataList = ObservableArrayList<EditorFragmentData>()
+
+    val vfsManager: FileSystemManager by lazy(LazyThreadSafetyMode.NONE) {
+        VFS.getManager()
+    }
 
     suspend fun loadProject(uri: String): Project {
         val projectValue = EditorRepository.loadProject(uri)
@@ -101,6 +107,18 @@ class EditorViewModel : ViewModel() {
         return checkNotNull(_project.value)
     }
 
+
+    suspend fun openFile(fileObject: FileObject): String {
+        return EditorRepository.openFile(fileObject)
+    }
+
+    suspend fun loadFileInCache(fileObject: FileObject): String {
+        return EditorRepository.loadFileInCache(fileObject)
+    }
+
+    suspend fun saveFile(fileObject: FileObject, content: String? = null) {
+        EditorRepository.saveFile(fileObject, content)
+    }
 
     fun bindCoroutineScope(co: CoroutineScope) {
         EditorRepository.getOpenFileManager().bindCoroutineScope(co)

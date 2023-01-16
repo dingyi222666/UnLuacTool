@@ -1,14 +1,11 @@
 package com.dingyi.unluactool.core.project.internal
 
-import android.os.Parcel
-import android.os.Parcelable
-import com.dingyi.unluactool.beans.ProjectInfo
-import com.dingyi.unluactool.core.project.Project
-import com.dingyi.unluactool.common.ktx.decodeToBean
 import com.dingyi.unluactool.common.ktx.encodeToJson
+import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.CompositeProjectIndexer
+import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.ServiceRegistry
@@ -20,11 +17,10 @@ import org.apache.commons.vfs2.FileSelectInfo
 import org.apache.commons.vfs2.FileSelector
 
 internal class LuaProject constructor(
-    val serviceRegistry: ServiceRegistry,
+    private val serviceRegistry: ServiceRegistry,
+    private var projectInfo: ProjectInfo,
     override val projectPath: FileObject
 ) : Project {
-
-    private var projectInfo = readInfo()
 
     private var _fileCount: Int = 0
 
@@ -56,20 +52,10 @@ internal class LuaProject constructor(
                 .update()
         }
 
-
     override suspend fun resolveProjectFileCount(): Int = withContext(Dispatchers.IO) {
         _fileCount = projectPath
             .resolveFile(ORIGIN_DIR_NAME)
-            .findFiles(object : FileSelector {
-                override fun includeFile(fileInfo: FileSelectInfo): Boolean {
-                    return fileInfo.file.run { isFile && name.extension == "lua" }
-                }
-
-                override fun traverseDescendents(fileInfo: FileSelectInfo): Boolean {
-                    return true
-                }
-
-            })
+            .findFiles(LuaFileSelector)
             .size
 
         fileCount
@@ -78,16 +64,7 @@ internal class LuaProject constructor(
     override suspend fun getProjectFileList(): List<FileObject> {
         return projectPath
             .resolveFile(ORIGIN_DIR_NAME)
-            .findFiles(object : FileSelector {
-                override fun includeFile(fileInfo: FileSelectInfo): Boolean {
-                    return fileInfo.file.run { isFile && name.extension == "lua" }
-                }
-
-                override fun traverseDescendents(fileInfo: FileSelectInfo): Boolean {
-                    return true
-                }
-
-            }).toList()
+            .findFiles(LuaFileSelector).toList()
     }
 
     override fun getProjectPath(attr: String): FileObject {
@@ -106,34 +83,16 @@ internal class LuaProject constructor(
 
     private fun ProjectInfo.update() {
         //
-        projectPath.resolveFile(PROJECT_CONFIG_JSON)
+        getProjectPath(PROJECT_CONFIG_JSON)
             .use { fileObject ->
                 if (!fileObject.isFile) {
                     fileObject.close()
                     error("Can't resolve file info")
                 }
-
-                fileObject.content.outputStream
+                fileObject.outputStream
                     .use { it.write(this.encodeToJson().encodeToByteArray()) }
 
             }
-
-
-    }
-
-    private fun readInfo(): ProjectInfo {
-        return projectPath.resolveFile(PROJECT_CONFIG_JSON)
-            .use { fileObject ->
-                if (!fileObject.isFile) {
-                    error("Can't resolve file info")
-                }
-
-                fileObject.content.inputStream
-                    .use { it.readBytes() }
-                    .decodeToString()
-                    .decodeToBean()
-            }
-
     }
 
     override suspend fun remove(): Boolean = withContext(Dispatchers.IO) {
@@ -194,4 +153,19 @@ internal class LuaProject constructor(
     }
 
 
+    object LuaFileSelector : FileSelector {
+        override fun includeFile(fileInfo: FileSelectInfo): Boolean {
+            return fileInfo.file.run { isFile && name.extension == "lua" }
+        }
+
+        override fun traverseDescendents(fileInfo: FileSelectInfo): Boolean {
+            return true
+        }
+    }
+
+    data class ProjectInfo(
+        val iconPath: String?,
+        val name: String,
+        val path: String
+    )
 }

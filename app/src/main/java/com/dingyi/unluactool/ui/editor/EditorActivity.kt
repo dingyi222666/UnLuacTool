@@ -12,8 +12,6 @@ import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.adapter.ViewPageDataFragmentAdapter
 import com.dingyi.unluactool.common.ktx.getJavaClass
-import com.dingyi.unluactool.core.file.OpenedFileManager
-import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.databinding.EditorBinding
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.ui.editor.drawer.DrawerFragment

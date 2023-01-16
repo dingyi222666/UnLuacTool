@@ -6,7 +6,7 @@ import com.dingyi.unluactool.core.file.FileManagerServiceRegistry
 import com.dingyi.unluactool.core.project.ProjectServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistryBuilder
-import com.dingyi.unluactool.engine.filesystem.UnLuacFileProvider
+import com.dingyi.unluactool.engine.filesystem.UnLuaCVirtualFileProvider
 import org.apache.commons.vfs2.VFS
 import org.apache.commons.vfs2.impl.StandardFileSystemManager
 
@@ -35,7 +35,7 @@ class MainApplication : Application() {
 
         // need call init method
         fileSystemManager.init()
-        fileSystemManager.addProvider("unluac",UnLuacFileProvider())
+        fileSystemManager.addProvider("unluac",UnLuaCVirtualFileProvider())
         VFS.setManager(fileSystemManager)
 
 

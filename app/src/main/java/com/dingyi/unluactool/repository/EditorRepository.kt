@@ -72,16 +72,16 @@ object EditorRepository {
         openedFileManager.saveAllOpenedFile(project)
     }
 
-    suspend fun openFile(uri: String): String {
-        return _openFileManager.openFile(uri)
+    suspend fun openFile(fileObject: FileObject): String {
+        return _openFileManager.openFile(fileObject)
     }
 
-    suspend fun loadFileInCache(uri: String): String {
-        return _openFileManager.loadFileInCache(uri)
+    suspend fun loadFileInCache(fileObject: FileObject): String {
+        return _openFileManager.loadFileInCache(fileObject)
     }
 
-    suspend fun saveFile(uri: String, content: String? = null) {
-        _openFileManager.saveFile(uri, content)
+    suspend fun saveFile(fileObject: FileObject, content: String? = null) {
+        _openFileManager.saveFile(fileObject, content)
     }
 
 }

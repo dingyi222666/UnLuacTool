@@ -3,6 +3,8 @@ package com.dingyi.unluactool.engine.lasm.indexer
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.ktx.getString
+import com.dingyi.unluactool.common.ktx.inputStream
+import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectIndexer
@@ -105,7 +107,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                         this.rawstring = true
                         this.mode = Configuration.Mode.DECOMPILE
                         this.variable = Configuration.VariableMode.FINDER
-                    } to originFileObject.content.inputStream.use {
+                    } to originFileObject.inputStream.use {
                         ByteBuffer.wrap(it.readBytes())
                     })
                 } catch (e: Exception) {
@@ -129,7 +131,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
                 val bytes = provider.getBytes()
 
-                targetFile.content.outputStream.use {
+                targetFile.outputStream.use {
                     it.write(bytes)
                 }
 
