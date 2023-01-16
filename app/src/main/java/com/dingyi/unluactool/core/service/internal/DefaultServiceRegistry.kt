@@ -2,8 +2,15 @@ package com.dingyi.unluactool.core.service.internal
 
 import com.dingyi.unluactool.core.service.*
 import com.dingyi.unluactool.core.service.ContainsServices
-import com.google.gson.internal.Primitives.unwrap
+import com.dingyi.unluactool.core.service.internal.TypeStringFormatter.format
+import com.dingyi.unluactool.core.util.JsonConfigReader
+import java.lang.reflect.Constructor
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
+import java.lang.reflect.Modifier
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
 import java.util.*
 
 
@@ -58,7 +65,19 @@ open class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceR
             this.allServices = CompositeServiceProvider(ownServices, parentServices)
         }
 
+        findServicesForConfig()
         findProviderMethods(this)
+    }
+
+
+    private fun findServicesForConfig() {
+        val jsonObject = JsonConfigReader.readConfig("service-global.json").asJsonObject
+
+        jsonObject.keySet().forEach {
+            val interfaceClassName = it
+            val implementClassName = jsonObject[it].asString
+            ownServices.add(ConstructorService(this, Class.forName(implementClassName),Class.forName(interfaceClassName)))
+        }
     }
 
     private fun findProviderMethods(target: Any) {
@@ -70,7 +89,6 @@ open class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceR
 
         if (targetMethods.isEmpty())
             return
-
 
         //2. addService
 
@@ -194,6 +212,71 @@ open class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceR
         }
 
 
+    }
+
+
+
+    private class ConstructorService constructor(
+        owner: DefaultServiceRegistry,
+        serviceType: Class<*>,
+        interfaceType: Class<*>
+    ) : SingletonService(owner, interfaceType) {
+        private val constructor: Constructor<*>
+
+        init {
+            if (serviceType.isInterface) {
+                error("Cannot register an interface for construction.")
+            }
+            val match: Constructor<*> = InjectUtil.selectConstructor(serviceType)
+            if (InjectUtil.isPackagePrivate(match.modifiers) || Modifier.isPrivate(match.modifiers)) {
+                match.isAccessible = true
+            }
+            constructor = match
+        }
+
+        private val parameterTypes = constructor.genericParameterTypes
+
+
+        protected fun invokeMethod(params: Array<Any?>): Any {
+            return try {
+                constructor.newInstance(*params)
+            } catch (e: InvocationTargetException) {
+
+                throw RuntimeException(
+                    java.lang.String.format(
+                        "Could not create service of type %s.",
+                        format(serviceType)
+                    ), e
+                )
+            } catch (e: Exception) {
+                throw RuntimeException(
+                    java.lang.String.format(
+                        "Could not create service of type %s.",
+                        format(serviceType)
+                    ), e
+                )
+            }
+        }
+
+        override fun createServiceInstance(): Any {
+            val params = parameterTypes
+
+            val invokeArray = arrayOfNulls<Any>(params.size)
+            params.forEachIndexed { index, any ->
+                val availableService = Optional.ofNullable(owner[unwrap(any)])
+                if (!availableService.isPresent) {
+                    error("Can't create services")
+                }
+                invokeArray[index] = availableService.get()
+            }
+
+
+            return invokeMethod(invokeArray)
+        }
+
+        override fun getDisplayName(): String {
+            return "Service " + format(serviceType)
+        }
     }
 
     private class FactoryService(
@@ -419,5 +502,22 @@ open class DefaultServiceRegistry(displayName: String?, vararg parents: ServiceR
 
     override fun toString(): String {
         return getDisplayName()
+    }
+}
+
+fun unwrap(type: Type): Class<*> {
+    return if (type is Class<*>) {
+        type as Class<*>
+    } else {
+        if (type is WildcardType) {
+            val wildcardType: WildcardType = type as WildcardType
+            if (wildcardType.getUpperBounds()
+                    .get(0) is Class<*> && wildcardType.getLowerBounds().size === 0
+            ) {
+                return wildcardType.getUpperBounds().get(0) as Class<*>
+            }
+        }
+        val parameterizedType = type as ParameterizedType
+        parameterizedType.getRawType() as Class<*>
     }
 }

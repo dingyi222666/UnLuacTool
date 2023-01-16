@@ -1,3 +1,7 @@
 {
-
+  "com.dingyi.unluactool.core.event.EventManager": "com.dingyi.unluactool.core.event.internal.RootEventManager",
+  "com.dingyi.unluactool.core.file.OpenedFileManager": "com.dingyi.unluactool.core.file.OpenedFileManager",
+  "com.dingyi.unluactool.core.file.OpenFileManager": "com.dingyi.unluactool.core.file.OpenFileManager",
+  "com.dingyi.unluactool.core.project.ProjectCreator": "com.dingyi.unluactool.core.project.internal.LuaProjectCreator",
+  "com.dingyi.unluactool.core.project.ProjectManager": "com.dingyi.unluactool.core.project.internal.DefaultProjectManager"
 }

@@ -1,9 +1,6 @@
 package com.dingyi.unluactool
 
 import android.app.Application
-import com.dingyi.unluactool.core.event.EventServiceRegistry
-import com.dingyi.unluactool.core.file.FileManagerServiceRegistry
-import com.dingyi.unluactool.core.project.ProjectServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.ServiceRegistryBuilder
 import com.dingyi.unluactool.engine.filesystem.UnLuaCVirtualFileProvider
@@ -25,9 +22,6 @@ class MainApplication : Application() {
 
         globalServiceRegistry = ServiceRegistryBuilder
             .builder()
-            .provider(ProjectServiceRegistry())
-            .provider(EventServiceRegistry())
-            .provider(FileManagerServiceRegistry())
             .displayName("global service")
             .build()
 
