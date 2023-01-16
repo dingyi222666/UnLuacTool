@@ -5,10 +5,10 @@ import unluac.parse.BHeader
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-object BHeaderDecompiler : Decompiler<Pair<unluac.Configuration, ByteBuffer>, unluac.parse.BHeader> {
-    override fun decompile(input: Pair<unluac.Configuration, ByteBuffer>): unluac.parse.BHeader {
+object BHeaderDecompiler : Decompiler<Pair<unluac.Configuration, ByteBuffer>, BHeader> {
+    override fun decompile(input: Pair<unluac.Configuration, ByteBuffer>): BHeader {
         val (configuration, buffer) = input
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        return unluac.parse.BHeader(buffer, configuration)
+        return BHeader(buffer, configuration)
     }
 }

@@ -1,8 +1,14 @@
 package com.dingyi.unluactool.engine.lua.decompile
 
-interface Decompiler<C : Any> {
+interface Decompiler {
 
-    var configuration: C
+    val name: String
 
-    fun decompile(input: ByteArray): Any
+
+    fun decompile(input: ByteArray, configuration: Any?,decompilerGetter: DecompilerGetter): Any
+
+}
+
+interface DecompilerGetter {
+    fun getDecompilerByName(name: String): Decompiler?
 }

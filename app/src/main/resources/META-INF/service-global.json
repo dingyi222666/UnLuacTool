@@ -3,5 +3,6 @@
   "com.dingyi.unluactool.core.file.OpenedFileManager": "com.dingyi.unluactool.core.file.OpenedFileManager",
   "com.dingyi.unluactool.core.file.OpenFileManager": "com.dingyi.unluactool.core.file.OpenFileManager",
   "com.dingyi.unluactool.core.project.ProjectCreator": "com.dingyi.unluactool.core.project.internal.LuaProjectCreator",
-  "com.dingyi.unluactool.core.project.ProjectManager": "com.dingyi.unluactool.core.project.internal.DefaultProjectManager"
+  "com.dingyi.unluactool.core.project.ProjectManager": "com.dingyi.unluactool.core.project.internal.DefaultProjectManager",
+  "com.dingyi.unluactool.engine.lua.decompile.DecompileService": "com.dingyi.unluactool.engine.lua.decompile.DecompileService"
 }
