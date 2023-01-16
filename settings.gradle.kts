@@ -27,4 +27,4 @@ dependencyResolutionManagement {
 
 
 rootProject.name = "UnLuacTool"
-include(":app")
+include(":app",":unluac")

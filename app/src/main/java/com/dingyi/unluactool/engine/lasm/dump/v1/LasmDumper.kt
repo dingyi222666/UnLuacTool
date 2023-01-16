@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream
 import java.util.zip.GZIPOutputStream
 
 class LasmDumper(
-    private val output: Output,
+    private val output: unluac.decompile.Output,
     private val chunk: LASMChunk
 ) {
 

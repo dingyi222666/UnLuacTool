@@ -14,7 +14,7 @@ class Assembler(
 ) {
 
     fun assemble(output: OutputStream) {
-        Assembler(
+        unluac.assemble.Assembler(
             ByteArrayInputStream(main.getAllData().encodeToByteArray()),
             output
         ).assemble()
@@ -24,9 +24,9 @@ class Assembler(
     /**
      * @return the main function and current assemble  function
      */
-    fun assemble(assembleFunction: LASMFunction): Pair<LFunction, LFunction> {
+    fun assemble(assembleFunction: LASMFunction): Pair<unluac.parse.LFunction, unluac.parse.LFunction> {
         val inputStream = ByteArrayInputStream(main.getAllData().encodeToByteArray())
-        val assembler = Assembler(
+        val assembler = unluac.assemble.Assembler(
             inputStream,
             null
         )
@@ -42,8 +42,8 @@ class Assembler(
         val mainFunction = chunk.convertToFunction(mainAssembleFunction)
 
         val currentFunction = chunk.convertToFunction(currentASMFunction)
-        mainFunction.header.config = Configuration().apply {
-            variable = Configuration.VariableMode.FINDER
+        mainFunction.header.config = unluac.Configuration().apply {
+            variable = unluac.Configuration.VariableMode.FINDER
         }
 
         inputStream.close()

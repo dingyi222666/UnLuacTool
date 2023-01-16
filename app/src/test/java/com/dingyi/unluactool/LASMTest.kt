@@ -32,9 +32,9 @@ class LASMTest {
         val path = LUA_PATH
 
         val lFunction = checkNotNull(
-            fileToFunction(path, Configuration().apply {
-                this.mode = Configuration.Mode.ASSEMBLE
-                this.variable = Configuration.VariableMode.FINDER
+            fileToFunction(path, unluac.Configuration().apply {
+                this.mode = unluac.Configuration.Mode.ASSEMBLE
+                this.variable = unluac.Configuration.VariableMode.FINDER
             })
         )
         println(lFunction)
@@ -45,9 +45,9 @@ class LASMTest {
     fun lasmTest2() {
         val path = LUA_PATH
 
-        val header = checkNotNull(fileToBHeader(path, Configuration().apply {
-            this.mode = Configuration.Mode.ASSEMBLE
-            this.variable = Configuration.VariableMode.DEFAULT
+        val header = checkNotNull(fileToBHeader(path, unluac.Configuration().apply {
+            this.mode = unluac.Configuration.Mode.ASSEMBLE
+            this.variable = unluac.Configuration.VariableMode.DEFAULT
         }))
 
         /*val disassembler = Disassembler(header.main)
@@ -71,9 +71,9 @@ class LASMTest {
     fun lasmTest3() {
         val path = LUA_PATH
 
-        val header = checkNotNull(fileToBHeader(path, Configuration().apply {
-            this.mode = Configuration.Mode.ASSEMBLE
-            this.variable = Configuration.VariableMode.DEFAULT
+        val header = checkNotNull(fileToBHeader(path, unluac.Configuration().apply {
+            this.mode = unluac.Configuration.Mode.ASSEMBLE
+            this.variable = unluac.Configuration.VariableMode.DEFAULT
         }))
 
         val chunk = LasmDisassembler(header.main).decompile()
@@ -86,7 +86,7 @@ class LASMTest {
 
         val provider = ByteArrayOutputProvider()
 
-        val output = Output(provider)
+        val output = unluac.decompile.Output(provider)
 
         val dumper = LasmDumper(output, chunk)
 
@@ -115,7 +115,7 @@ class LASMTest {
      */
 
 
-    private fun fileToBHeader(path: String, config: Configuration): BHeader? {
+    private fun fileToBHeader(path: String, config: unluac.Configuration): unluac.parse.BHeader? {
         return runCatching {
             val file = RandomAccessFile(path, "r")
             val buffer = ByteBuffer.allocate(file.length().toInt())
@@ -124,11 +124,11 @@ class LASMTest {
             val channel = file.channel
             while (len > 0) len -= channel.read(buffer)
             buffer.rewind()
-            BHeader(buffer, config)
+            unluac.parse.BHeader(buffer, config)
         }.getOrNull()
     }
 
-    private fun fileToFunction(fn: String, config: Configuration): LFunction? {
+    private fun fileToFunction(fn: String, config: unluac.Configuration): unluac.parse.LFunction? {
         return fileToBHeader(fn, config)?.main
     }
 

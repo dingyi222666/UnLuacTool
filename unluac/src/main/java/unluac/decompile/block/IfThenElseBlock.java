@@ -90,7 +90,7 @@ public class IfThenElseBlock extends ContainerBlock {
     out.println();
     out.indent();
     
-    Statement.printSequence(d, out, statements);
+    printSequence(d, out, statements);
     
     out.dedent();
     

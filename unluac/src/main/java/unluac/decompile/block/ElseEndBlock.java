@@ -3,7 +3,6 @@ package unluac.decompile.block;
 import unluac.decompile.CloseType;
 import unluac.decompile.Decompiler;
 import unluac.decompile.Output;
-import unluac.decompile.statement.Statement;
 import unluac.parse.LFunction;
 
 public class ElseEndBlock extends ContainerBlock {
@@ -57,7 +56,7 @@ public class ElseEndBlock extends ContainerBlock {
       out.print("else");
       out.println();
       out.indent();
-      Statement.printSequence(d, out, statements);
+      printSequence(d, out, statements);
       out.dedent();
       out.print("end");
     }

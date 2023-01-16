@@ -101,12 +101,12 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 }
 
 
-                val header: BHeader
+                val header: unluac.parse.BHeader
                 try {
-                    header = BHeaderDecompiler.decompile(Configuration().apply {
+                    header = BHeaderDecompiler.decompile(unluac.Configuration().apply {
                         this.rawstring = true
-                        this.mode = Configuration.Mode.DECOMPILE
-                        this.variable = Configuration.VariableMode.FINDER
+                        this.mode = unluac.Configuration.Mode.DECOMPILE
+                        this.variable = unluac.Configuration.VariableMode.FINDER
                     } to originFileObject.inputStream.use {
                         ByteBuffer.wrap(it.readBytes())
                     })
@@ -123,7 +123,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
                 val provider = ByteArrayOutputProvider()
 
-                val output = Output(provider)
+                val output = unluac.decompile.Output(provider)
 
                 val dumper = LasmDumper(output, chunk)
 

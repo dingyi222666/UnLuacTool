@@ -10,7 +10,6 @@ import java.util.Map;
 import unluac.Version;
 import unluac.decompile.Op;
 import unluac.decompile.OpcodeMap;
-import unluac.assemble.AssemblerChunk;
 
 import unluac.util.StringUtils;
 

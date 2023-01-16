@@ -17,7 +17,6 @@ import com.dingyi.unluactool.engine.decompiler.BHeaderDecompiler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
-import org.apache.commons.vfs2.AllFileSelector
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.Selectors
 import org.apache.commons.vfs2.VFS
@@ -148,10 +147,10 @@ class LuaProjectCreator : ProjectCreator {
 
     private fun checkLuaFile(targetFile: FileObject): String? {
         return kotlin.runCatching {
-            return BHeaderDecompiler.decompile(Configuration().apply {
+            return BHeaderDecompiler.decompile(unluac.Configuration().apply {
                 this.rawstring = true
-                this.mode = Configuration.Mode.DECOMPILE
-                this.variable = Configuration.VariableMode.FINDER
+                this.mode = unluac.Configuration.Mode.DECOMPILE
+                this.variable = unluac.Configuration.VariableMode.FINDER
             } to targetFile.inputStream.use {
                 ByteBuffer.wrap(it.readBytes())
             }).toString()

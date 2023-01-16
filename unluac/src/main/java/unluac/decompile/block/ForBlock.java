@@ -77,7 +77,7 @@ abstract public class ForBlock extends ContainerBlock {
     out.print(" do");
     out.println();
     out.indent();
-    Statement.printSequence(d, out, statements);
+    printSequence(d, out, statements);
     out.dedent();
     out.print("end");
   }

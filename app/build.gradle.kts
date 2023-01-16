@@ -6,11 +6,10 @@ plugins {
 android {
 
     compileSdk = 33
-    //compileSdkPreview = "TiramisuPrivacySandbox"
 
     namespace = "com.dingyi.unluactool"
+
     defaultConfig {
-       // applicationId =
         minSdk = 26
         targetSdk = 33
         versionCode = 1
@@ -46,8 +45,8 @@ android {
     }
 
     packagingOptions {
-        resources.excludes.addAll(listOf( "xsd/*", "license/*"))
-        resources.pickFirsts.addAll(listOf("META-INF/**","kotlin/**"))
+        resources.excludes.addAll(listOf("xsd/*", "license/*"))
+        resources.pickFirsts.addAll(listOf("META-INF/**", "kotlin/**"))
     }
 
     compileOptions {
@@ -58,38 +57,33 @@ android {
 
 dependencies {
 
+    implementation(project(":unluac"))
+
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha04")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha04")
     implementation("androidx.core:core-ktx:1.9.0")
-    implementation("com.github.techinessoverloaded:progress-dialog:1.5.1")
     implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
-    implementation("com.google.android.material:material:1.8.0-rc01")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha04")
+    implementation("androidx.fragment:fragment-ktx:1.5.5")
+    implementation("com.google.android.material:material:1.8.0-rc01")
 
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.google.code.gson:gson:2.9.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha04")
-    implementation("androidx.fragment:fragment-ktx:1.5.5")
-    implementation("io.github.dingyi222666:treeview:1.0.4")
-
-    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.0"))
-    implementation("io.github.Rosemoe.sora-editor:editor")
-
     implementation("net.lingala.zip4j:zip4j:2.11.1")
-    implementation ("com.github.Commit451:ScrimInsetsLayout:1.1.0")
-
-    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    implementation("com.github.Commit451:ScrimInsetsLayout:1.1.0")
     implementation(kotlin("reflect"))
-
-
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-vfs2
     implementation("org.apache.commons:commons-vfs2:2.9.0") {
         exclude("org.apache.hadoop")
     }
 
+    implementation("io.github.dingyi222666:treeview:1.0.4")
+    implementation("com.github.techinessoverloaded:progress-dialog:1.5.1")
+    implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.0"))
+    implementation("io.github.Rosemoe.sora-editor:editor")
+
+
+    testImplementation("junit:junit:4.13.2")
 
 }

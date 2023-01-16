@@ -68,7 +68,7 @@ public class RepeatBlock extends ContainerBlock {
     out.print("repeat");
     out.println();
     out.indent();
-    Statement.printSequence(d, out, statements);
+    printSequence(d, out, statements);
     out.dedent();
     out.print("until ");
     condexpr.print(d, out);

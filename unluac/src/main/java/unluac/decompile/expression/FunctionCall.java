@@ -97,7 +97,7 @@ public class FunctionCall extends Expression {
       }
     }
     out.print("(");
-    Expression.printSequence(d, out, args, false, true);
+    printSequence(d, out, args, false, true);
     out.print(")");
   }
   

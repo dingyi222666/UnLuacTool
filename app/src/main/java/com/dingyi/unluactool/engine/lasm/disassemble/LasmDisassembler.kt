@@ -12,7 +12,7 @@ import unluac.parse.LFunction
 import unluac.util.StringUtils
 
 class LasmDisassembler(
-    private val mainFunction: LFunction
+    private val mainFunction: unluac.parse.LFunction
 ) {
 
     fun decompile(): LASMChunk {
@@ -20,13 +20,13 @@ class LasmDisassembler(
     }
 
     private fun decompile(
-        function: LFunction,
+        function: unluac.parse.LFunction,
         parent: AbsFunction<LASMFunction>?,
-        out: Output,
+        out: unluac.decompile.Output,
         name: String
     ) {
 
-        val code = Code(function)
+        val code = unluac.decompile.Code(function)
 
         val fullName = if (parent == null) {
             name
@@ -53,7 +53,7 @@ class LasmDisassembler(
         if (function.upvalues.isNotEmpty()) {
             for (upvalue in 1..function.upvalues.size) {
                 val u = function.upvalues[upvalue - 1]
-                out.println(".upvalue\t" + StringUtils.toPrintString(u.name) + "\t" + u.idx + "\t" + u.instack)
+                out.println(".upvalue\t" + unluac.util.StringUtils.toPrintString(u.name) + "\t" + u.idx + "\t" + u.instack)
             }
             out.println()
         }
@@ -67,7 +67,7 @@ class LasmDisassembler(
 
         val label = BooleanArray(function.code.size)
         for (line in 1..function.code.size) {
-            val op: Op = code.op(line)
+            val op: unluac.decompile.Op = code.op(line)
             if (op != null && op.hasJump()) {
                 val target: Int = code.target(line)
                 if (target >= 1 && target <= label.size) {
@@ -89,7 +89,7 @@ class LasmDisassembler(
             if (line <= function.lines.size) {
                 out.print(".line\t" + function.lines[line - 1] + "\t")
             }
-            val op: Op? = code.op(line)
+            val op: unluac.decompile.Op? = code.op(line)
             var cpLabel: String? = null
             if (op != null && op.hasJump()) {
                 val target: Int = code.target(line)
@@ -99,7 +99,7 @@ class LasmDisassembler(
             }
             if (op == null) {
                 out.println(
-                    Op.defaultToString(
+                    unluac.decompile.Op.defaultToString(
                         code.codepoint(line),
                         function.header.version,
                         code.extractor
@@ -135,11 +135,11 @@ class LasmDisassembler(
     }
 
     private fun decompileMain(
-        function: LFunction,
+        function: unluac.parse.LFunction,
     ): LASMChunk {
 
         val bufferProvider = ByteArrayOutputProvider()
-        val out = Output(bufferProvider)
+        val out = unluac.decompile.Output(bufferProvider)
 
 
         out.println(".version\t" + function.header.version.name)
@@ -155,7 +155,7 @@ class LasmDisassembler(
             for (opcode in 0 until opmap.size()) {
                 val op = opmap[opcode]
                 if (op != null) {
-                    out.println(Directive.OP.token + "\t" + opcode + "\t" + op.name)
+                    out.println(unluac.assemble.Directive.OP.token + "\t" + opcode + "\t" + op.name)
                 }
             }
             out.println()
@@ -184,10 +184,10 @@ class LasmDisassembler(
     }
 
     private fun decompileChildFunction(
-        func: LFunction,
+        func: unluac.parse.LFunction,
         parent: AbsFunction<LASMFunction>,
         bufferProvider: ByteArrayOutputProvider,
-        out: Output,
+        out: unluac.decompile.Output,
         name: String,
         level: Int
     ) {

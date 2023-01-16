@@ -5,7 +5,6 @@ import unluac.decompile.Decompiler;
 import unluac.decompile.Function;
 import unluac.decompile.Output;
 import unluac.decompile.expression.ConstantExpression;
-import unluac.decompile.statement.Statement;
 import unluac.parse.LFunction;
 
 public class AlwaysLoop extends ContainerBlock {
@@ -64,7 +63,7 @@ public class AlwaysLoop extends ContainerBlock {
       out.println(" do");
     }
     out.indent();
-    Statement.printSequence(d, out, statements);
+    printSequence(d, out, statements);
     out.dedent();
     if(repeat) {
       out.print("until false");

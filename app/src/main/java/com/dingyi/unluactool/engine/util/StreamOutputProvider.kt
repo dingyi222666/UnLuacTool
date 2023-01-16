@@ -1,13 +1,12 @@
 package com.dingyi.unluactool.engine.util
 
 import unluac.decompile.OutputProvider
-import java.io.ByteArrayOutputStream
 import java.io.Closeable
 import java.io.OutputStream
 
 class StreamOutputProvider(
     private val out:OutputStream
-    ):OutputProvider,Closeable {
+    ): unluac.decompile.OutputProvider,Closeable {
 
 
 

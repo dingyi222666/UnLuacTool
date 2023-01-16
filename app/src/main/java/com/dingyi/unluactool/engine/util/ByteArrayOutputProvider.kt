@@ -3,7 +3,7 @@ package com.dingyi.unluactool.engine.util
 import unluac.decompile.OutputProvider
 import java.io.ByteArrayOutputStream
 
-class ByteArrayOutputProvider : OutputProvider {
+class ByteArrayOutputProvider : unluac.decompile.OutputProvider {
 
     private val out = ByteArrayOutputStream()
 

@@ -62,7 +62,7 @@ class UnLuacParsedFileObject(
             proxyFileObject.outputStream
         )
         LasmDumper(
-            Output(outputProvider), lasmChunk
+            unluac.decompile.Output(outputProvider), lasmChunk
         ).dump()
         outputProvider.close()
     }

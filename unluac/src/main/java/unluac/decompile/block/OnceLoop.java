@@ -3,7 +3,6 @@ package unluac.decompile.block;
 import unluac.decompile.CloseType;
 import unluac.decompile.Decompiler;
 import unluac.decompile.Output;
-import unluac.decompile.statement.Statement;
 import unluac.parse.LFunction;
 
 public class OnceLoop extends ContainerBlock {
@@ -36,7 +35,7 @@ public class OnceLoop extends ContainerBlock {
   public void print(Decompiler d, Output out) {
     out.println("repeat");
     out.indent();
-    Statement.printSequence(d, out, statements);
+    printSequence(d, out, statements);
     out.dedent();
     out.print("until true");
   }
