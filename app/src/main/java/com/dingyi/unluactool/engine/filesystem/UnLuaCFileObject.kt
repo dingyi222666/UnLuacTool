@@ -2,6 +2,9 @@ package com.dingyi.unluactool.engine.filesystem
 
 import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.outputStream
+import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
+import org.apache.commons.vfs2.FileChangeEvent
+import org.apache.commons.vfs2.FileListener
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.provider.AbstractFileName
@@ -14,41 +17,78 @@ class UnLuaCFileObject(
     private var data: UnLuacFileObjectExtra? = null,
     private val name: AbstractFileName,
     private val fileSystem: UnLuaCFileSystem
-) : AbstractFileObject<UnLuaCFileSystem>(name, fileSystem) {
+) : AbstractFileObject<UnLuaCFileSystem>(name, fileSystem), ChunkChangeListener, FileListener {
 
     companion object {
         private val emptyArray = arrayOf<String>()
         private val emptyFileObjectArray = arrayOf<FileObject>()
     }
 
-
     private var currentFileType: FileObjectType? = null
+
+    private var isDelete = false
 
     private fun isNotUnLuacParsedObject(): Boolean = data == null
 
     private fun requireExtra(): UnLuacFileObjectExtra = checkNotNull(data)
+
+
+    override fun doAttach() {
+        data?.fileObject?.addChunkChangeListener(this)
+        proxyFileObject.fileSystem.addListener(proxyFileObject, this)
+    }
+
+    override fun doDetach() {
+        data?.fileObject?.removeChunkChangeListener(this)
+        proxyFileObject.fileSystem.removeListener(proxyFileObject, this)
+    }
+
+    override fun onChunkChange(newChunk: LASMChunk, oldChunk: LASMChunk) {
+
+        val data = requireExtra()
+
+        val currentFunctionPath = data.currentFunction?.fullName
+
+        fileSystem.fireFileChanged(this)
+
+        if (currentFunctionPath != null) {
+            val newFunction = newChunk.resolveFunction(currentFunctionPath)
+            if (newFunction == null) {
+                isDelete = true
+                data.currentFunction = null
+                fileSystem.fireFileDeleted(this)
+                return
+            }
+            data.currentFunction = newFunction
+        } else {
+            data.chunk = newChunk
+        }
+
+    }
 
     override fun doGetContentSize(): Long {
         return proxyFileObject.content.size
     }
 
     override fun refresh() {
-        // proxyFileObject.refresh()
+        proxyFileObject.refresh()
 
-        if (isNotUnLuacParsedObject()) {
-            proxyFileObject.refresh()
-        } else requireExtra().fileObject.refresh()
-
+        requireExtra().fileObject.refresh()
 
         doGetFileType()
 
-        if (getFileType() != FileObjectType.DIR) {
+        if (exists() && getFileType() != FileObjectType.DIR) {
             fileSystem.refresh(this)
         }
     }
 
     private fun doGetFileType() {
         val func = func@{
+
+            if (!proxyFileObject.exists() || isDelete) {
+                return@func FileObjectType.IMAGINARY
+            }
+
             if (proxyFileObject.isFolder) {
                 return@func FileObjectType.DIR
             }
@@ -110,9 +150,13 @@ class UnLuaCFileObject(
         return when (getFileType()) {
             FileObjectType.DIR, FileObjectType.FUNCTION_WITH_CHILD, FileObjectType.FILE -> FileType.FOLDER
             FileObjectType.FUNCTION -> FileType.FILE
+            FileObjectType.IMAGINARY -> FileType.IMAGINARY
         }
     }
 
+    override fun doListChildren(): Array<String> {
+        return emptyArray
+    }
 
     override fun doGetOutputStream(bAppend: Boolean): OutputStream {
         return if (isNotUnLuacParsedObject()) {
@@ -125,36 +169,11 @@ class UnLuaCFileObject(
         }
     }
 
-    override fun doListChildren(): Array<String> {
-        /* val fileType = getFileType()
-         val friendlyURI = name.friendlyURI
-         val proxyFriendlyURI = proxyFileObject.name.friendlyURI
-         return when {
-             proxyFileObject.isFolder -> {
-                 proxyFileObject.children.map {
-                     it.name.friendlyURI.replace(
-                         proxyFriendlyURI,
-                         friendlyURI
-                     )
-                 }.toTypedArray()
-
-             }
-
-             fileType == FileObjectType.FILE || fileType == FileObjectType.FUNCTION_WITH_CHILD -> {
-                 val childFunctions = requireExtra().chunk.childFunctions
-                 childFunctions.map {
-                     friendlyURI + "/" + it.name
-                 }.toTypedArray()
-             }
-
-             else -> emptyArray
-         }*/
-        return emptyArray
-    }
-
 
     override fun doDelete() {
-        proxyFileObject.delete()
+        if (isNotUnLuacParsedObject()) {
+            proxyFileObject.delete()
+        }
     }
 
     override fun equals(other: Any?): Boolean {
@@ -170,6 +189,19 @@ class UnLuaCFileObject(
 
     override fun hashCode(): Int {
         return proxyFileObject.hashCode()
+    }
+
+    override fun fileCreated(event: FileChangeEvent) {
+        // noop
+    }
+
+    override fun fileDeleted(event: FileChangeEvent?) {
+        isDelete = true
+        fileSystem.fireFileDeleted(this)
+    }
+
+    override fun fileChanged(event: FileChangeEvent?) {
+        fileSystem.fireFileChanged(this)
     }
 
     fun getFileType(): FileObjectType {
@@ -224,5 +256,5 @@ class UnLuaCFileObject(
 }
 
 enum class FileObjectType {
-    FUNCTION, FILE, DIR, FUNCTION_WITH_CHILD
+    FUNCTION, FILE, DIR, FUNCTION_WITH_CHILD, IMAGINARY
 }

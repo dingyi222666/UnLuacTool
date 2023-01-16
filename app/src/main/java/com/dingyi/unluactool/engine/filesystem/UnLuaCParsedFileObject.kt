@@ -9,13 +9,11 @@ import com.dingyi.unluactool.engine.lasm.assemble.LasmAssembleService
 import com.dingyi.unluactool.engine.lasm.data.v1.AbsFunction
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
-import com.dingyi.unluactool.engine.lasm.disassemble.AbstractLasmDisassembler
 import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembleService
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmDumper
 import com.dingyi.unluactool.engine.lasm.dump.v1.LasmUnDumper
 import com.dingyi.unluactool.engine.util.StreamOutputProvider
 import org.apache.commons.vfs2.FileObject
-import unluac.assemble.Assembler
 import unluac.decompile.Output
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -29,7 +27,7 @@ class UnLuacParsedFileObject(
     lateinit var lasmChunk: LASMChunk
         private set
 
-    private val chunkChangeListeners = mutableListOf<(LASMChunk) -> Unit>()
+    private val chunkChangeListeners = mutableListOf<ChunkChangeListener>()
 
     private val lasmDisassembleService by lazy(LazyThreadSafetyMode.NONE) {
         MainApplication.instance.globalServiceRegistry.get<LasmDisassembleService>()
@@ -53,15 +51,17 @@ class UnLuacParsedFileObject(
     }
 
 
-    fun addChunkChangeListener(listener: (LASMChunk) -> Unit) {
-        chunkChangeListeners.add(listener)
+    fun addChunkChangeListener(listener: ChunkChangeListener) {
+        if (!chunkChangeListeners.contains(listener)) {
+            chunkChangeListeners.add(listener)
+        }
     }
 
-    fun removeChunkChangeListener(listener: (LASMChunk) -> Unit) {
+    fun removeChunkChangeListener(listener: ChunkChangeListener) {
         chunkChangeListeners.remove(listener)
     }
 
-    fun clearChunkChangeListener(listener: (LASMChunk) -> Unit) {
+    fun clearChunkChangeListener(listener: ChunkChangeListener) {
         chunkChangeListeners.clear()
     }
 
@@ -136,10 +136,12 @@ class UnLuacParsedFileObject(
 
             val byteCode = checkNotNull(lasmAssembleService.assemble(lasmChunk))
 
+            val oldChunk = lasmChunk
+
             lasmChunk = checkNotNull(lasmDisassembleService.disassemble(byteCode))
 
             chunkChangeListeners.forEach {
-                it(lasmChunk)
+                it.onChunkChange(lasmChunk, oldChunk)
             }
 
             System.gc()
@@ -152,6 +154,10 @@ class UnLuacParsedFileObject(
 
 }
 
+
+fun interface ChunkChangeListener {
+    fun onChunkChange(newChunk: LASMChunk, oldChunk: LASMChunk)
+}
 
 data class UnLuacFileObjectExtra(
     var chunk: LASMChunk,
