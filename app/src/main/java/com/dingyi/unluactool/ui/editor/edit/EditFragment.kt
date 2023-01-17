@@ -2,6 +2,7 @@ package com.dingyi.unluactool.ui.editor.edit
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -11,12 +12,14 @@ import com.dingyi.unluactool.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.ui.editor.EditorFragmentData
 import com.dingyi.unluactool.ui.editor.EditorViewModel
+import com.dingyi.unluactool.ui.editor.event.MenuListener
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import kotlinx.coroutines.launch
 import org.apache.commons.vfs2.impl.DefaultFileMonitor
 
-class EditFragment : BaseFragment<FragmentEditorEditBinding>() {
+class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
 
     private val viewModel by activityViewModels<EditorViewModel>()
@@ -68,6 +71,10 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>() {
 
         }
 
+    }
+
+    override fun onReload(menu: Menu, currentFragmentData: EditorFragmentData) {
+        TODO("Not yet implemented")
     }
 
 

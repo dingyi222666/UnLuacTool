@@ -16,10 +16,21 @@
     <string name="editor_main_viewer_tab_search">Search</string>
     <string name="editor_menu_export_project">Compile and Export</string>
     <string name="editor_menu_backup_project">Backup</string>
-    <string name="editor_menu_save_project">Save</string>
+    <string name="editor_menu_save">Save</string>
     <string name="editor_menu_exit">Exit</string>
+    <string name="editor_menu_code_undo">Undo</string>
+    <string name="editor_menu_code_redo">Redo</string>
+    <string name="editor_menu_code_search">Search</string>
+    <string name="editor_menu_code_as_lua">Lasm to Lua</string>
+    <string name="editor_menu_code_explore">Explore</string>
     <string name="editor_toolbar_title">Lua Bytecode Editor</string>
     <string name="editor_toolbar_title_loading">Loading…</string>
     <string name="main_temporary_project_name">Temporary Project</string>
     <string name="editor_project_indexer_toast">Lua compiled file is opening %1$s (%2$s/%3$s)</string>
+    <string name="editor_menu_code_goto">Jump to Line</string>
+    <string name="editor_menu_wordwrap">Word wrap</string>
+    <string name="editor_menu_readonly">Read-only mode</string>
+    <string name="editor_menu_smooth_mode">Smooth mode</string>
+    <string name="editor_menu_code_completion">Instruction completion</string>
+    <string name="editor_menu_edit_fragment_close">Close</string>
 </resources>

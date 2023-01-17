@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/editor_menu_code_explore"
+        android:icon="@drawable/ic_round_explore_24"
+        android:title="@string/editor_menu_code_explore"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/editor_menu_code_undo"
+        android:icon="@drawable/ic_round_undo_24"
+        android:title="@string/editor_menu_code_undo"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/editor_menu_code_redo"
+        android:icon="@drawable/ic_round_redo_24"
+        android:title="@string/editor_menu_code_redo"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/editor_menu_save"
+        android:icon="@drawable/ic_round_save_24"
+        android:title="@string/editor_menu_save"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/editor_menu_code_search"
+        android:title="@string/editor_menu_code_search" />
+
+    <item
+        android:id="@+id/editor_menu_code_as_lua"
+        android:title="@string/editor_menu_code_as_lua" />
+
+    <item
+        android:id="@+id/editor_menu_wordwrap"
+        android:title="@string/editor_menu_wordwrap" />
+
+    <item
+        android:id="@+id/editor_menu_readonly"
+        android:title="@string/editor_menu_readonly" />
+
+    <item
+        android:id="@+id/editor_menu_smooth_mode"
+        android:title="@string/editor_menu_smooth_mode" />
+
+    <item
+        android:id="@+id/editor_menu_code_completion"
+        android:title="@string/editor_menu_code_completion" />
+
+    <item
+        android:id="@+id/editor_menu_edit_fragment_close"
+        android:title="@string/editor_menu_edit_fragment_close" />
+
+</menu>
