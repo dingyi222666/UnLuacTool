@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -54,8 +55,8 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
         viewModel.project.value?.projectPath?.name?.friendlyURI ?: ""
     }
 
-    private val eventConnection by lazy(LazyThreadSafetyMode.NONE) {
-        viewModel.eventManager.connect()
+    private val eventManager by lazy(LazyThreadSafetyMode.NONE) {
+        viewModel.eventManager
     }
 
     override fun getViewBinding(
@@ -68,7 +69,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventConnection.subscribe(MenuListener.menuListenerEventType, this)
+        eventManager.subscribe(MenuListener.menuListenerEventType, this)
 
         treeViewData.apply {
             generator = FileDataGenerator()
@@ -102,27 +103,27 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     }
 
 
-    override fun onReload(menu: Menu, currentFragmentData: EditorFragmentData) {
+    override fun onReload(toolbar: Toolbar, currentFragmentData: EditorFragmentData) {
         if (currentFragmentData.fileUri.isNotEmpty()) {
             return
         }
+        val menu = toolbar.menu
         menu.clear()
-        (requireActivity() as AppCompatActivity).apply {
-            menuInflater.inflate(R.menu.editor_main, menu)
 
-            supportActionBar?.apply {
-                title = getString(R.string.editor_toolbar_title)
-                val name = viewModel.project.value?.name
-                subtitle = name.toString()
-            }
+        requireActivity().menuInflater.inflate(R.menu.editor_main, menu)
+
+        toolbar.apply {
+            title = getString(R.string.editor_toolbar_title)
+            val name = viewModel.project.value?.name
+            subtitle = name.toString()
         }
+
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        eventConnection.disconnect()
+    override fun onPause() {
+        super.onPause()
+        eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
     }
-
 
     inner class FileNodeBinder : TreeViewBinder<UnLuaCFileObject>(),
         TreeNodeEventListener<UnLuaCFileObject> {

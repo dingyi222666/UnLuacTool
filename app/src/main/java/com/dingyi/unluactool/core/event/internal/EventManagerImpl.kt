@@ -12,7 +12,7 @@ import kotlin.concurrent.write
 
 open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManager {
 
-    private val receivers = mutableMapOf<EventType<*>, MutableList<Any>>()
+    private val receivers = mutableMapOf<EventType<*>, MutableSet<Any>>()
 
     private val lock = ReentrantReadWriteLock()
 
@@ -56,7 +56,7 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
     }
 
     override fun <T : Any> subscribe(eventType: EventType<T>, target: T) {
-        val receivers = lock.read { receivers.getOrDefault(eventType, mutableListOf()) }
+        val receivers = lock.read { receivers.getOrDefault(eventType, mutableSetOf()) }
 
         lock.write {
             receivers.add(target)

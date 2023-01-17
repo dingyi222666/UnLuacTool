@@ -32,6 +32,10 @@ class EditorActivity : AppCompatActivity() {
         MainApplication.instance.globalServiceRegistry
     }
 
+    private val toolbar by lazy(LazyThreadSafetyMode.NONE) {
+        IncludeToolbarBinding.bind(binding.root).toolbar
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -40,10 +44,9 @@ class EditorActivity : AppCompatActivity() {
 
         setContentView(binding.root)
 
-        setSupportActionBar(getToolBar())
-        supportActionBar?.apply {
-            title = getString(R.string.editor_toolbar_title_loading)
-        }
+
+        toolbar.title = getString(R.string.editor_toolbar_title_loading)
+
 
         initViewModel()
 
@@ -97,21 +100,17 @@ class EditorActivity : AppCompatActivity() {
         }
     }
 
-    private fun getToolBar(): Toolbar {
-        return IncludeToolbarBinding.bind(binding.root).toolbar
-    }
 
     private fun initView() {
 
         // toolbar set
-        supportActionBar?.apply {
+        toolbar.apply {
             title = getString(R.string.editor_toolbar_title)
             val name = viewModel.project.value?.name
             subtitle = name.toString()
-            setDisplayHomeAsUpEnabled(true)
         }
 
-        val actionBarDrawerToggle = ActionBarDrawerToggle(this, binding.root, getToolBar(), 0, 0)
+        val actionBarDrawerToggle = ActionBarDrawerToggle(this, binding.root, toolbar, 0, 0)
 
         binding.root.apply {
             addDrawerListener(actionBarDrawerToggle)
@@ -157,7 +156,7 @@ class EditorActivity : AppCompatActivity() {
         binding.root.closeDrawers()
 
         viewModel.eventManager.syncPublisher(MenuListener.menuListenerEventType)
-            .onReload(getToolBar().menu, new)
+            .onReload(toolbar, new)
 
     }
 

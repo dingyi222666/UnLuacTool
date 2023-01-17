@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ActionMenuView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -26,17 +27,15 @@ import org.apache.commons.vfs2.impl.DefaultFileMonitor
 
 class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
-
     private val viewModel by activityViewModels<EditorViewModel>()
 
     private val vfsManager by lazy(LazyThreadSafetyMode.NONE) {
         viewModel.vfsManager
     }
 
-    private val eventConnection by lazy(LazyThreadSafetyMode.NONE) {
-        viewModel.eventManager.connect()
+    private val eventManager by lazy(LazyThreadSafetyMode.NONE) {
+        viewModel.eventManager
     }
-
 
     private lateinit var currentOpenFileObject: UnLuaCFileObject
 
@@ -66,7 +65,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
         openFile()
 
-        eventConnection.subscribe(MenuListener.menuListenerEventType, this)
+        eventManager.subscribe(MenuListener.menuListenerEventType, this)
 
     }
 
@@ -87,25 +86,25 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
     }
 
-    override fun onReload(menu: Menu, currentFragmentData: EditorFragmentData) {
+    override fun onReload(toolbar: Toolbar, currentFragmentData: EditorFragmentData) {
         if (currentFragmentData.fileUri != currentOpenFileObject.publicURIString) {
             return
         }
+        val menu = toolbar.menu
         menu.clear()
-        (requireActivity() as AppCompatActivity).apply {
-            supportActionBar?.apply {
-                title = ""
-                subtitle = ""
-            }
-
-            menuInflater.inflate(R.menu.editor_edit, menu)
-
+        toolbar.apply {
+            title = ""
+            subtitle = ""
         }
+
+        requireActivity().menuInflater.inflate(R.menu.editor_edit, menu)
+
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        eventConnection.disconnect()
+
+    override fun onPause() {
+        super.onPause()
+        eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
     }
 
 
