@@ -5,14 +5,6 @@
     <string name="menu_navigation_default_about">About</string>
     <string name="home_navigation_head_user_name">dingyi</string>
     <string name="home_navigation_head_user_hitokoto">loading....</string>
-    <string name="settings_common_title">常用</string>
-    <string name="about_version_title">版本</string>
-    <string name="about_licence_title">许可证书</string>
-    <string name="about_agreement_title">用户协议</string>
-    <string name="about_helper_title">帮助文档</string>
-    <string name="about_author_title">dingyi</string>
-    <string name="about_share_title">分享该应用</string>
-    <string name="about_other_title">其他</string>
     <string name="app_version">1.0 (1)</string>
     <string name="main_project_import_fail">You want to import the file is not a lua or zip (apk) file</string>
     <string name="main_project_import_file_fail">No files found that match the lua standard bytecode (5.1–5.4)</string>
@@ -22,10 +14,12 @@
     <string name="editor_main_viewer_tab_browse">Browse</string>
     <string name="editor_main_viewer_tab_recent">Recent</string>
     <string name="editor_main_viewer_tab_search">Search</string>
+    <string name="editor_menu_export_project">Compile and Export</string>
+    <string name="editor_menu_backup_project">Backup</string>
+    <string name="editor_menu_save_project">Save</string>
+    <string name="editor_menu_exit">Exit</string>
     <string name="editor_toolbar_title">Lua Bytecode Editor</string>
     <string name="editor_toolbar_title_loading">Loading…</string>
-    <string name="about_author_summary">作者</string>
     <string name="main_temporary_project_name">Temporary Project</string>
-    <string name="toast_is_install_qq">打开QQ聊天窗口失败 请检查是否安装了QQ</string>
     <string name="editor_project_indexer_toast">Lua compiled file is opening %1$s (%2$s/%3$s)</string>
 </resources>

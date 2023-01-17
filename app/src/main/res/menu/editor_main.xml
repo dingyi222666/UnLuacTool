@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/editor_menu_save_project"
+        android:icon="@drawable/ic_round_save_24"
+        android:title="@string/editor_menu_save_project"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/editor_menu_make_project"
+        android:icon="@drawable/ic_baseline_export_variant_24"
+        android:title="@string/editor_menu_export_project" />
+    <item
+        android:id="@+id/editor_menu_backup_project"
+        android:icon="@drawable/ic_round_restore_24"
+        android:title="@string/editor_menu_backup_project" />
+
+    <item
+        android:id="@+id/editor_menu_exit"
+        android:icon="@drawable/ic_round_exit_to_app_24"
+        android:title="@string/editor_menu_exit" />
+</menu>
