@@ -58,6 +58,8 @@ class EditorActivity : AppCompatActivity() {
 
         editorMainViewAdapter.removeObservable(viewModel.fragmentDataList)
 
+        viewModel.eventManager.close(true)
+
     }
 
 

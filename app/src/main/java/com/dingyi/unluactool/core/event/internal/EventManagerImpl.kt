@@ -13,10 +13,12 @@ import kotlin.concurrent.write
 open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManager {
 
     private val receivers = mutableMapOf<EventType<*>, MutableList<Any>>()
+
     private val lock = ReentrantReadWriteLock()
 
     private val children = mutableListOf<EventManagerImpl>()
 
+    private val stickyEventCaches = mutableMapOf<EventType<*>, Event>()
 
     private val publisherCaches = mutableMapOf<EventType<*>, Any>()
 
@@ -69,6 +71,13 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
                 this.receivers.put(eventType, receivers)
             }
         }
+
+        // sticky event support
+
+        lock.read {
+            stickyEventCaches[eventType]
+        }?.execute(target)
+
     }
 
     override fun <T : Any> clearListener(eventType: EventType<T>) {
@@ -92,23 +101,22 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
     fun getParent(): EventManager? = parent
 
     /**
-     * Get root node
+     * Get root Manager
      */
     fun getRootManager(): EventManager {
         return parent?.getRootManager() ?: this
     }
 
     private fun dispatchEvent(event: Event) {
-        /* ForkJoinPool.commonPool().submit {*/
+        stickyEventCaches[event.eventType] = event
+
         val receivers = lock.read {
             this.receivers[event.eventType]
         }
 
         receivers?.forEach {
-            event.targetMethod
-                .invoke(it, *(event.args ?: EMPTY_ARRAY))
+            event.execute(it)
         }
-        /*}*/
     }
 
 
@@ -126,9 +134,7 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
             it.doClose()
         }
         children.clear()
+        stickyEventCaches.clear()
     }
 
-    companion object {
-        private val EMPTY_ARRAY = arrayOfNulls<Any>(0)
-    }
 }

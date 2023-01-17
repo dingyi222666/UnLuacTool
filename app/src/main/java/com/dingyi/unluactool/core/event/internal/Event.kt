@@ -7,7 +7,6 @@ data class Event(
     val targetMethod: Method,
     val eventType: EventType<*>,
     val args: Array<Any?>?
-
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -30,5 +29,14 @@ data class Event(
         result = 31 * result + eventType.hashCode()
         result = 31 * result + (args?.contentHashCode() ?: 0)
         return result
+    }
+
+    internal fun execute(target: Any?) {
+        targetMethod
+            .invoke(target, *(args ?: EMPTY_ARRAY))
+    }
+
+    companion object {
+        private val EMPTY_ARRAY = arrayOfNulls<Any>(0)
     }
 }
