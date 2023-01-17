@@ -16,6 +16,7 @@ import com.dingyi.unluactool.databinding.EditorBinding
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.ui.editor.drawer.DrawerFragment
 import com.dingyi.unluactool.ui.editor.edit.EditFragment
+import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.main.MainFragment
 import kotlinx.coroutines.launch
 
@@ -139,10 +140,20 @@ class EditorActivity : AppCompatActivity() {
         }
 
         viewModel.currentSelectEditorFragmentData.observe(this) {
-            val currentIndex = viewModel.indexOfEditorFragmentData(it)
-            binding.editorMainViewpager.setCurrentItem(currentIndex, true)
-            binding.root.closeDrawers()
+            onSelectEditorFragmentDataChange(it)
         }
+
+        onSelectEditorFragmentDataChange(checkNotNull(viewModel.currentSelectEditorFragmentData.value))
+
+    }
+
+    private fun onSelectEditorFragmentDataChange(new: EditorFragmentData) {
+        val currentIndex = viewModel.indexOfEditorFragmentData(new)
+        binding.editorMainViewpager.setCurrentItem(currentIndex, true)
+        binding.root.closeDrawers()
+
+        viewModel.eventManager.syncPublisher(MenuListener.menuListenerEventType)
+            .onReload(getToolBar().menu, new)
 
     }
 

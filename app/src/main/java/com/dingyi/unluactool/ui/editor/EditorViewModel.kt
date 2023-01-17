@@ -38,6 +38,10 @@ class EditorViewModel : ViewModel() {
         VFS.getManager()
     }
 
+    val eventManager by lazy(LazyThreadSafetyMode.NONE) {
+        EditorRepository.getEventManager()
+    }
+
     suspend fun loadProject(uri: String): Project {
         val projectValue = EditorRepository.loadProject(uri)
         _project.value = projectValue
