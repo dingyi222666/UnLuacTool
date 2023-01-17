@@ -8,6 +8,7 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -23,7 +24,9 @@ import com.dingyi.unluactool.databinding.ItemEditorFileViewerListBinding
 import com.dingyi.unluactool.databinding.ItemEditorFileViewerListDirBinding
 import com.dingyi.unluactool.engine.filesystem.FileObjectType
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.ui.editor.EditorFragmentData
 import com.dingyi.unluactool.ui.editor.EditorViewModel
+import com.dingyi.unluactool.ui.editor.event.MenuListener
 import io.github.dingyi222666.view.treeview.AbstractTree
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeNode
@@ -35,18 +38,23 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
+
+class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), MenuListener {
 
     private val viewModel by activityViewModels<EditorViewModel>()
 
     private val treeViewData by lazy(LazyThreadSafetyMode.NONE) { Tree.createTree<UnLuaCFileObject>() }
 
     private val vfsManager by lazy(LazyThreadSafetyMode.NONE) {
-       viewModel.vfsManager
+        viewModel.vfsManager
     }
 
     private val projectUri by lazy(LazyThreadSafetyMode.NONE) {
         viewModel.project.value?.projectPath?.name?.friendlyURI ?: ""
+    }
+
+    private val eventConnection by lazy(LazyThreadSafetyMode.NONE) {
+        viewModel.eventManager.connect()
     }
 
     override fun getViewBinding(
@@ -58,6 +66,8 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        eventConnection.subscribe(MenuListener.menuListenerEventType, this)
 
         treeViewData.apply {
             generator = FileDataGenerator()
@@ -379,6 +389,19 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>() {
         }
 
 
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        eventConnection.disconnect()
+    }
+
+    override fun onReload(menu: Menu, currentFragmentData: EditorFragmentData) {
+        if (currentFragmentData.fileUri.isNotEmpty()) {
+            return
+        }
+        menu.clear()
+        requireActivity().menuInflater.inflate(R.menu.editor_main,menu)
     }
 
 

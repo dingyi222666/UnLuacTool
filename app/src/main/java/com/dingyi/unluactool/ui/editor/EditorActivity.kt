@@ -149,7 +149,9 @@ class EditorActivity : AppCompatActivity() {
 
     private fun onSelectEditorFragmentDataChange(new: EditorFragmentData) {
         val currentIndex = viewModel.indexOfEditorFragmentData(new)
+
         binding.editorMainViewpager.setCurrentItem(currentIndex, true)
+
         binding.root.closeDrawers()
 
         viewModel.eventManager.syncPublisher(MenuListener.menuListenerEventType)
