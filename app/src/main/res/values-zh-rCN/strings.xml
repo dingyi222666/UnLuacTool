@@ -20,7 +20,7 @@
     <string name="editor_menu_exit">退出</string>
     <string name="editor_menu_code_explore">导航</string>
     <string name="editor_menu_code_undo">撤销</string>
-    <string name="editor_menu_code_redo">重装</string>
+    <string name="editor_menu_code_redo">重做</string>
     <string name="editor_toolbar_title">Lua字节码编辑器</string>
     <string name="editor_toolbar_title_loading">加载中…</string>
     <string name="main_project_lua_file_count">%1$s 个Lua文件</string>

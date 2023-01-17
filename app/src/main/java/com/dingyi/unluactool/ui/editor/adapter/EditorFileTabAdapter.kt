@@ -273,7 +273,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
             itemCount: Int
         ) {
             for (i in positionStart until positionStart + itemCount) {
-                currentDataList.removeAt(i)
+                currentDataList.removeAt(positionStart)
             }
 
             notifyItemRangeRemoved(positionStart, itemCount)

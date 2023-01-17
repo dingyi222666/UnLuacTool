@@ -4,20 +4,21 @@
 
     <item
         android:id="@+id/editor_menu_save"
-        android:icon="@drawable/ic_round_save_24"
+        android:iconTint="?colorOnSurface"
         android:title="@string/editor_menu_save"
+        android:icon="@drawable/ic_round_save_24"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/editor_menu_backup_project"
-        android:icon="@drawable/ic_round_restore_24"
+        android:iconTint="?colorOnSurface"
         android:title="@string/editor_menu_backup_project"
+        android:icon="@drawable/ic_round_restore_24"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/editor_menu_make_project"
-        android:icon="@drawable/ic_baseline_export_variant_24"
-        android:title="@string/editor_menu_export_project" />
-
+        android:title="@string/editor_menu_export_project"
+        android:icon="@drawable/ic_baseline_export_variant_24" />
     <item
         android:id="@+id/editor_menu_exit"
         android:icon="@drawable/ic_round_exit_to_app_24"

@@ -28,10 +28,8 @@
         <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_dark_inversePrimary</item>
 
-
         <!-- Customize your theme here. -->
         <item name="android:windowTranslucentStatus">true</item><!--可以页面拉伸到状态栏顶部-->
-
 
         <!-- <item name="android:windowAnimationStyle">@style/alertDialogAnimation</item>-->
         <item name="dialogCornerRadius">6dp</item>

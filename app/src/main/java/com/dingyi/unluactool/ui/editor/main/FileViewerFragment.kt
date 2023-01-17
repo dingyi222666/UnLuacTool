@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -99,6 +100,29 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     private fun openFileObject(fileObject: UnLuaCFileObject) {
         viewModel.openFileObject(fileObject)
     }
+
+
+    override fun onReload(menu: Menu, currentFragmentData: EditorFragmentData) {
+        if (currentFragmentData.fileUri.isNotEmpty()) {
+            return
+        }
+        menu.clear()
+        (requireActivity() as AppCompatActivity).apply {
+            menuInflater.inflate(R.menu.editor_main, menu)
+
+            supportActionBar?.apply {
+                title = getString(R.string.editor_toolbar_title)
+                val name = viewModel.project.value?.name
+                subtitle = name.toString()
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        eventConnection.disconnect()
+    }
+
 
     inner class FileNodeBinder : TreeViewBinder<UnLuaCFileObject>(),
         TreeNodeEventListener<UnLuaCFileObject> {
@@ -390,19 +414,5 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
 
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        eventConnection.disconnect()
-    }
-
-    override fun onReload(menu: Menu, currentFragmentData: EditorFragmentData) {
-        if (currentFragmentData.fileUri.isNotEmpty()) {
-            return
-        }
-        menu.clear()
-        requireActivity().menuInflater.inflate(R.menu.editor_main,menu)
-    }
-
 
 }
