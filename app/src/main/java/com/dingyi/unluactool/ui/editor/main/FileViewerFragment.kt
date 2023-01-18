@@ -19,7 +19,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
-import com.dingyi.unluactool.base.BaseFragment
+import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.dp
 import com.dingyi.unluactool.databinding.FragmentEditorFileViewerBinding
 import com.dingyi.unluactool.databinding.ItemEditorFileViewerListBinding
@@ -104,9 +104,10 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
 
     override fun onReload(toolbar: Toolbar, currentFragmentData: EditorFragmentData) {
-        if (currentFragmentData.fileUri.isNotEmpty()) {
+        if (currentFragmentData.fileUri.isNotEmpty() || isDetached) {
             return
         }
+
         val menu = toolbar.menu
         menu.clear()
 

@@ -10,7 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.dingyi.unluactool.base.BaseFragment
+import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.showSnackBar
 import com.dingyi.unluactool.common.ktx.startActivity
@@ -53,7 +53,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
         ) {
             it?.let { uri ->
                 doRefresh(Dispatchers.Main + coroutineHandler) {
-
                     kotlin.runCatching {
                         viewModel.createProject(uri)
                     }.onFailure {
@@ -90,7 +89,6 @@ class MainFragment : BaseFragment<FragmentMainBinding>() {
                 }
                 setColorSchemeColors(requireActivity().getAttributeColor(androidx.appcompat.R.attr.colorPrimary))
             }
-
         }
 
         observeLiveData()

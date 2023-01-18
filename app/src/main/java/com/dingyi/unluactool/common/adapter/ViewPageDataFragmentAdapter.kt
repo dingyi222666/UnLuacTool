@@ -24,6 +24,10 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
         currentFragmentDataList.remove(data)
     }
 
+    override fun getItemId(position: Int): Long {
+        return currentFragmentDataList.get(position).hashCode().toLong()
+    }
+
     fun observableSource(source: ObservableList<T>) {
         source.addOnListChangedCallback(currentListener)
         // add all data

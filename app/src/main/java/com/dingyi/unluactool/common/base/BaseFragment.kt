@@ -1,4 +1,4 @@
-package com.dingyi.unluactool.base
+package com.dingyi.unluactool.common.base
 
 import android.os.Bundle
 import android.view.LayoutInflater

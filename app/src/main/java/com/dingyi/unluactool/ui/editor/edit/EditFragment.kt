@@ -12,7 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
-import com.dingyi.unluactool.base.BaseFragment
+import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
@@ -87,7 +87,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
     }
 
     override fun onReload(toolbar: Toolbar, currentFragmentData: EditorFragmentData) {
-        if (currentFragmentData.fileUri != currentOpenFileObject.publicURIString) {
+        if (currentFragmentData.fileUri != currentOpenFileObject.publicURIString || isDetached) {
             return
         }
         val menu = toolbar.menu

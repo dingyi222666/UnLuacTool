@@ -10,6 +10,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
+import com.dingyi.unluactool.common.base.BaseActivity
 import com.dingyi.unluactool.common.adapter.ViewPageDataFragmentAdapter
 import com.dingyi.unluactool.common.ktx.getJavaClass
 import com.dingyi.unluactool.databinding.EditorBinding
@@ -20,7 +21,7 @@ import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.main.MainFragment
 import kotlinx.coroutines.launch
 
-class EditorActivity : AppCompatActivity() {
+class EditorActivity : BaseActivity() {
 
     private val binding by lazy(LazyThreadSafetyMode.NONE) {
         EditorBinding.inflate(layoutInflater)
@@ -53,6 +54,9 @@ class EditorActivity : AppCompatActivity() {
     }
 
 
+    override fun isNeedInterceptBackEvent() = true
+
+
     override fun onDestroy() {
         super.onDestroy()
 
@@ -62,6 +66,33 @@ class EditorActivity : AppCompatActivity() {
         editorMainViewAdapter.removeObservable(viewModel.fragmentDataList)
 
         viewModel.eventManager.close(true)
+
+    }
+
+
+    override fun onBackEvent() {
+        val currentFragmentData = checkNotNull(viewModel.currentSelectEditorFragmentData.value)
+        val index = viewModel.indexOfEditorFragmentData(currentFragmentData)
+
+        if (index > 0) {
+
+            var targetIndex = index - 1
+
+            if (targetIndex == 0 && viewModel.fragmentDataList.size > 2) {
+                targetIndex = 1
+            }
+
+            val targetData = viewModel.fragmentDataList[targetIndex]
+
+            viewModel.fragmentDataList.removeAt(index)
+
+            viewModel.setCurrentSelectEditorFragmentData(targetData)
+
+            return
+        }
+
+        //TODO: File Save Check
+        finish()
 
     }
 

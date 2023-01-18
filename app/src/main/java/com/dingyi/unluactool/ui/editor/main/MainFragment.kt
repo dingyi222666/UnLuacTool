@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.dingyi.unluactool.base.BaseFragment
+import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.adapter.ViewPageFragmentAdapter
 import com.dingyi.unluactool.common.ktx.getJavaClass
 import com.dingyi.unluactool.databinding.FragmentEditorMainViewerBinding
@@ -34,7 +34,7 @@ class MainFragment : BaseFragment<FragmentEditorMainViewerBinding>() {
 
     }
 
-    private fun getPagerFragments(): List<Class<*>> {
+    private fun getPagerFragments(): List <Class<*>> {
         return arrayListOf(
             getJavaClass<FileViewerFragment>()
         )

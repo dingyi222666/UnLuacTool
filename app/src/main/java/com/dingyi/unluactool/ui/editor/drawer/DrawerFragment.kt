@@ -8,7 +8,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.dingyi.unluactool.base.BaseFragment
+import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.dp
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorDrawerShipBinding
