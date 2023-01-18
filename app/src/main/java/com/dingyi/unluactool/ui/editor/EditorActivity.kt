@@ -47,7 +47,6 @@ class EditorActivity : BaseActivity() {
 
         toolbar.title = getString(R.string.editor_toolbar_title_loading)
 
-
         initViewModel()
 
     }
@@ -65,6 +64,10 @@ class EditorActivity : BaseActivity() {
         editorMainViewAdapter.removeObservable(viewModel.editorUIFileTabManager.openedFileList)
 
         viewModel.eventManager.close(true)
+
+        MainApplication.instance.applicationScope.launch {
+            viewModel.saveAllOpenedFileTab()
+        }
 
     }
 
@@ -85,34 +88,24 @@ class EditorActivity : BaseActivity() {
     }
 
 
-    override fun onStop() {
-        super.onStop()
+    private fun initViewModel() = lifecycleScope.launch {
+        viewModel.loadProject(intent.getStringExtra("path") ?: "")
 
-        lifecycleScope.launch {
-            viewModel.saveAllOpenedFile()
-        }
-    }
+        val (progressDialog, func) = viewModel.openProject(
+            this@EditorActivity, this@EditorActivity
+        )
 
-    private fun initViewModel() {
+        progressDialog.show()
+        func()
 
-        lifecycleScope.launch {
-            viewModel.loadProject(intent.getStringExtra("path") ?: "")
+        viewModel.bindCoroutineScope(MainApplication.instance.applicationScope)
 
-            val (progressDialog, func) = viewModel.openProject(
-                this@EditorActivity, this@EditorActivity
-            )
+        viewModel.initFileTabDataList()
 
-            progressDialog.show()
-            func()
+        viewModel.queryAllOpenedFileTab()
 
-            viewModel.bindCoroutineScope(lifecycleScope)
+        initView()
 
-            viewModel.initFileTabDataList()
-
-            viewModel.queryAllOpenedFile()
-
-            initView()
-        }
     }
 
 

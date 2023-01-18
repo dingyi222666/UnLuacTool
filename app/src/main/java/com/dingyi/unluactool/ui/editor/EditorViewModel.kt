@@ -41,6 +41,7 @@ class EditorViewModel : ViewModel() {
     suspend fun loadProject(uri: String): Project {
         val projectValue = EditorRepository.loadProject(uri)
         _project.value = projectValue
+        editorUIFileTabManager.projectUri = requireProject().projectPath.name.friendlyURI
         return projectValue
     }
 
@@ -96,30 +97,30 @@ class EditorViewModel : ViewModel() {
     }
 
     fun bindCoroutineScope(co: CoroutineScope) {
-        EditorRepository.getOpenFileManager().bindCoroutineScope(co)
+        EditorRepository.getOpenFileTabManager().bindCoroutineScope(co)
         addCloseable {
-            EditorRepository.getOpenFileManager().close()
+            EditorRepository.getOpenFileTabManager().close()
         }
     }
 
-    suspend fun queryAllOpenedFile(): List<FileObject> {
-        return EditorRepository.queryAllOpenedFile(requireProject())
+    suspend fun queryAllOpenedFileTab(): List<FileObject> {
+        return EditorRepository.queryAllOpenedFileTab(requireProject())
             .apply {
                editorUIFileTabManager.openMultiFileTab(this)
             }
     }
 
     fun queryCacheOpenedFile(): List<FileObject> {
-        return EditorRepository.queryCacheOpenedFile(requireProject())
+        return EditorRepository.queryCacheOpenedFileTab(requireProject())
     }
 
-    suspend fun saveAllOpenedFile() {
-        EditorRepository.saveAllOpenedFile(requireProject())
+    suspend fun saveAllOpenedFileTab() {
+        EditorRepository.saveAllOpenedFileTab(requireProject())
     }
 
 
     fun openFileObject(fileObject: UnLuaCFileObject) {
-        EditorRepository.openFileObject(
+        EditorRepository.openFile(
             fileObject.name.friendlyURI, project.value
                 ?.projectPath?.name?.friendlyURI ?: "/???"
         )

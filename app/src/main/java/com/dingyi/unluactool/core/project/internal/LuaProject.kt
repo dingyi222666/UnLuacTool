@@ -114,7 +114,7 @@ internal class LuaProject constructor(
 
         other as LuaProject
 
-        if (projectPath.publicURIString != other.projectPath.publicURIString) return false
+        if (projectPath.name.friendlyURI != other.projectPath.name.friendlyURI) return false
         if (name != other.name) return false
         if (projectIconPath != other.projectIconPath) return false
 
@@ -122,7 +122,7 @@ internal class LuaProject constructor(
     }
 
     override fun hashCode(): Int {
-        var result = projectPath.publicURIString.hashCode()
+        var result = projectPath.name.friendlyURI.hashCode()
         result = 31 * result + name.hashCode()
         return result
     }

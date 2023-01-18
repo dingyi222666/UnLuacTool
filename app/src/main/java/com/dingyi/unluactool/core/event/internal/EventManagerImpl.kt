@@ -1,5 +1,7 @@
 package com.dingyi.unluactool.core.event.internal
 
+import android.os.Handler
+import android.os.Looper
 import com.dingyi.unluactool.core.event.EventConnection
 import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.event.EventType
@@ -21,6 +23,8 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
     private val stickyEventCaches = mutableMapOf<EventType<*>, Event>()
 
     private val publisherCaches = mutableMapOf<EventType<*>, Any>()
+
+    private val handler = Handler(Looper.getMainLooper())
 
     constructor() : this(null)
 
@@ -107,16 +111,21 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
         return parent?.getRootManager() ?: this
     }
 
-    private fun dispatchEvent(event: Event) {
-        stickyEventCaches[event.eventType] = event
-
+    private fun dispatchEvent(event: Event) = ForkJoinPool.commonPool().execute {
         val receivers = lock.read {
+            stickyEventCaches[event.eventType] = event
             this.receivers[event.eventType]
         }
 
-        receivers?.forEach {
-            event.execute(it)
+        lock.read {
+            receivers?.forEach {
+                println("event:$event, target:$it")
+                handler.post {
+                    event.execute(it)
+                }
+            }
         }
+
     }
 
 

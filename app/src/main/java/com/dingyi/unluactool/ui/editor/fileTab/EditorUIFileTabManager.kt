@@ -4,6 +4,7 @@ import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.repository.EditorRepository
 import org.apache.commons.vfs2.FileObject
 
 class EditorUIFileTabManager {
@@ -18,6 +19,7 @@ class EditorUIFileTabManager {
 
     private var wantRemoveFileExtra: OpenedFileTabData? = null
 
+    lateinit var projectUri: String
 
     fun initList() {
 
@@ -59,7 +61,7 @@ class EditorUIFileTabManager {
 
     fun createOpenFileTabData(
         fileObject: UnLuaCFileObject? = null,
-        fileUri: String = fileObject?.publicURIString ?: "",
+        fileUri: String = fileObject?.name?.friendlyURI ?: "",
         functionName: String? = fileObject?.getFunctionName(),
         fullFunctionName: String? = fileObject?.getFullFunctionNameWithPath()
     ): OpenedFileTabData {
@@ -69,7 +71,7 @@ class EditorUIFileTabManager {
     }
 
     fun openFileObject(fileObject: UnLuaCFileObject) {
-        val fileUri = fileObject.publicURIString
+        val fileUri = fileObject.name.friendlyURI
         val currentData =
             openedFileList.find { it.fileUri == fileUri } ?: createOpenFileTabData(fileObject)
 
@@ -83,7 +85,8 @@ class EditorUIFileTabManager {
             OpenedFileTabData(
                 functionName = fileObject.getFunctionName(),
                 fullFunctionName = fileObject.getFullFunctionNameWithPath(),
-                fileUri = fileObject.name.friendlyURI
+                fileUri = fileObject.name.friendlyURI,
+                projectUri = projectUri
             )
         }.let {
             openedFileList.addAll(it)
@@ -108,6 +111,7 @@ class EditorUIFileTabManager {
         val targetData = openedFileList[targetIndex]
 
         openedFileList.removeAt(removeIndex)
+        EditorRepository.closeFile(currentFragmentData.fileUri, currentFragmentData.projectUri)
 
         setCurrentSelectFileTabData(targetData)
 
@@ -117,7 +121,9 @@ class EditorUIFileTabManager {
 }
 
 data class OpenedFileTabData(
-    val fileUri: String, val functionName: String? = null, val fullFunctionName: String? = null
+    val fileUri: String,
+    val projectUri: String = "",
+    val functionName: String? = null, val fullFunctionName: String? = null
 ) {
     companion object {
         val EMPTY = OpenedFileTabData("")

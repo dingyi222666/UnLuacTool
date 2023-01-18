@@ -134,14 +134,14 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
             oldItem: TreeNode<UnLuaCFileObject>,
             newItem: TreeNode<UnLuaCFileObject>
         ): Boolean {
-            return oldItem.data?.publicURIString == newItem.data?.publicURIString
+            return oldItem.data?.name?.friendlyURI == newItem.data?.name?.friendlyURI
         }
 
         override fun areItemsTheSame(
             oldItem: TreeNode<UnLuaCFileObject>,
             newItem: TreeNode<UnLuaCFileObject>
         ): Boolean {
-            return oldItem.data?.publicURIString == newItem.data?.publicURIString
+            return oldItem.data?.name?.friendlyURI == newItem.data?.name?.friendlyURI
         }
 
         override fun bindView(

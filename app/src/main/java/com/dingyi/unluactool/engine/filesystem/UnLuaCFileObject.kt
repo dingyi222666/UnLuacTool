@@ -158,7 +158,7 @@ class UnLuaCFileObject(
 
     override fun doGetOutputStream(bAppend: Boolean): OutputStream {
         return if (isNotUnLuacParsedObject()) {
-            proxyFileObject.outputStream
+            proxyFileObject.content.getOutputStream(bAppend)
         } else {
             requireExtra().let {
                 if (it.currentFunction == null) it.fileObject.writeAllData()
@@ -180,7 +180,7 @@ class UnLuaCFileObject(
 
         other as UnLuaCFileObject
 
-        if (proxyFileObject.publicURIString != other.proxyFileObject.publicURIString) return false
+        if (proxyFileObject.name.friendlyURI != other.proxyFileObject.name.friendlyURI) return false
 
         return true
     }

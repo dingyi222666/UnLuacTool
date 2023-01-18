@@ -18,7 +18,7 @@ class OpenFileManager internal constructor() : FileEventListener {
     private var coroutineScope: CoroutineScope? = null
 
     suspend fun openFile(fileObject: FileObject): String = withContext(Dispatchers.IO) {
-        val uri = fileObject.publicURIString
+        val uri = fileObject.name.friendlyURI
         val fileContent = kotlin.runCatching {
             fileObject.inputStream
                 .readBytes()
@@ -34,10 +34,8 @@ class OpenFileManager internal constructor() : FileEventListener {
     }
 
     suspend fun saveFile(fileObject: FileObject, content: String?) = withContext(Dispatchers.IO) {
-        val uri  = fileObject.publicURIString
+        val uri  = fileObject.name.friendlyURI
         val saveContent = cacheOpenedFile[uri]?.content ?: content ?: return@withContext
-
-        val fileObject = vfsManager.resolveFile(uri)
 
         fileObject.content
             .outputStream
@@ -45,11 +43,10 @@ class OpenFileManager internal constructor() : FileEventListener {
             .use {
                 it.write(saveContent)
             }
-
     }
 
     suspend fun loadFileInCache(fileObject: FileObject): String {
-        val uri = fileObject.publicURIString
+        val uri = fileObject.name.friendlyURI
         val cacheContent = cacheOpenedFile[uri]
         return cacheContent?.content ?: openFile(fileObject)
     }

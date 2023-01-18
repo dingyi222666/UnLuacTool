@@ -2,10 +2,11 @@ package com.dingyi.unluactool.repository
 
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.core.event.EventManager
+import com.dingyi.unluactool.core.file.FileCloseEvent
 import com.dingyi.unluactool.core.file.FileEventListener
 import com.dingyi.unluactool.core.file.FileOpenEvent
 import com.dingyi.unluactool.core.file.OpenFileManager
-import com.dingyi.unluactool.core.file.OpenedFileManager
+import com.dingyi.unluactool.core.file.OpenedFileTabManager
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get
@@ -23,8 +24,8 @@ object EditorRepository {
             .get<EventManager>()
     }
 
-    private val openedFileManager by lazy(LazyThreadSafetyMode.NONE) {
-        globalServiceRegistry.get<OpenedFileManager>()
+    private val openedFileTabManager by lazy(LazyThreadSafetyMode.NONE) {
+        globalServiceRegistry.get<OpenedFileTabManager>()
     }
 
     private val _openFileManager by lazy(LazyThreadSafetyMode.NONE) {
@@ -47,9 +48,9 @@ object EditorRepository {
 
     fun getEventManager() = _eventManager
 
-    fun getOpenFileManager() = _openFileManager
+    fun getOpenFileTabManager() = _openFileManager
 
-    fun openFileObject(targetFileUri: String, projectUri: String) {
+    fun openFile(targetFileUri: String, projectUri: String) {
         _eventManager.syncPublisher(FileEventListener.EVENT_TYPE)
             .onEvent(
                 FileOpenEvent(
@@ -59,17 +60,27 @@ object EditorRepository {
             )
     }
 
-
-    suspend fun queryAllOpenedFile(project: Project): List<FileObject> {
-        return openedFileManager.queryAllOpenedFile(project)
+    fun closeFile(targetFileUri: String, projectUri: String) {
+        println("targetFileUri:$targetFileUri,projectUri:$projectUri")
+        _eventManager.syncPublisher(FileEventListener.EVENT_TYPE)
+            .onEvent(
+                FileCloseEvent(
+                    targetFileUri = targetFileUri,
+                    projectUri = projectUri
+                )
+            )
     }
 
-    fun queryCacheOpenedFile(project: Project): List<FileObject> {
-        return openedFileManager.queryCacheOpenedFile(project)
+    suspend fun queryAllOpenedFileTab(project: Project): List<FileObject> {
+        return openedFileTabManager.queryAllOpenedFileTab(project)
     }
 
-    suspend fun saveAllOpenedFile(project: Project) {
-        openedFileManager.saveAllOpenedFile(project)
+    fun queryCacheOpenedFileTab(project: Project): List<FileObject> {
+        return openedFileTabManager.queryCacheOpenedFileTab(project)
+    }
+
+    suspend fun saveAllOpenedFileTab(project: Project) {
+        openedFileTabManager.saveAllOpenedFileTab(project)
     }
 
     suspend fun openFile(fileObject: FileObject): String {

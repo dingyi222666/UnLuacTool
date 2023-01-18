@@ -12,14 +12,14 @@ import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
 
 
-class OpenedFileManager internal constructor() : FileEventListener {
+class OpenedFileTabManager internal constructor() : FileEventListener {
 
     private val cacheOpenedFile = mutableMapOf<String, MutableList<FileObject>>()
 
     private val vfsManager = VFS.getManager()
-    suspend fun queryAllOpenedFile(project: Project): List<FileObject> =
+    suspend fun queryAllOpenedFileTab(project: Project): List<FileObject> =
         withContext(Dispatchers.IO) {
-            val publicUri = project.projectPath.publicURIString
+            val publicUri = project.projectPath.name.friendlyURI
             val cacheJsonFile =
                 project.getProjectPath(LuaProject.CACHE_DIR_NAME).resolveFile("opened_file.json")
 
@@ -38,8 +38,8 @@ class OpenedFileManager internal constructor() : FileEventListener {
             cacheOpenedFile.getValue(publicUri)
         }
 
-    suspend fun saveAllOpenedFile(project: Project) = withContext(Dispatchers.IO) {
-        val publicUri = project.projectPath.publicURIString
+    suspend fun saveAllOpenedFileTab(project: Project) = withContext(Dispatchers.IO) {
+        val publicUri = project.projectPath.name.friendlyURI
         val cacheJsonFile =
             project.getProjectPath(LuaProject.CACHE_DIR_NAME)
                 .apply {
@@ -53,23 +53,22 @@ class OpenedFileManager internal constructor() : FileEventListener {
 
         val openedFileList = cacheOpenedFile.getOrPut(publicUri) { mutableListOf() }
             .map {
-                OpenedFileObject.OpenedFile(it.publicURIString)
+                OpenedFileObject.OpenedFile(it.name.friendlyURI)
             }.toMutableList()
 
         val openedFileObject = OpenedFileObject(openedFileList)
 
         cacheJsonFile
             .content
-            .outputStream
-            .bufferedWriter()
+            .getOutputStream(false)
             .use {
-                it.write(openedFileObject.encodeToJson())
+                it.write(openedFileObject.encodeToJson().encodeToByteArray())
             }
 
     }
 
-    fun queryCacheOpenedFile(project: Project): List<FileObject> {
-        val publicUri = project.projectPath.publicURIString
+    fun queryCacheOpenedFileTab(project: Project): List<FileObject> {
+        val publicUri = project.projectPath.name.friendlyURI
         return cacheOpenedFile.getOrPut(publicUri) { mutableListOf() }
     }
 
@@ -80,7 +79,7 @@ class OpenedFileManager internal constructor() : FileEventListener {
             is FileOpenEvent -> {
 
                 val isOpenedFile = projectOpenedFileList
-                    .find { it.publicURIString == targetUri } != null
+                    .find { it.name.friendlyURI == targetUri } != null
 
                 if (isOpenedFile) {
                     return
@@ -91,7 +90,7 @@ class OpenedFileManager internal constructor() : FileEventListener {
 
             is FileCloseEvent -> {
                 projectOpenedFileList.removeIf {
-                    it.publicURIString == targetUri
+                    it.name.friendlyURI == targetUri
                 }
             }
 
@@ -107,11 +106,11 @@ class OpenedFileManager internal constructor() : FileEventListener {
 }
 
 
-internal data class OpenedFileObject(
+data class OpenedFileObject(
     @SerializedName("opened_files")
     val openedFiles: MutableList<OpenedFile>
 ) {
-    internal data class OpenedFile(
+    data class OpenedFile(
         val uri: String
     )
 }

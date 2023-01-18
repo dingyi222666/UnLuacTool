@@ -133,7 +133,7 @@ class LuaProjectCreator : ProjectCreator {
                         LuaProject.ProjectInfo(
                             iconPath = null,
                             name = projectName,
-                            path = projectPath.publicURIString
+                            path = projectPath.name.friendlyURI
                         ).encodeToJson().encodeToByteArray()
                     )
                 }

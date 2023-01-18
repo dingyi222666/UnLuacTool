@@ -37,7 +37,7 @@ class ProjectListAdapter :
             oldItem: Project,
             newItem: Project
         ): Boolean {
-            return oldItem.projectPath.publicURIString == newItem.projectPath.publicURIString
+            return oldItem.projectPath.name.friendlyURI == newItem.projectPath.name.friendlyURI
 
         }
 

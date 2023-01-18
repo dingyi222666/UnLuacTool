@@ -90,7 +90,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     .instance
                     .fileSystemManager
                     .resolveFile(
-                        projectIndexedDir.publicURIString.plus("/").plus(
+                        projectIndexedDir.name.friendlyURI.plus("/").plus(
                             originFile
                                 .nameWithoutExtension
                         ).plus(".lasm")

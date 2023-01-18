@@ -79,7 +79,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
     }
 
     override fun onReload(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
-        if (currentFragmentData.fileUri != currentOpenFileObject.publicURIString || isDetached) {
+        if (currentFragmentData.fileUri != currentOpenFileObject.name.friendlyURI || isDetached) {
             return
         }
         val menu = toolbar.menu
