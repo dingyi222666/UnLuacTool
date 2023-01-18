@@ -10,6 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
+import org.apache.commons.vfs2.provider.local.LocalFile
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
+import kotlin.io.path.outputStream
 
 
 class OpenedFileTabManager internal constructor() : FileEventListener {
@@ -58,16 +62,13 @@ class OpenedFileTabManager internal constructor() : FileEventListener {
 
         val openedFileObject = OpenedFileObject(openedFileList)
 
-        cacheJsonFile
-            .apply {
-                refresh()
-            }
-            .content
-            .getOutputStream(false)
+        // 在这里用Path是为了覆盖掉FileContent的默认行为
+        cacheJsonFile.path
+            .outputStream()
             .bufferedWriter()
             .use {
-                println(openedFileObject.encodeToJson())
                 it.write(openedFileObject.encodeToJson())
+                it.flush()
             }
 
     }
