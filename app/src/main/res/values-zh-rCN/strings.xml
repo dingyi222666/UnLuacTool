@@ -33,5 +33,6 @@
     <string name="editor_menu_readonly">只读模式</string>
     <string name="editor_menu_smooth_mode">流畅模式</string>
     <string name="editor_menu_code_completion">指令补全</string>
+    <string name="editor_menu_code_export">导出</string>
     <string name="editor_menu_edit_fragment_close">关闭</string>
 </resources>

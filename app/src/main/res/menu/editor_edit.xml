@@ -36,20 +36,36 @@
         android:title="@string/editor_menu_code_as_lua" />
 
     <item
+        android:id="@+id/editor_menu_code_goto"
+        android:title="@string/editor_menu_code_goto" />
+
+    <item
         android:id="@+id/editor_menu_wordwrap"
+        android:checkable="true"
+        android:checked="false"
         android:title="@string/editor_menu_wordwrap" />
 
     <item
         android:id="@+id/editor_menu_readonly"
+        android:checkable="true"
+        android:checked="false"
         android:title="@string/editor_menu_readonly" />
 
     <item
         android:id="@+id/editor_menu_smooth_mode"
+        android:checkable="true"
+        android:checked="false"
         android:title="@string/editor_menu_smooth_mode" />
 
     <item
         android:id="@+id/editor_menu_code_completion"
+        android:checkable="true"
+        android:checked="false"
         android:title="@string/editor_menu_code_completion" />
+
+    <item
+        android:id="@+id/editor_menu_code_export"
+        android:title="@string/editor_menu_code_export" />
 
     <item
         android:id="@+id/editor_menu_edit_fragment_close"
