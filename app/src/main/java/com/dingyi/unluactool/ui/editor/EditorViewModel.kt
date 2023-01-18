@@ -2,7 +2,6 @@ package com.dingyi.unluactool.ui.editor
 
 
 import android.content.Context
-import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +11,8 @@ import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.dialog.progressDialogWithState
+import com.dingyi.unluactool.ui.editor.fileTab.EditorUIFileTabManager
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,13 +27,7 @@ class EditorViewModel : ViewModel() {
     val project: LiveData<Project>
         get() = _project
 
-    private val _currentSelectEditorFragmentData = MutableLiveData<EditorFragmentData>()
-
-    val currentSelectEditorFragmentData: LiveData<EditorFragmentData>
-        get() = _currentSelectEditorFragmentData
-
-
-    val fragmentDataList = ObservableArrayList<EditorFragmentData>()
+    internal val editorUIFileTabManager = EditorUIFileTabManager()
 
     val vfsManager: FileSystemManager by lazy(LazyThreadSafetyMode.NONE) {
         VFS.getManager()
@@ -42,24 +37,16 @@ class EditorViewModel : ViewModel() {
         EditorRepository.getEventManager()
     }
 
+
     suspend fun loadProject(uri: String): Project {
         val projectValue = EditorRepository.loadProject(uri)
         _project.value = projectValue
         return projectValue
     }
 
-    fun initFragmentDataList() {
-        addMainFragmentData()
-
-        _currentSelectEditorFragmentData.value = fragmentDataList[0]
+    fun initFileTabDataList() {
+        editorUIFileTabManager.initList()
     }
-
-    private fun addMainFragmentData() {
-        if (!fragmentDataList.contains(EditorFragmentData.EMPTY)) {
-            fragmentDataList.add(0, EditorFragmentData.EMPTY)
-        }
-    }
-
 
     suspend fun openProject(context: Context, lifecycleOwner: LifecycleOwner) =
         withContext(Dispatchers.Main) {
@@ -88,29 +75,13 @@ class EditorViewModel : ViewModel() {
     }
 
 
-    fun indexOfEditorFragmentData(data: EditorFragmentData): Int {
-        if (!fragmentDataList.contains(data)) {
-            putAndSetFragmentData(data)
-        }
-        return fragmentDataList.indexOfFirst { it.fileUri == data.fileUri }
-    }
-
-
-    private fun putAndSetFragmentData(fragmentData: EditorFragmentData) {
-        if (!fragmentDataList.contains(fragmentData)) {
-            fragmentDataList.add(fragmentData)
-        }
-        _currentSelectEditorFragmentData.value = fragmentData
-    }
-
-    fun setCurrentSelectEditorFragmentData(value: EditorFragmentData) {
-        _currentSelectEditorFragmentData.value = value
+    fun setCurrentSelectFileTabData(value: OpenedFileTabData) {
+        editorUIFileTabManager.setCurrentSelectFileTabData(value)
     }
 
     fun requireProject(): Project {
         return checkNotNull(_project.value)
     }
-
 
     suspend fun openFile(fileObject: FileObject): String {
         return EditorRepository.openFile(fileObject)
@@ -134,16 +105,7 @@ class EditorViewModel : ViewModel() {
     suspend fun queryAllOpenedFile(): List<FileObject> {
         return EditorRepository.queryAllOpenedFile(requireProject())
             .apply {
-                map {
-                    val fileObject = it as UnLuaCFileObject
-                    EditorFragmentData(
-                        functionName = fileObject.getFunctionName(),
-                        fullFunctionName = fileObject.getFullFunctionNameWithPath(),
-                        fileUri = fileObject.name.friendlyURI
-                    )
-                }.let {
-                    fragmentDataList.addAll(it)
-                }
+               editorUIFileTabManager.openMultiFileTab(this)
             }
     }
 
@@ -157,31 +119,13 @@ class EditorViewModel : ViewModel() {
 
 
     fun openFileObject(fileObject: UnLuaCFileObject) {
-
-        val fileUri = fileObject.name.friendlyURI
-
         EditorRepository.openFileObject(
             fileObject.name.friendlyURI, project.value
                 ?.projectPath?.name?.friendlyURI ?: "/???"
         )
 
-        val currentData =
-            fragmentDataList.find { it.fileUri == fileUri } ?: EditorFragmentData(
-                fileUri = fileUri,
-                functionName = fileObject.getFunctionName(),
-                fullFunctionName = fileObject.getFullFunctionNameWithPath()
-            )
+        editorUIFileTabManager.openFileObject(fileObject)
 
-        putAndSetFragmentData(currentData)
     }
 }
 
-data class EditorFragmentData(
-    val fileUri: String,
-    val functionName: String? = null,
-    val fullFunctionName: String? = null
-) {
-    companion object {
-        val EMPTY = EditorFragmentData("")
-    }
-}

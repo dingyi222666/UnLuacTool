@@ -3,8 +3,6 @@ package com.dingyi.unluactool.ui.editor
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +16,7 @@ import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.ui.editor.drawer.DrawerFragment
 import com.dingyi.unluactool.ui.editor.edit.EditFragment
 import com.dingyi.unluactool.ui.editor.event.MenuListener
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import com.dingyi.unluactool.ui.editor.main.MainFragment
 import kotlinx.coroutines.launch
 
@@ -61,9 +60,9 @@ class EditorActivity : BaseActivity() {
         super.onDestroy()
 
         val editorMainViewAdapter =
-            binding.editorMainViewpager.adapter as ViewPageDataFragmentAdapter<EditorFragmentData>
+            binding.editorMainViewpager.adapter as ViewPageDataFragmentAdapter<OpenedFileTabData>
 
-        editorMainViewAdapter.removeObservable(viewModel.fragmentDataList)
+        editorMainViewAdapter.removeObservable(viewModel.editorUIFileTabManager.openedFileList)
 
         viewModel.eventManager.close(true)
 
@@ -71,22 +70,24 @@ class EditorActivity : BaseActivity() {
 
 
     override fun onBackEvent() {
-        val currentFragmentData = checkNotNull(viewModel.currentSelectEditorFragmentData.value)
-        val index = viewModel.indexOfEditorFragmentData(currentFragmentData)
+        val currentFragmentData =
+            checkNotNull(viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData.value)
+        val index = viewModel.editorUIFileTabManager.indexOfDataIndex(currentFragmentData)
+        val fileTabDataList = viewModel.editorUIFileTabManager.openedFileList
 
         if (index > 0) {
 
             var targetIndex = index - 1
 
-            if (targetIndex == 0 && viewModel.fragmentDataList.size > 2) {
+            if (targetIndex == 0 && fileTabDataList.size > 2) {
                 targetIndex = 1
             }
 
-            val targetData = viewModel.fragmentDataList[targetIndex]
+            val targetData = fileTabDataList[targetIndex]
 
-            viewModel.fragmentDataList.removeAt(index)
+            fileTabDataList.removeAt(index)
 
-            viewModel.setCurrentSelectEditorFragmentData(targetData)
+            viewModel.setCurrentSelectFileTabData(targetData)
 
             return
         }
@@ -117,15 +118,11 @@ class EditorActivity : BaseActivity() {
             progressDialog.show()
             func()
 
-
-            viewModel.fragmentDataList.clear()
-
             viewModel.bindCoroutineScope(lifecycleScope)
 
+            viewModel.initFileTabDataList()
+
             viewModel.queryAllOpenedFile()
-
-            viewModel.initFragmentDataList()
-
 
             initView()
         }
@@ -153,9 +150,9 @@ class EditorActivity : BaseActivity() {
 
 
         binding.editorMainViewpager.apply {
-            val adapter = ViewPageDataFragmentAdapter<EditorFragmentData>(this@EditorActivity)
+            val adapter = ViewPageDataFragmentAdapter<OpenedFileTabData>(this@EditorActivity)
 
-            adapter.observableSource(viewModel.fragmentDataList)
+            adapter.observableSource(viewModel.editorUIFileTabManager.openedFileList)
 
             adapter.createFragmentFunc = this@EditorActivity::createPagerFragment
 
@@ -171,16 +168,16 @@ class EditorActivity : BaseActivity() {
             add(R.id.editor_drawer_fragment_container, getJavaClass<DrawerFragment>(), Bundle())
         }
 
-        viewModel.currentSelectEditorFragmentData.observe(this) {
+        viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData.observe(this) {
             onSelectEditorFragmentDataChange(it)
         }
 
-        onSelectEditorFragmentDataChange(checkNotNull(viewModel.currentSelectEditorFragmentData.value))
+        onSelectEditorFragmentDataChange(checkNotNull(viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData.value))
 
     }
 
-    private fun onSelectEditorFragmentDataChange(new: EditorFragmentData) {
-        val currentIndex = viewModel.indexOfEditorFragmentData(new)
+    private fun onSelectEditorFragmentDataChange(new: OpenedFileTabData) {
+        val currentIndex = viewModel.editorUIFileTabManager.indexOfDataIndex(new)
 
         binding.editorMainViewpager.setCurrentItem(currentIndex, true)
 
@@ -192,7 +189,7 @@ class EditorActivity : BaseActivity() {
     }
 
 
-    private fun createPagerFragment(editorFragmentData: EditorFragmentData): Fragment {
+    private fun createPagerFragment(editorFragmentData: OpenedFileTabData): Fragment {
         if (editorFragmentData.fileUri.isNotEmpty()) {
             val fragment = EditFragment()
             fragment.arguments = Bundle().apply {

@@ -2,11 +2,8 @@ package com.dingyi.unluactool.ui.editor.edit
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.ActionMenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
@@ -15,15 +12,12 @@ import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
-import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
-import com.dingyi.unluactool.ui.editor.EditorFragmentData
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.event.MenuListener
-import com.google.android.material.appbar.MaterialToolbar
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import kotlinx.coroutines.launch
-import org.apache.commons.vfs2.impl.DefaultFileMonitor
 
 class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
@@ -86,7 +80,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
     }
 
-    override fun onReload(toolbar: Toolbar, currentFragmentData: EditorFragmentData) {
+    override fun onReload(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
         if (currentFragmentData.fileUri != currentOpenFileObject.publicURIString || isDetached) {
             return
         }

@@ -8,10 +8,8 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -26,9 +24,9 @@ import com.dingyi.unluactool.databinding.ItemEditorFileViewerListBinding
 import com.dingyi.unluactool.databinding.ItemEditorFileViewerListDirBinding
 import com.dingyi.unluactool.engine.filesystem.FileObjectType
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
-import com.dingyi.unluactool.ui.editor.EditorFragmentData
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.event.MenuListener
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.dingyi222666.view.treeview.AbstractTree
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeNode
@@ -103,7 +101,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     }
 
 
-    override fun onReload(toolbar: Toolbar, currentFragmentData: EditorFragmentData) {
+    override fun onReload(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
         if (currentFragmentData.fileUri.isNotEmpty() || isDetached) {
             return
         }

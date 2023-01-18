@@ -14,30 +14,30 @@ import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.setAlpha
 import com.dingyi.unluactool.databinding.ItemEditorDrawerListHomeItemBinding
 import com.dingyi.unluactool.databinding.ItemEditorDrawerListItemBinding
-import com.dingyi.unluactool.ui.editor.EditorFragmentData
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import com.google.android.material.card.MaterialCardView
 
 class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolder>() {
 
-    private val currentDataList = mutableListOf<EditorFragmentData>()
+    private val currentDataList = mutableListOf<OpenedFileTabData>()
 
     private val currentListener = OnListChangedCallback()
 
-    private lateinit var currentSelectData: EditorFragmentData
-    private var oldSelectData: EditorFragmentData? = null
+    private lateinit var currentSelectData: OpenedFileTabData
+    private var oldSelectData: OpenedFileTabData? = null
 
-    var clickListener: (EditorFragmentData) -> Unit = {}
+    var clickListener: (OpenedFileTabData) -> Unit = {}
 
 
-    fun addData(data: EditorFragmentData) {
+    fun addData(data: OpenedFileTabData) {
         currentDataList.add(data)
     }
 
-    fun removeData(data: EditorFragmentData) {
+    fun removeData(data: OpenedFileTabData) {
         currentDataList.remove(data)
     }
 
-    fun observableSource(source: ObservableList<EditorFragmentData>) {
+    fun observableSource(source: ObservableList<OpenedFileTabData>) {
         source.addOnListChangedCallback(currentListener)
         // add all data
         currentDataList.addAll(source)
@@ -45,7 +45,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
 
     fun observableCurrentSelectData(
         lifecycleOwner: LifecycleOwner,
-        data: LiveData<EditorFragmentData>
+        data: LiveData<OpenedFileTabData>
     ) {
         data.observe(lifecycleOwner) {
             if (this::currentSelectData.isInitialized && it != currentSelectData) {
@@ -60,7 +60,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         currentSelectData = checkNotNull(data.value)
     }
 
-    fun removeObservable(source: ObservableList<EditorFragmentData>) {
+    fun removeObservable(source: ObservableList<OpenedFileTabData>) {
         source.removeOnListChangedCallback(currentListener)
     }
 
@@ -115,7 +115,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         return if (currentData.fileUri.isNotEmpty()) 0 else 1
     }
 
-    private fun checkDataIsSelected(holder: ViewHolder, position: Int, data: EditorFragmentData) {
+    private fun checkDataIsSelected(holder: ViewHolder, position: Int, data: OpenedFileTabData) {
         val itemViewType = getItemViewType(position)
 
         /*  if (data.fileUri == oldSelectData?.fileUri) {
@@ -221,13 +221,13 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
 
 
     inner class OnListChangedCallback :
-        ObservableList.OnListChangedCallback<ObservableList<EditorFragmentData>>() {
-        override fun onChanged(sender: ObservableList<EditorFragmentData>) {
+        ObservableList.OnListChangedCallback<ObservableList<OpenedFileTabData>>() {
+        override fun onChanged(sender: ObservableList<OpenedFileTabData>) {
             // ?
         }
 
         override fun onItemRangeChanged(
-            sender: ObservableList<EditorFragmentData>,
+            sender: ObservableList<OpenedFileTabData>,
             positionStart: Int,
             itemCount: Int
         ) {
@@ -240,7 +240,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         }
 
         override fun onItemRangeInserted(
-            sender: ObservableList<EditorFragmentData>,
+            sender: ObservableList<OpenedFileTabData>,
             positionStart: Int,
             itemCount: Int
         ) {
@@ -252,7 +252,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         }
 
         override fun onItemRangeMoved(
-            sender: ObservableList<EditorFragmentData>,
+            sender: ObservableList<OpenedFileTabData>,
             fromPosition: Int,
             toPosition: Int,
             itemCount: Int
@@ -268,7 +268,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         }
 
         override fun onItemRangeRemoved(
-            sender: ObservableList<EditorFragmentData>,
+            sender: ObservableList<OpenedFileTabData>,
             positionStart: Int,
             itemCount: Int
         ) {

@@ -7,15 +7,14 @@ import android.view.ViewGroup
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.dp
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorDrawerShipBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
-import com.dingyi.unluactool.ui.editor.EditorFragmentData
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.adapter.EditorFileTabAdapter
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.RoundedCornerTreatment
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -73,14 +72,14 @@ class DrawerFragment : BaseFragment<FragmentEditorDrawerShipBinding>() {
                 layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
                 adapter.apply {
-                    observableSource(viewModel.fragmentDataList)
+                    observableSource(viewModel.editorUIFileTabManager.openedFileList)
                     observableCurrentSelectData(
                         this@DrawerFragment,
-                        viewModel.currentSelectEditorFragmentData
+                        viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData
                     )
 
                     clickListener = {
-                        openFileObjectByFragmentData(it)
+                        openFileObjectForFragmentData(it)
                     }
                 }
 
@@ -90,10 +89,10 @@ class DrawerFragment : BaseFragment<FragmentEditorDrawerShipBinding>() {
         }
     }
 
-    private fun openFileObjectByFragmentData(fragmentData: EditorFragmentData) {
+    private fun openFileObjectForFragmentData(fragmentData: OpenedFileTabData) {
         val fileUri = fragmentData.fileUri
         if (fileUri.isEmpty()) {
-            viewModel.setCurrentSelectEditorFragmentData(fragmentData)
+            viewModel.setCurrentSelectFileTabData(fragmentData)
             return
         }
         val fileObject = fsManager.resolveFile(fragmentData.fileUri) as UnLuaCFileObject
@@ -106,6 +105,6 @@ class DrawerFragment : BaseFragment<FragmentEditorDrawerShipBinding>() {
         val editorDrawerListAdapter =
             binding.editorDrawerList.adapter as EditorFileTabAdapter
 
-        editorDrawerListAdapter.removeObservable(viewModel.fragmentDataList)
+        editorDrawerListAdapter.removeObservable(viewModel.editorUIFileTabManager.openedFileList)
     }
 }
