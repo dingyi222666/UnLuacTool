@@ -25,7 +25,11 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
     }
 
     override fun getItemId(position: Int): Long {
-        return currentFragmentDataList.get(position).hashCode().toLong()
+        return currentFragmentDataList[position].hashCode().toLong()
+    }
+
+    override fun containsItem(itemId: Long): Boolean {
+        return currentFragmentDataList.find { it.hashCode().toLong() == itemId } != null
     }
 
     fun observableSource(source: ObservableList<T>) {
@@ -59,7 +63,7 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
             itemCount: Int
         ) {
 
-            for (i in positionStart until  positionStart + itemCount) {
+            for (i in positionStart until positionStart + itemCount) {
                 currentFragmentDataList[i] = sender[i]
             }
 
@@ -71,7 +75,7 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
             positionStart: Int,
             itemCount: Int
         ) {
-            for (i in positionStart until  positionStart + itemCount) {
+            for (i in positionStart until positionStart + itemCount) {
                 currentFragmentDataList.add(i, sender[i])
             }
 
@@ -99,7 +103,7 @@ class ViewPageDataFragmentAdapter<T : Any>(fragmentActivity: FragmentActivity) :
             positionStart: Int,
             itemCount: Int
         ) {
-            for (i in positionStart until  positionStart + itemCount) {
+            for (i in positionStart until positionStart + itemCount) {
                 currentFragmentDataList.removeAt(positionStart)
             }
 
