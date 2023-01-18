@@ -67,8 +67,6 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        eventManager.subscribe(MenuListener.menuListenerEventType, this)
-
         treeViewData.apply {
             generator = FileDataGenerator()
             initTree()
@@ -116,6 +114,12 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
             val name = viewModel.project.value?.name
             subtitle = name.toString()
         }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        eventManager.subscribe(MenuListener.menuListenerEventType, this)
 
     }
 

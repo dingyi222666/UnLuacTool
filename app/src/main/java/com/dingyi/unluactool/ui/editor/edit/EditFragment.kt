@@ -59,8 +59,6 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
         openFile()
 
-        eventManager.subscribe(MenuListener.menuListenerEventType, this)
-
     }
 
 
@@ -100,6 +98,13 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
         super.onPause()
         eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
     }
+
+    override fun onResume() {
+        super.onResume()
+        eventManager.subscribe(MenuListener.menuListenerEventType, this)
+    }
+
+
 
 
 }
