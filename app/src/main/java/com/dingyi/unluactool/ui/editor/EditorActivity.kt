@@ -73,22 +73,9 @@ class EditorActivity : BaseActivity() {
         val currentFragmentData =
             checkNotNull(viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData.value)
         val index = viewModel.editorUIFileTabManager.indexOfDataIndex(currentFragmentData)
-        val fileTabDataList = viewModel.editorUIFileTabManager.openedFileList
 
         if (index > 0) {
-
-            var targetIndex = index - 1
-
-            if (targetIndex == 0 && fileTabDataList.size > 2) {
-                targetIndex = 1
-            }
-
-            val targetData = fileTabDataList[targetIndex]
-
-            fileTabDataList.removeAt(index)
-
-            viewModel.setCurrentSelectFileTabData(targetData)
-
+            viewModel.editorUIFileTabManager.removeData(currentFragmentData)
             return
         }
 

@@ -33,6 +33,7 @@ class EditorUIFileTabManager {
 
     private fun putAndSetData(data: OpenedFileTabData) {
         if (data == wantRemoveFileExtra) {
+            wantRemoveFileExtra = null
             return
         }
         if (!openedFileList.contains(data)) {
@@ -43,6 +44,7 @@ class EditorUIFileTabManager {
 
     fun indexOfDataIndex(data: OpenedFileTabData): Int {
         if (data == wantRemoveFileExtra) {
+            wantRemoveFileExtra = null
             return 0
         }
         if (!openedFileList.contains(data)) {
@@ -86,6 +88,29 @@ class EditorUIFileTabManager {
         }.let {
             openedFileList.addAll(it)
         }
+    }
+
+    fun removeData(currentFragmentData: OpenedFileTabData) {
+        if (currentFragmentData == OpenedFileTabData.EMPTY) {
+            return
+        }
+
+        val removeIndex = openedFileList.indexOf(currentFragmentData)
+
+        var targetIndex = removeIndex - 1
+
+        if (targetIndex == 0 && openedFileList.size > 2) {
+            targetIndex = 2
+        }
+
+        wantRemoveFileExtra = currentFragmentData
+
+        val targetData = openedFileList[targetIndex]
+
+        openedFileList.removeAt(removeIndex)
+
+        setCurrentSelectFileTabData(targetData)
+
     }
 
 
