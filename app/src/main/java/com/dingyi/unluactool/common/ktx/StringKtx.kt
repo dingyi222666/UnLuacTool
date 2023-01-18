@@ -12,8 +12,8 @@ internal inline fun <reified T> String.decodeToBean(): T {
     return gson.fromJson(this, T::class.java)
 }
 
-internal fun Any.encodeToJson(): String {
-    return gson.toJson(this)
+internal inline fun <reified T:Any> T.encodeToJson(): String {
+    return gson.toJson(this,T::class.java)
 }
 
 fun String.toFile(): File = File(this)

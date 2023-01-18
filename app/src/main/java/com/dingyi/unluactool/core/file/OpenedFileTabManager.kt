@@ -59,10 +59,15 @@ class OpenedFileTabManager internal constructor() : FileEventListener {
         val openedFileObject = OpenedFileObject(openedFileList)
 
         cacheJsonFile
+            .apply {
+                refresh()
+            }
             .content
             .getOutputStream(false)
+            .bufferedWriter()
             .use {
-                it.write(openedFileObject.encodeToJson().encodeToByteArray())
+                println(openedFileObject.encodeToJson())
+                it.write(openedFileObject.encodeToJson())
             }
 
     }

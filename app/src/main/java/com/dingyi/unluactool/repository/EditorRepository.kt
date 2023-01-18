@@ -61,7 +61,6 @@ object EditorRepository {
     }
 
     fun closeFile(targetFileUri: String, projectUri: String) {
-        println("targetFileUri:$targetFileUri,projectUri:$projectUri")
         _eventManager.syncPublisher(FileEventListener.EVENT_TYPE)
             .onEvent(
                 FileCloseEvent(

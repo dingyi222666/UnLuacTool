@@ -63,7 +63,9 @@ class EditorActivity : BaseActivity() {
 
         editorMainViewAdapter.removeObservable(viewModel.editorUIFileTabManager.openedFileList)
 
-        viewModel.eventManager.close(true)
+        viewModel.eventManager.apply {
+            clearListener(MenuListener.menuListenerEventType)
+        }
 
         MainApplication.instance.applicationScope.launch {
             viewModel.saveAllOpenedFileTab()

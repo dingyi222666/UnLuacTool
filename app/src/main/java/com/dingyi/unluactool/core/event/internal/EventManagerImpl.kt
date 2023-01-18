@@ -56,7 +56,6 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
         }
 
         return instance as T
-
     }
 
     override fun <T : Any> subscribe(eventType: EventType<T>, target: T) {
@@ -112,14 +111,17 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
     }
 
     private fun dispatchEvent(event: Event) = ForkJoinPool.commonPool().execute {
+        println("event:$event")
         val receivers = lock.read {
             stickyEventCaches[event.eventType] = event
             this.receivers[event.eventType]
         }
 
+        println("receivers: $receivers")
+
         lock.read {
             receivers?.forEach {
-                println("event:$event, target:$it")
+                println("target:$it")
                 handler.post {
                     event.execute(it)
                 }
