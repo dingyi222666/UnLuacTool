@@ -73,7 +73,8 @@ object EditorRepository {
     }
 
     fun contentChangeFile(event: ContentChangeEvent, targetFileUri: String, projectUri: String) {
-        _eventManager.syncPublisher(FileEventListener.EVENT_TYPE)
+        _eventManager
+            .syncPublisher(FileEventListener.EVENT_TYPE)
             .onEvent(
                 FileContentChangeEvent(
                     newContent = event.editor.text.toString(),

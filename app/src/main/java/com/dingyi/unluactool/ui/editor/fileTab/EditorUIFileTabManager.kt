@@ -118,6 +118,11 @@ class EditorUIFileTabManager {
 
     }
 
+    fun contentChange(targetFileUri: String, checkFileIsSave: Boolean) {
+        val target = openedFileList.find { it.fileUri == targetFileUri } ?: return
+        target.isNotSaveEditContent.value = !checkFileIsSave
+    }
+
 
 }
 
@@ -126,7 +131,7 @@ data class OpenedFileTabData(
     val projectUri: String = "",
     val functionName: String? = null,
     val fullFunctionName: String? = null,
-    val isNotSaveEditContent:Boolean = false,
+    var isNotSaveEditContent: MutableLiveData<Boolean> = MutableLiveData(false)
 ) {
     companion object {
         val EMPTY = OpenedFileTabData("")

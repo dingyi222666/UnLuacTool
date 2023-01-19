@@ -6,6 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
@@ -16,6 +17,8 @@ import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemManager
@@ -89,12 +92,22 @@ class EditorViewModel : ViewModel() {
         return EditorRepository.openFile(fileObject)
     }
 
-    fun contentChangeFile(event: ContentChangeEvent, targetFileUri: String) {
-        return EditorRepository.contentChangeFile(
+    fun contentChangeFile(event: ContentChangeEvent, targetFileObject: FileObject) {
+        val targetFileUri = targetFileObject.name.friendlyURI
+        EditorRepository.contentChangeFile(
             event,
             targetFileUri,
             requireProject().projectPath.name.friendlyURI
         )
+        viewModelScope.launch(Dispatchers.Main) {
+            // 暴力延时等待事件分发完成
+            delay(200)
+
+            editorUIFileTabManager.contentChange(
+                targetFileUri,
+                EditorRepository.checkFileIsSave(targetFileObject)
+            )
+        }
     }
 
     suspend fun loadFileInCache(fileObject: FileObject): String {
@@ -141,5 +154,6 @@ class EditorViewModel : ViewModel() {
         editorUIFileTabManager.openFileObject(fileObject)
 
     }
+
 }
 

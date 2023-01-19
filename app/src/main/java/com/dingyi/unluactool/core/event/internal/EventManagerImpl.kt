@@ -29,7 +29,9 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
     constructor() : this(null)
 
     init {
-        parent?.children?.add(this)
+        parent?.lock?.read {
+            parent.children.add(this)
+        }
     }
 
     override fun <T : Any> syncPublisher(eventType: EventType<T>): T {
@@ -110,7 +112,7 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
         return parent?.getRootManager() ?: this
     }
 
-    private fun dispatchEvent(event: Event) = ForkJoinPool.commonPool().execute {
+    internal fun dispatchEvent(event: Event): Unit = ForkJoinPool.commonPool().execute {
         println("event:$event")
         val receivers = lock.read {
             stickyEventCaches[event.eventType] = event
@@ -125,6 +127,12 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
                 handler.post {
                     event.execute(it)
                 }
+            }
+        }
+
+        lock.read {
+            for (sub in children) {
+                sub.dispatchEvent(event)
             }
         }
 

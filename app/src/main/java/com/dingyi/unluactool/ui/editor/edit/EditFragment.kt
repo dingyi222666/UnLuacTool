@@ -39,7 +39,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
     private val editorChangeEventReceiver = EditorChangeEventReceiver()
 
-    private lateinit var subscriptionReceipt: SubscriptionReceipt<ContentChangeEvent>
+    private var subscriptionReceipt: SubscriptionReceipt<ContentChangeEvent>? = null
 
     private lateinit var currentOpenFileObject: UnLuaCFileObject
 
@@ -69,7 +69,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
         openFile()
 
-        subscriptionReceipt = editor.subscribeEvent(EditorChangeEventReceiver())
+        subscriptionReceipt = editor.subscribeEvent(editorChangeEventReceiver)
 
     }
 
@@ -94,8 +94,10 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
         if (currentFragmentData.fileUri != currentOpenFileObject.name.friendlyURI || isDetached) {
             return
         }
+
         val menu = toolbar.menu
         menu.clear()
+
         toolbar.apply {
             title = ""
             subtitle = ""
@@ -108,18 +110,22 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
     override fun onPause() {
         super.onPause()
         eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
-        subscriptionReceipt.unsubscribe()
+        kotlin.runCatching {
+            subscriptionReceipt?.unsubscribe()
+        }
     }
 
     override fun onResume() {
         super.onResume()
         eventManager.subscribe(MenuListener.menuListenerEventType, this)
-        subscriptionReceipt = binding.editor.subscribeEvent(EditorChangeEventReceiver())
+        kotlin.runCatching {
+            subscriptionReceipt = binding.editor.subscribeEvent(editorChangeEventReceiver)
+        }
     }
 
-    inner class EditorChangeEventReceiver:EventReceiver<ContentChangeEvent> {
+    inner class EditorChangeEventReceiver : EventReceiver<ContentChangeEvent> {
         override fun onReceive(event: ContentChangeEvent, unsubscribe: Unsubscribe) {
-            viewModel.contentChangeFile(event,currentOpenFileObject.name.friendlyURI)
+            viewModel.contentChangeFile(event, currentOpenFileObject)
         }
 
     }

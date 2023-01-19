@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.ui.editor.drawer
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,7 @@ class DrawerFragment : BaseFragment<FragmentEditorDrawerShipBinding>() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -81,6 +83,16 @@ class DrawerFragment : BaseFragment<FragmentEditorDrawerShipBinding>() {
                     clickListener = {
                         openFileObjectForFragmentData(it)
                     }
+
+                    onContentChangeListener = { data, binding ->
+                        data.isNotSaveEditContent.observe(viewLifecycleOwner) { isNotSaveEditContentValue ->
+
+                            binding.title.text =
+                                (if (isNotSaveEditContentValue) "*" else "") + data.functionName
+
+                        }
+                    }
+
                 }
 
                 setAdapter(adapter)

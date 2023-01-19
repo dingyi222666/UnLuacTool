@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.ui.editor.adapter
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -27,6 +28,8 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
     private var oldSelectData: OpenedFileTabData? = null
 
     var clickListener: (OpenedFileTabData) -> Unit = {}
+    var onContentChangeListener: (OpenedFileTabData, ItemEditorDrawerListItemBinding) -> Unit =
+        { _, _ -> }
 
 
     fun addData(data: OpenedFileTabData) {
@@ -85,6 +88,7 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         )
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentData = currentDataList[position]
 
@@ -103,10 +107,13 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
 
         val binding = ItemEditorDrawerListItemBinding.bind(holder.itemView)
 
+        val isNotSaveEditContent = currentData.isNotSaveEditContent
+        val isNotSaveEditContentValue = isNotSaveEditContent.value ?: false
 
-
-        binding.title.text = currentData.functionName
+        binding.title.text = (if (isNotSaveEditContentValue) "*" else "") + currentData.functionName
         binding.path.text = currentData.fullFunctionName
+
+        onContentChangeListener(currentData, binding)
 
     }
 
