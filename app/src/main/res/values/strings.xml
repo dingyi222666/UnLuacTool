@@ -26,6 +26,7 @@
     <string name="editor_toolbar_title">Lua Bytecode Editor</string>
     <string name="editor_toolbar_title_loading">Loading…</string>
     <string name="main_temporary_project_name">Temporary Project</string>
+    <string name="editor_save_successful">Save Successful</string>
     <string name="editor_project_indexer_toast">Lua compiled file is opening %1$s (%2$s/%3$s)</string>
     <string name="editor_menu_code_goto">Jump to Line</string>
     <string name="editor_menu_wordwrap">Word wrap</string>

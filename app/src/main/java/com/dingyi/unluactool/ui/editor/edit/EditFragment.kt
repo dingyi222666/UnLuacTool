@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
+import com.dingyi.unluactool.common.ktx.showSnackBar
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.ui.editor.EditorViewModel
@@ -156,6 +157,9 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                 lifecycleScope.launch {
                     viewModel.saveFile(currentOpenFileObject)
                     viewModel.contentChangeFile(binding.editor, currentOpenFileObject)
+                    getString(R.string.editor_save_successful).showSnackBar(
+                        binding.root
+                    )
                 }
             }
         }
