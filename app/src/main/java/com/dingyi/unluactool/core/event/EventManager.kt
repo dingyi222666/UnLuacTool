@@ -16,4 +16,7 @@ interface EventManager {
     fun <T : Any> unsubscribe(eventType: EventType<T>, target: T)
 
     fun close(closeParent: Boolean)
+    fun dispatchEventOnThreadPool()
+
+    fun dispatchEventOnUiThread()
 }

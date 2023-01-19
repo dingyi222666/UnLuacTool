@@ -15,6 +15,7 @@ import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.ui.editor.event.MenuEvent
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
+import io.github.rosemoe.sora.widget.CodeEditor
 import org.apache.commons.vfs2.FileObject
 
 object EditorRepository {
@@ -39,9 +40,7 @@ object EditorRepository {
 
 
     suspend fun loadProject(uri: String): Project {
-        return MainApplication
-            .instance
-            .globalServiceRegistry
+        return globalServiceRegistry
             .get<ProjectManager>()
             .resolveProjectByPath(
                 MainApplication
@@ -75,12 +74,12 @@ object EditorRepository {
             )
     }
 
-    fun contentChangeFile(event: ContentChangeEvent, targetFileUri: String, projectUri: String) {
+    fun contentChangeFile(editor:CodeEditor, targetFileUri: String, projectUri: String) {
         _eventManager
             .syncPublisher(FileEventListener.EVENT_TYPE)
             .onEvent(
                 FileContentChangeEvent(
-                    newContent = event.editor.text.toString(),
+                    newContent =editor.text.toString(),
                     targetFileUri, projectUri
                 )
             )

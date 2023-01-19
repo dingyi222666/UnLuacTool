@@ -4,4 +4,6 @@ interface ProjectManagerListener {
     fun projectOpened(project: Project)
 
     fun projectClosed(project: Project)
+
+
 }

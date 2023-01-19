@@ -45,19 +45,17 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 size,
             )
 
-            if (projectIndexedDir.isFolder && projectIndexedDir.findFiles(Selectors.SELECT_FILES)
+            if (projectIndexedDir.isFolder && projectIndexedDir.findFiles(Selectors.SELECT_CHILDREN)
                     .isNotEmpty()
             ) {
-                //indexed, use file system to open
+                println(projectIndexedDir.findFiles(Selectors.SELECT_CHILDREN))
+                // indexed, use file system to open
                 return@withContext Collections.emptyList()
             }
-
-
 
             delay(2000)
 
             projectIndexedDir.createFolder()
-
 
             for (index in 0 until size) {
 

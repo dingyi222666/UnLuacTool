@@ -13,11 +13,14 @@ import com.dingyi.unluactool.common.adapter.ViewPageDataFragmentAdapter
 import com.dingyi.unluactool.common.ktx.getJavaClass
 import com.dingyi.unluactool.databinding.EditorBinding
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
+import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.editor.drawer.DrawerFragment
 import com.dingyi.unluactool.ui.editor.edit.EditFragment
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import com.dingyi.unluactool.ui.editor.main.MainFragment
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class EditorActivity : BaseActivity() {
@@ -43,7 +46,6 @@ class EditorActivity : BaseActivity() {
         setTheme(R.style.Theme_UnLuacTool)
 
         setContentView(binding.root)
-
 
         toolbar.title = getString(R.string.editor_toolbar_title_loading)
 
@@ -90,7 +92,10 @@ class EditorActivity : BaseActivity() {
     }
 
 
-    private fun initViewModel() = lifecycleScope.launch {
+    private fun initViewModel() = lifecycleScope.launch(Dispatchers.Main) {
+
+        EditorRepository.getEventManager().dispatchEventOnUiThread()
+
         viewModel.loadProject(intent.getStringExtra("path") ?: "")
 
         val (progressDialog, func) = viewModel.openProject(
@@ -98,6 +103,7 @@ class EditorActivity : BaseActivity() {
         )
 
         progressDialog.show()
+
         func()
 
         viewModel.bindCoroutineScope(MainApplication.instance.applicationScope)
@@ -105,6 +111,8 @@ class EditorActivity : BaseActivity() {
         viewModel.initFileTabDataList()
 
         viewModel.queryAllOpenedFileTab()
+
+        EditorRepository.getEventManager().dispatchEventOnThreadPool()
 
         initView()
 

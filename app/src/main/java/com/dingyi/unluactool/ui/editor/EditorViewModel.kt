@@ -16,6 +16,7 @@ import com.dingyi.unluactool.ui.dialog.progressDialogWithState
 import com.dingyi.unluactool.ui.editor.fileTab.EditorUIFileTabManager
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
+import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -77,7 +78,7 @@ class EditorViewModel : ViewModel() {
         }
 
     private suspend fun openProject(progressState: ProgressState) {
-        project.value?.open(progressState)
+        requireProject().open(progressState)
     }
 
 
@@ -93,22 +94,24 @@ class EditorViewModel : ViewModel() {
         return EditorRepository.openFile(fileObject)
     }
 
-    fun contentChangeFile(event: ContentChangeEvent, targetFileObject: FileObject) {
+    fun contentChangeFile(editor: CodeEditor, targetFileObject: FileObject) {
         val targetFileUri = targetFileObject.name.friendlyURI
+
+        EditorRepository.getEventManager().dispatchEventOnUiThread()
+
         EditorRepository.contentChangeFile(
-            event,
+            editor,
             targetFileUri,
             requireProject().projectPath.name.friendlyURI
         )
-        viewModelScope.launch(Dispatchers.Main) {
-            // 暴力延时等待事件分发完成
-            delay(200)
 
-            editorUIFileTabManager.contentChange(
-                targetFileUri,
-                EditorRepository.checkFileIsSave(targetFileObject)
-            )
-        }
+        EditorRepository.getEventManager().dispatchEventOnThreadPool()
+
+        editorUIFileTabManager.contentChange(
+            targetFileUri,
+            EditorRepository.checkFileIsSave(targetFileObject)
+        )
+
     }
 
     suspend fun loadFileInCache(fileObject: FileObject): String {
@@ -146,7 +149,7 @@ class EditorViewModel : ViewModel() {
         return EditorRepository.checkFileIsSave(fileObject)
     }
 
-     fun queryOpenedFileTab(fileObject: FileObject): OpenedFileTabData {
+    fun queryOpenedFileTab(fileObject: FileObject): OpenedFileTabData {
         return editorUIFileTabManager.queryOpenedFileTab(fileObject)
     }
 

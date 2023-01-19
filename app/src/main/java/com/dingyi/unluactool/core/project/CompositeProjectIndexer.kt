@@ -6,8 +6,10 @@ class CompositeProjectIndexer : ProjectIndexer<List<Any>> {
 
     private val allIndexer = mutableListOf<ProjectIndexer<*>>()
 
-    override suspend fun index(project: Project,progressState: ProgressState?): List<Any> =
-        allIndexer.map { it.index(project,progressState) as Any }.toList()
+    override suspend fun index(project: Project, progressState: ProgressState?): List<Any> {
+        println("indexer $allIndexer")
+        return allIndexer.map { it.index(project, progressState) as Any }.toList()
+    }
 
     fun <T : Any> addIndexer(indexer: ProjectIndexer<T>) {
         allIndexer.add(indexer)

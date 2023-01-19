@@ -92,12 +92,11 @@ class DefaultProjectManager(
         }
     }
 
-
     override suspend fun resolveProjectByPath(path: FileObject): Project? {
         resolveAllProject()
-        return getProjectByPath(path).also {
-            currentProject = it ?: EmptyProject
-        }
+        val project = getProjectByPath(path)
+        currentProject = project ?: EmptyProject
+        return project
     }
 
     override fun getProjectByName(name: String): Project? {

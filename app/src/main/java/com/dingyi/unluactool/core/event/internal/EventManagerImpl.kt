@@ -27,12 +27,22 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
 
     private val handler = Handler(Looper.getMainLooper())
 
+    private var isRunOnUiThread = true
+
     constructor() : this(null)
 
     init {
         parent?.lock?.read {
             parent.children.add(this)
         }
+    }
+
+    override fun dispatchEventOnUiThread() {
+        isRunOnUiThread = true
+    }
+
+    override fun dispatchEventOnThreadPool() {
+        isRunOnUiThread = false
     }
 
     override fun <T : Any> syncPublisher(eventType: EventType<T>): T {
@@ -113,7 +123,7 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
         return parent?.getRootManager() ?: this
     }
 
-    internal fun dispatchEvent(event: Event): Unit = ForkJoinPool.commonPool().execute {
+    private fun dispatchEventInternal(event: Event) {
         println("event:$event")
         val receivers = lock.read {
             stickyEventCaches[event.eventType] = event
@@ -125,9 +135,7 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
         lock.read {
             receivers?.forEach {
                 println("target:$it")
-                handler.post {
-                    event.execute(it)
-                }
+                executeEvent(event, it)
             }
         }
 
@@ -136,7 +144,26 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
                 sub.dispatchEvent(event)
             }
         }
+    }
 
+    private fun executeEvent(event: Event, target: Any) {
+        if (isRunOnUiThread) {
+            event.execute(target)
+        } else {
+            handler.post {
+                event.execute(target)
+            }
+        }
+    }
+
+    private fun dispatchEvent(event: Event) {
+        if (isRunOnUiThread) {
+            dispatchEventInternal(event)
+        } else {
+            ForkJoinPool.commonPool().submit {
+                dispatchEventInternal(event)
+            }
+        }
     }
 
 

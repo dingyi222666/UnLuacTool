@@ -150,7 +150,16 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         if (viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData.value?.fileUri != currentOpenFileObject.name.friendlyURI || isDetached) {
             return
         }
-        println(menuItem.title)
+
+        when (menuItem.itemId) {
+            R.id.editor_menu_save -> {
+                lifecycleScope.launch {
+                    viewModel.saveFile(currentOpenFileObject)
+                    viewModel.contentChangeFile(binding.editor, currentOpenFileObject)
+                }
+            }
+        }
+
     }
 
     override fun onPause() {
@@ -174,7 +183,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
 
     inner class EditorChangeEventReceiver : EventReceiver<ContentChangeEvent> {
         override fun onReceive(event: ContentChangeEvent, unsubscribe: Unsubscribe) {
-            viewModel.contentChangeFile(event, currentOpenFileObject)
+            viewModel.contentChangeFile(event.editor, currentOpenFileObject)
             updateMenuState()
         }
 
