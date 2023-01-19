@@ -155,7 +155,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
 
             val binding =
-                if (extra.isFile) ItemEditorFileViewerListBinding.bind(holder.itemView)
+                if (extra.getFileType() == FileObjectType.FUNCTION) ItemEditorFileViewerListBinding.bind(holder.itemView)
                 else ItemEditorFileViewerListDirBinding.bind(holder.itemView)
 
             val space = if (binding is ItemEditorFileViewerListDirBinding) binding.space else
@@ -274,7 +274,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
         override fun getItemViewType(node: TreeNode<UnLuaCFileObject>): Int {
             val extra = checkNotNull(node.data)
-            return if (extra.isFile) 0 else 1
+            return if (extra.getFileType() == FileObjectType.FUNCTION) 0 else 1
         }
 
     }
@@ -289,6 +289,8 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
             val targetNodeExtra = checkNotNull(targetNode.data)
             // val friendlyURI = targetNodeExtra.name.friendlyURI
+
+            withContext(Dispatchers.IO) { targetNodeExtra.refresh() }
 
             if (targetNodeExtra.getFileType() == FileObjectType.FUNCTION) {
                 targetNode.isChild = false

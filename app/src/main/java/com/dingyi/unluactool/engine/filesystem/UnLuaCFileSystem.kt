@@ -72,7 +72,7 @@ class UnLuaCFileSystem(
             return createEmptyFileObject(currentFileObject, projectSourceSrc, projectName)
         }
 
-        val parsedFileObject = cacheParsedFileObject.getOrPut(currentFileObject.name.friendlyURI)
+        val parsedFileObject = cacheParsedFileObject.getOrPut(projectSourceSrc.name.friendlyURI)
         { UnLuacParsedFileObject(currentFileObject) }
 
         parsedFileObject.init()

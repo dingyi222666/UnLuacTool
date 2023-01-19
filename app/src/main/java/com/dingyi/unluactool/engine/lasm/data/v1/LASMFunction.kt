@@ -98,7 +98,7 @@ package com.dingyi.unluactool.engine.lasm.data.v1
     }
 
     override fun toString(): String {
-        return "LASMFunction(name='$name', fullName='$fullName', parent=$parent, childFunctions=$childFunctions)"
+        return "LASMFunction(name='$name', fullName='$fullName', childFunctions=$childFunctions)"
     }
 
 

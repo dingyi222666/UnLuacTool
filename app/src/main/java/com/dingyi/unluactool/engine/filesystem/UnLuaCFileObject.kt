@@ -32,7 +32,6 @@ class UnLuaCFileObject(
 
     private fun requireExtra(): UnLuacFileObjectExtra = checkNotNull(data)
 
-
     override fun doAttach() {
         data?.fileObject?.addChunkChangeListener(this)
     }
@@ -50,7 +49,7 @@ class UnLuaCFileObject(
         fileSystem.fireFileChanged(this)
 
         if (currentFunctionPath != null) {
-            val newFunction = newChunk.resolveFunction(currentFunctionPath)
+            val newFunction = newChunk.resolveFunction(currentFunctionPath.substringAfter("/"))
             if (newFunction == null) {
                 isDelete = true
                 data.currentFunction = null
@@ -69,6 +68,9 @@ class UnLuaCFileObject(
     }
 
     override fun refresh() {
+
+        println(data?.currentFunction)
+
         proxyFileObject.refresh()
 
         data?.fileObject?.refresh()

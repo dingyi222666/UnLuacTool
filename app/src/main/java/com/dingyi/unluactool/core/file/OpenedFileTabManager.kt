@@ -80,7 +80,7 @@ class OpenedFileTabManager internal constructor() : FileEventListener {
     }
 
     override fun onEvent(event: FileEvent) {
-        val projectOpenedFileList = cacheOpenedFile.getValue(event.projectUri)
+        val projectOpenedFileList = cacheOpenedFile.get(event.projectUri) ?: return
         val targetUri = event.targetFileUri
         when (event) {
             is FileOpenEvent -> {
