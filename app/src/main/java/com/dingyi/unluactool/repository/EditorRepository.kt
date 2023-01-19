@@ -11,6 +11,7 @@ import com.dingyi.unluactool.core.file.OpenedFileTabManager
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import org.apache.commons.vfs2.FileObject
 
@@ -111,5 +112,4 @@ object EditorRepository {
     suspend fun saveFile(fileObject: FileObject, content: String? = null) {
         _openFileManager.saveFile(fileObject, content)
     }
-
 }

@@ -123,7 +123,12 @@ class EditorUIFileTabManager {
         target.isNotSaveEditContent.value = !checkFileIsSave
     }
 
+    fun queryOpenedFileTab(fileObject: FileObject): OpenedFileTabData {
+        return checkNotNull(openedFileList.find {
+            it.fileUri == fileObject.name.friendlyURI
+        })
 
+    }
 }
 
 data class OpenedFileTabData(

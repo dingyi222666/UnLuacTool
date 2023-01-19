@@ -5,6 +5,7 @@ import com.dingyi.unluactool.common.ktx.encodeToJson
 import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.internal.LuaProject
+import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -108,6 +109,8 @@ class OpenedFileTabManager internal constructor() : FileEventListener {
             }
         }
     }
+
+
 
 }
 

@@ -2,6 +2,7 @@ package com.dingyi.unluactool.ui.editor.edit
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
@@ -13,7 +14,6 @@ import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
-import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
@@ -24,6 +24,7 @@ import io.github.rosemoe.sora.event.Unsubscribe
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import io.github.rosemoe.sora.widget.subscribeEvent
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
@@ -38,6 +39,8 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
     }
 
     private val editorChangeEventReceiver = EditorChangeEventReceiver()
+
+    private var toolbar = WeakReference<Toolbar>(null)
 
     private var subscriptionReceipt: SubscriptionReceipt<ContentChangeEvent>? = null
 
@@ -54,10 +57,47 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val editor = binding.editor
         val fileUri = arguments?.getString("fileUri") ?: ""
 
         currentOpenFileObject = vfsManager.resolveFile(fileUri) as UnLuaCFileObject
+
+        initEditor()
+
+        openFile()
+
+    }
+
+    private fun listenerEditorContentChange() {
+        viewModel.queryOpenedFileTab(currentOpenFileObject)
+            .isNotSaveEditContent
+            .observe(viewLifecycleOwner) { isNotSaveEdit ->
+                toolbar.get()?.let { toolbarTarget ->
+                    toolbarTarget.menu.let { menu ->
+                        val saveItem = menu.findItem(R.id.editor_menu_save)
+                        saveItem.isEnabled = isNotSaveEdit
+                    }
+                    toolbarTarget.invalidateMenu()
+                }
+            }
+    }
+
+
+    private fun updateMenuState() {
+        val editor = binding.editor
+        toolbar.get()?.let { toolbarTarget ->
+            toolbarTarget.menu.let { menu ->
+                val undoItem = menu.findItem(R.id.editor_menu_code_undo)
+                val redoItem = menu.findItem(R.id.editor_menu_code_redo)
+                undoItem.isEnabled = editor.canUndo()
+                redoItem.isEnabled = editor.canRedo()
+            }
+            toolbarTarget.invalidateMenu()
+        }
+    }
+
+    private fun initEditor() {
+
+        val editor = binding.editor
 
         editor.colorScheme.apply {
             setColor(
@@ -66,10 +106,6 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
             )
             editor.colorScheme = this
         }
-
-        openFile()
-
-        subscriptionReceipt = editor.subscribeEvent(editorChangeEventReceiver)
 
     }
 
@@ -96,11 +132,14 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
         }
 
         val menu = toolbar.menu
+
         menu.clear()
 
         toolbar.apply {
             title = ""
             subtitle = ""
+
+            this@EditFragment.toolbar = WeakReference(this)
         }
 
         requireActivity().menuInflater.inflate(R.menu.editor_edit, menu)
@@ -117,6 +156,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
     override fun onResume() {
         super.onResume()
+        listenerEditorContentChange()
         eventManager.subscribe(MenuListener.menuListenerEventType, this)
         kotlin.runCatching {
             subscriptionReceipt = binding.editor.subscribeEvent(editorChangeEventReceiver)
@@ -126,8 +166,10 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
     inner class EditorChangeEventReceiver : EventReceiver<ContentChangeEvent> {
         override fun onReceive(event: ContentChangeEvent, unsubscribe: Unsubscribe) {
             viewModel.contentChangeFile(event, currentOpenFileObject)
+            updateMenuState()
         }
 
     }
+
 
 }

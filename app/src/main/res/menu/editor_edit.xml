@@ -11,12 +11,14 @@
         android:id="@+id/editor_menu_code_undo"
         android:iconTint="?colorOnSurface"
         android:title="@string/editor_menu_code_undo"
+        android:enabled="false"
         android:icon="@drawable/ic_round_undo_24"
         app:showAsAction="always" />
     <item
         android:id="@+id/editor_menu_code_redo"
         android:iconTint="?colorOnSurface"
         android:title="@string/editor_menu_code_redo"
+        android:enabled="false"
         android:icon="@drawable/ic_round_redo_24"
         app:showAsAction="always" />
 
@@ -24,6 +26,7 @@
         android:id="@+id/editor_menu_save"
         android:iconTint="?colorOnSurface"
         android:title="@string/editor_menu_save"
+        android:enabled="false"
         android:icon="@drawable/ic_round_save_24"
         app:showAsAction="always" />
 

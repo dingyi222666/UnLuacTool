@@ -145,6 +145,11 @@ class EditorViewModel : ViewModel() {
         return EditorRepository.checkFileIsSave(fileObject)
     }
 
+     fun queryOpenedFileTab(fileObject: FileObject): OpenedFileTabData {
+        return editorUIFileTabManager.queryOpenedFileTab(fileObject)
+    }
+
+
     fun openFileObject(fileObject: UnLuaCFileObject) {
         EditorRepository.openFile(
             fileObject.name.friendlyURI, project.value

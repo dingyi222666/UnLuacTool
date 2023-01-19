@@ -34,7 +34,6 @@
         <!-- <item name="android:windowAnimationStyle">@style/alertDialogAnimation</item>-->
         <item name="dialogCornerRadius">6dp</item>
 
-        <item name="iconTint">#8f000000</item>
         <!-- <item name="toolbarStyle">@style/Widget.Base.Toolbar</item>-->
         <item name="alertDialogTheme">@style/alertDialogTheme</item>
         <item name="android:windowContentTransitions">true</item>
