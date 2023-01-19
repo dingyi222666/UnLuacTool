@@ -111,6 +111,7 @@ class EditorUIFileTabManager {
         val targetData = openedFileList[targetIndex]
 
         openedFileList.removeAt(removeIndex)
+
         EditorRepository.closeFile(currentFragmentData.fileUri, currentFragmentData.projectUri)
 
         setCurrentSelectFileTabData(targetData)
@@ -123,7 +124,9 @@ class EditorUIFileTabManager {
 data class OpenedFileTabData(
     val fileUri: String,
     val projectUri: String = "",
-    val functionName: String? = null, val fullFunctionName: String? = null
+    val functionName: String? = null,
+    val fullFunctionName: String? = null,
+    val isNotSaveEditContent:Boolean = false,
 ) {
     companion object {
         val EMPTY = OpenedFileTabData("")

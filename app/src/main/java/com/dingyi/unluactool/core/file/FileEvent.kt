@@ -21,7 +21,6 @@ class FileSaveEvent(
 
 class FileContentChangeEvent(
     val newContent: String,
-    val oldContent: String,
     targetFileUri: String,
     projectUri: String
 ) : FileEvent(targetFileUri, projectUri)

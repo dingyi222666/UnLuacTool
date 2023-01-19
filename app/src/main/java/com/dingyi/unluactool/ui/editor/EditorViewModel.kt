@@ -13,6 +13,7 @@ import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.dialog.progressDialogWithState
 import com.dingyi.unluactool.ui.editor.fileTab.EditorUIFileTabManager
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
+import io.github.rosemoe.sora.event.ContentChangeEvent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -88,6 +89,14 @@ class EditorViewModel : ViewModel() {
         return EditorRepository.openFile(fileObject)
     }
 
+    fun contentChangeFile(event: ContentChangeEvent, targetFileUri: String) {
+        return EditorRepository.contentChangeFile(
+            event,
+            targetFileUri,
+            requireProject().projectPath.name.friendlyURI
+        )
+    }
+
     suspend fun loadFileInCache(fileObject: FileObject): String {
         return EditorRepository.loadFileInCache(fileObject)
     }
@@ -106,7 +115,7 @@ class EditorViewModel : ViewModel() {
     suspend fun queryAllOpenedFileTab(): List<FileObject> {
         return EditorRepository.queryAllOpenedFileTab(requireProject())
             .apply {
-               editorUIFileTabManager.openMultiFileTab(this)
+                editorUIFileTabManager.openMultiFileTab(this)
             }
     }
 
@@ -118,6 +127,10 @@ class EditorViewModel : ViewModel() {
         EditorRepository.saveAllOpenedFileTab(requireProject())
     }
 
+
+    fun checkFileIsSave(fileObject: FileObject): Boolean {
+        return EditorRepository.checkFileIsSave(fileObject)
+    }
 
     fun openFileObject(fileObject: UnLuaCFileObject) {
         EditorRepository.openFile(

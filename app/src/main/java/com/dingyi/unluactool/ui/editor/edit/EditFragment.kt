@@ -13,10 +13,16 @@ import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
+import io.github.rosemoe.sora.event.ContentChangeEvent
+import io.github.rosemoe.sora.event.EventReceiver
+import io.github.rosemoe.sora.event.SubscriptionReceipt
+import io.github.rosemoe.sora.event.Unsubscribe
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
+import io.github.rosemoe.sora.widget.subscribeEvent
 import kotlinx.coroutines.launch
 
 class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
@@ -30,6 +36,10 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
     private val eventManager by lazy(LazyThreadSafetyMode.NONE) {
         viewModel.eventManager
     }
+
+    private val editorChangeEventReceiver = EditorChangeEventReceiver()
+
+    private lateinit var subscriptionReceipt: SubscriptionReceipt<ContentChangeEvent>
 
     private lateinit var currentOpenFileObject: UnLuaCFileObject
 
@@ -58,6 +68,8 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
         }
 
         openFile()
+
+        subscriptionReceipt = editor.subscribeEvent(EditorChangeEventReceiver())
 
     }
 
@@ -90,21 +102,26 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
         }
 
         requireActivity().menuInflater.inflate(R.menu.editor_edit, menu)
-
     }
 
 
     override fun onPause() {
         super.onPause()
         eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
+        subscriptionReceipt.unsubscribe()
     }
 
     override fun onResume() {
         super.onResume()
         eventManager.subscribe(MenuListener.menuListenerEventType, this)
+        subscriptionReceipt = binding.editor.subscribeEvent(EditorChangeEventReceiver())
     }
 
+    inner class EditorChangeEventReceiver:EventReceiver<ContentChangeEvent> {
+        override fun onReceive(event: ContentChangeEvent, unsubscribe: Unsubscribe) {
+            viewModel.contentChangeFile(event,currentOpenFileObject.name.friendlyURI)
+        }
 
-
+    }
 
 }

@@ -103,6 +103,8 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
 
         val binding = ItemEditorDrawerListItemBinding.bind(holder.itemView)
 
+
+
         binding.title.text = currentData.functionName
         binding.path.text = currentData.fullFunctionName
 

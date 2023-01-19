@@ -26,7 +26,8 @@ class OpenFileManager internal constructor() : FileEventListener {
         }.getOrNull()
         val cacheContent = cacheOpenedFile[uri] ?: CacheOpenFileObject(
             uri = uri,
-            content = fileContent
+            content = fileContent,
+            originContent = fileContent
         )
         cacheContent.content = fileContent
         cacheOpenedFile[uri] = cacheContent
@@ -34,7 +35,7 @@ class OpenFileManager internal constructor() : FileEventListener {
     }
 
     suspend fun saveFile(fileObject: FileObject, content: String?) = withContext(Dispatchers.IO) {
-        val uri  = fileObject.name.friendlyURI
+        val uri = fileObject.name.friendlyURI
         val saveContent = cacheOpenedFile[uri]?.content ?: content ?: return@withContext
 
         fileObject.content
@@ -43,6 +44,14 @@ class OpenFileManager internal constructor() : FileEventListener {
             .use {
                 it.write(saveContent)
             }
+    }
+
+
+    fun checkFileIsSave(fileObject: FileObject): Boolean {
+        val uri = fileObject.name.friendlyURI
+        val cacheContent = cacheOpenedFile[uri] ?: return true
+
+        return cacheContent.content == cacheContent.originContent
     }
 
     suspend fun loadFileInCache(fileObject: FileObject): String {
@@ -75,9 +84,9 @@ class OpenFileManager internal constructor() : FileEventListener {
             }
 
             is FileContentChangeEvent -> {
-
+                val newContent = event.newContent
+                cacheContent?.content = newContent
             }
-
 
         }
     }
@@ -85,5 +94,6 @@ class OpenFileManager internal constructor() : FileEventListener {
 
 class CacheOpenFileObject(
     val uri: String,
-    var content: String?
+    var content: String?,
+    var originContent: String?
 )

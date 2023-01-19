@@ -49,9 +49,13 @@ android {
         resources.pickFirsts.addAll(listOf("META-INF/**", "kotlin/**"))
     }
 
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
