@@ -99,7 +99,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     }
 
 
-    override fun onReload(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
+    override fun onReloadMenu(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
         if (currentFragmentData.fileUri.isNotEmpty() || isDetached) {
             return
         }

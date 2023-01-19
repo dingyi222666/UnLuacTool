@@ -2,7 +2,7 @@ package com.dingyi.unluactool.ui.editor.edit
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
@@ -15,6 +15,7 @@ import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.ui.editor.EditorViewModel
+import com.dingyi.unluactool.ui.editor.event.MenuEvent
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
@@ -26,7 +27,7 @@ import io.github.rosemoe.sora.widget.subscribeEvent
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
-class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
+class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, MenuEvent {
 
     private val viewModel by activityViewModels<EditorViewModel>()
 
@@ -126,7 +127,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
 
     }
 
-    override fun onReload(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
+    override fun onReloadMenu(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
         if (currentFragmentData.fileUri != currentOpenFileObject.name.friendlyURI || isDetached) {
             return
         }
@@ -145,10 +146,17 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
         requireActivity().menuInflater.inflate(R.menu.editor_edit, menu)
     }
 
+    override fun onClick(menuItem: MenuItem) {
+        if (viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData.value?.fileUri != currentOpenFileObject.name.friendlyURI || isDetached) {
+            return
+        }
+        println(menuItem.title)
+    }
 
     override fun onPause() {
         super.onPause()
         eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
+        eventManager.unsubscribe(MenuEvent.eventType, this)
         kotlin.runCatching {
             subscriptionReceipt?.unsubscribe()
         }
@@ -158,6 +166,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener {
         super.onResume()
         listenerEditorContentChange()
         eventManager.subscribe(MenuListener.menuListenerEventType, this)
+        eventManager.subscribe(MenuEvent.eventType, this)
         kotlin.runCatching {
             subscriptionReceipt = binding.editor.subscribeEvent(editorChangeEventReceiver)
         }

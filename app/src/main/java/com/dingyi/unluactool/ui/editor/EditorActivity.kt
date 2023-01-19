@@ -118,6 +118,11 @@ class EditorActivity : BaseActivity() {
             title = getString(R.string.editor_toolbar_title)
             val name = viewModel.project.value?.name
             subtitle = name.toString()
+
+            setOnMenuItemClickListener {
+                viewModel.dispatchMenuClickEvent(it)
+                return@setOnMenuItemClickListener true
+            }
         }
 
         val actionBarDrawerToggle = ActionBarDrawerToggle(this, binding.root, toolbar, 0, 0)
@@ -166,7 +171,7 @@ class EditorActivity : BaseActivity() {
         binding.root.closeDrawers()
 
         viewModel.eventManager.syncPublisher(MenuListener.menuListenerEventType)
-            .onReload(toolbar, new)
+            .onReloadMenu(toolbar, new)
 
     }
 

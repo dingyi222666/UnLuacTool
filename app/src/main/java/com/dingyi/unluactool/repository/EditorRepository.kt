@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.repository
 
+import android.view.MenuItem
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.file.FileCloseEvent
@@ -11,6 +12,7 @@ import com.dingyi.unluactool.core.file.OpenedFileTabManager
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.ui.editor.event.MenuEvent
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import org.apache.commons.vfs2.FileObject
@@ -111,5 +113,11 @@ object EditorRepository {
 
     suspend fun saveFile(fileObject: FileObject, content: String? = null) {
         _openFileManager.saveFile(fileObject, content)
+    }
+
+    fun dispatchMenuClickEvent(item: MenuItem) {
+        _eventManager
+            .syncPublisher(MenuEvent.eventType)
+            .onClick(item)
     }
 }

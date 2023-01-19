@@ -2,6 +2,7 @@ package com.dingyi.unluactool.ui.editor
 
 
 import android.content.Context
+import android.view.MenuItem
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -158,6 +159,10 @@ class EditorViewModel : ViewModel() {
 
         editorUIFileTabManager.openFileObject(fileObject)
 
+    }
+
+    fun dispatchMenuClickEvent(item: MenuItem) {
+        EditorRepository.dispatchMenuClickEvent(item)
     }
 
 }

@@ -5,6 +5,7 @@ import android.os.Looper
 import com.dingyi.unluactool.core.event.EventConnection
 import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.event.EventType
+import com.dingyi.unluactool.ui.editor.edit.EditFragment
 import java.lang.reflect.Proxy
 import java.util.Arrays
 import java.util.concurrent.ForkJoinPool
