@@ -512,7 +512,7 @@ fun unwrap(type: Type): Class<*> {
         if (type is WildcardType) {
             val wildcardType: WildcardType = type as WildcardType
             if (wildcardType.getUpperBounds()
-                    .get(0) is Class<*> && wildcardType.getLowerBounds().size === 0
+                    .get(0) is Class<*> && wildcardType.getLowerBounds().isEmpty()
             ) {
                 return wildcardType.getUpperBounds().get(0) as Class<*>
             }

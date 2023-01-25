@@ -57,7 +57,7 @@ class UnLuaCVirtualFileProvider : LocalFileProvider,AbstractOriginatingFileProvi
     ): FileSystem {
         // Create the file system
         val rootName = name as LocalFileName
-        return UnLuaCFileSystem(rootName, rootName.rootFile,this, fileSystemOptions).apply {
+        return UnLuaCFileSystem(rootName, this, fileSystemOptions).apply {
             init()
         }
     }

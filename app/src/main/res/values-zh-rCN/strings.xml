@@ -27,6 +27,12 @@
     <string name="main_project_lua_file_count">%1$s 个Lua文件</string>
     <string name="main_temporary_project_name">临时工程</string>
     <string name="editor_project_indexer_toast">正在打开已编译的Lua文件 %1$s</string>
+    <string name="editor_edit_cursor_position_format">(行 %1$d, 列 %2$d) 绝对位置: %3$d</string>
+    <string name="editor_edit_cursor_position_select_format">(行 %1$d,列 %2$d) 绝对位置: %3$d (%4$d 个字符)</string>
+    <string name="editor_edit_cursor_position_search_format_default">(行 %1$d, 列 %2$d) 绝对位置: %3$d (%4$d/%5$d 个匹配)</string>
+    <string name="editor_edit_cursor_position_search_format_single">(行 %1$d, 列 %2$d) 绝对位置: %3$d (1 个匹配)</string>
+    <string name="editor_edit_cursor_position_search_format_empty">(行 %1$d, 列 %2$d) 绝对位置: %3$d (无匹配)</string>
+
     <string name="editor_menu_code_search">搜索</string>
     <string name="editor_menu_code_as_lua">转成Lua</string>
     <string name="editor_menu_code_goto">转到指定行</string>

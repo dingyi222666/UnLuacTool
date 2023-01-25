@@ -14,7 +14,6 @@ import org.apache.commons.vfs2.provider.AbstractFileSystem
 
 class UnLuaCFileSystem(
     rootFileName: FileName,
-    rootFile: String,
     private val provider: UnLuaCVirtualFileProvider,
     fileSystemOptions: FileSystemOptions?
 ) : AbstractFileSystem(rootFileName, null, fileSystemOptions) {

@@ -21,8 +21,12 @@ import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.EventReceiver
+import io.github.rosemoe.sora.event.PublishSearchResultEvent
+import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.event.SubscriptionReceipt
 import io.github.rosemoe.sora.event.Unsubscribe
+import io.github.rosemoe.sora.event.subscribeEvent
+import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import io.github.rosemoe.sora.widget.subscribeEvent
 import kotlinx.coroutines.launch
@@ -40,11 +44,11 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         viewModel.eventManager
     }
 
-    private val editorChangeEventReceiver = EditorChangeEventReceiver()
+    private val subEditorEventManager by lazy(LazyThreadSafetyMode.NONE) {
+        binding.editor.createSubEventManager()
+    }
 
     private var toolbar = WeakReference<Toolbar>(null)
-
-    private var subscriptionReceipt: SubscriptionReceipt<ContentChangeEvent>? = null
 
     private lateinit var currentOpenFileObject: UnLuaCFileObject
 
@@ -63,7 +67,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
 
         currentOpenFileObject = vfsManager.resolveFile(fileUri) as UnLuaCFileObject
 
-        initEditor()
+        initView()
 
         openFile()
 
@@ -81,6 +85,15 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                     toolbarTarget.invalidateMenu()
                 }
             }
+    }
+
+    private fun initView() {
+
+        binding.apply {
+            editorEditFunctionName.text = currentOpenFileObject.getFunctionFullName() ?: ""
+        }
+
+        initEditor()
     }
 
 
@@ -109,8 +122,70 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             editor.colorScheme = this
         }
 
+
+        subEditorEventManager.apply {
+            subscribeEvent<ContentChangeEvent> { event, _ ->
+                viewModel.contentChangeFile(event.editor, currentOpenFileObject)
+                updateMenuState()
+            }
+            subscribeEvent<SelectionChangeEvent> { _, _ -> updatePositionText() }
+            subscribeEvent<PublishSearchResultEvent> { _, _ -> updatePositionText() }
+        }
+
+        updatePositionText()
+
+
     }
 
+    private fun updatePositionText() {
+        val cursor = binding.editor.cursor
+        val leftCharPosition = cursor.left()
+
+        val searcher = binding.editor.searcher
+        val searcherHasQuery = searcher.hasQuery()
+        val text = when {
+            searcherHasQuery && searcher.matchedPositionCount == 0 -> {
+                getString(
+                    R.string.editor_edit_cursor_position_search_format_empty,
+                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index
+                )
+            }
+
+            searcherHasQuery && searcher.matchedPositionCount == 1 -> {
+                getString(
+                    R.string.editor_edit_cursor_position_search_format_default,
+                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index,
+                    searcher.currentMatchedPositionIndex + 1, searcher.matchedPositionCount
+                )
+            }
+
+            searcherHasQuery && searcher.matchedPositionCount > 1 -> {
+                getString(
+                    R.string.editor_edit_cursor_position_search_format_single,
+                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index,
+                )
+            }
+
+            cursor.isSelected ->
+                getString(
+                    R.string.editor_edit_cursor_position_select_format,
+                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index,
+                    cursor.right - cursor.leftLine
+                )
+
+            else -> {
+                getString(
+                    R.string.editor_edit_cursor_position_format,
+                    leftCharPosition.line,
+                    leftCharPosition.column,
+                    leftCharPosition.index,
+                )
+            }
+        }
+
+
+        binding.editorEditCursorPosition.text = text
+    }
 
     private fun openFile() {
 
@@ -170,9 +245,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         super.onPause()
         eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
         eventManager.unsubscribe(MenuEvent.eventType, this)
-        kotlin.runCatching {
-            subscriptionReceipt?.unsubscribe()
-        }
+        subEditorEventManager.isEnabled = false
     }
 
     override fun onResume() {
@@ -180,16 +253,12 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         listenerEditorContentChange()
         eventManager.subscribe(MenuListener.menuListenerEventType, this)
         eventManager.subscribe(MenuEvent.eventType, this, stickyEvent = false)
-        kotlin.runCatching {
-            subscriptionReceipt = binding.editor.subscribeEvent(editorChangeEventReceiver)
-        }
+        subEditorEventManager.isEnabled = true
     }
 
-    inner class EditorChangeEventReceiver : EventReceiver<ContentChangeEvent> {
-        override fun onReceive(event: ContentChangeEvent, unsubscribe: Unsubscribe) {
-            viewModel.contentChangeFile(event.editor, currentOpenFileObject)
-            updateMenuState()
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        subEditorEventManager.detach()
     }
 
 

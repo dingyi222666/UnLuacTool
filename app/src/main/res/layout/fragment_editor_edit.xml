@@ -32,6 +32,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_weight="1"
                 android:maxLines="1"
+                android:id="@+id/editor_edit_function_name"
                 android:text="f1/f2/f3/f4"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
                 android:textColor="?colorOnSurfaceVariant" />
@@ -43,6 +44,7 @@
                 android:layout_marginEnd="16dp"
                 android:maxLines="1"
                 android:text="(row 23,column 24) offset: 233"
+                android:id="@+id/editor_edit_cursor_position"
                 android:textAppearance="@style/TextAppearance.Material3.BodySmall"
 
                 android:textColor="?colorOnSurfaceVariant" />

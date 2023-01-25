@@ -31,6 +31,11 @@
     <string name="editor_menu_code_goto">Jump to Line</string>
     <string name="editor_menu_wordwrap">Word wrap</string>
     <string name="editor_menu_readonly">Read-only mode</string>
+    <string name="editor_edit_cursor_position_format">(row %1$d, column %2$d) offset: %3$d</string>
+    <string name="editor_edit_cursor_position_select_format">(row %1$d, column %2$d) offset: %3$d (%4$d chars)</string>
+    <string name="editor_edit_cursor_position_search_format_empty">(row %1$d, column %2$d) offset: %3$d (no match)</string>
+    <string name="editor_edit_cursor_position_search_format_default">(row %1$d, column %2$d) offset: %3$d (%4$d/%5$d matches)</string>
+    <string name="editor_edit_cursor_position_search_format_single">(row %1$d, column %2$d) offset: %3$d (1 match)</string>
     <string name="editor_menu_smooth_mode">Smooth mode</string>
     <string name="editor_menu_code_completion">Instruction completion</string>
     <string name="editor_menu_edit_fragment_close">Close</string>

@@ -7,7 +7,7 @@ object JsonConfigReader {
 
     fun readConfig(configPath: String): JsonElement {
         val configString = this.javaClass.classLoader
-            .getResource("META-INF/$configPath")
+            ?.getResource("META-INF/$configPath")
             ?.openStream()
             ?.use { it.readBytes() }
             ?.decodeToString()

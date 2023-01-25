@@ -155,8 +155,8 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
 
             val binding =
-                if (extra.getFileType() == FileObjectType.FUNCTION) ItemEditorFileViewerListBinding.bind(holder.itemView)
-                else ItemEditorFileViewerListDirBinding.bind(holder.itemView)
+                if (extra.getFileType() == FileObjectType.FUNCTION) ItemEditorFileViewerListBinding.bind(itemView)
+                else ItemEditorFileViewerListDirBinding.bind(itemView)
 
             val space = if (binding is ItemEditorFileViewerListDirBinding) binding.space else
                 (binding as ItemEditorFileViewerListBinding).space
