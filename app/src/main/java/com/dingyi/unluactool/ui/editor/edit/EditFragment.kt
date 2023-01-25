@@ -147,14 +147,14 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             searcherHasQuery && searcher.matchedPositionCount == 0 -> {
                 getString(
                     R.string.editor_edit_cursor_position_search_format_empty,
-                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index
+                    leftCharPosition.line + 1, leftCharPosition.column, leftCharPosition.index
                 )
             }
 
             searcherHasQuery && searcher.matchedPositionCount == 1 -> {
                 getString(
                     R.string.editor_edit_cursor_position_search_format_default,
-                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index,
+                    leftCharPosition.line + 1, leftCharPosition.column, leftCharPosition.index,
                     searcher.currentMatchedPositionIndex + 1, searcher.matchedPositionCount
                 )
             }
@@ -162,21 +162,21 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             searcherHasQuery && searcher.matchedPositionCount > 1 -> {
                 getString(
                     R.string.editor_edit_cursor_position_search_format_single,
-                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index,
+                    leftCharPosition.line + 1, leftCharPosition.column, leftCharPosition.index,
                 )
             }
 
             cursor.isSelected ->
                 getString(
                     R.string.editor_edit_cursor_position_select_format,
-                    leftCharPosition.line, leftCharPosition.column, leftCharPosition.index,
-                    cursor.right - cursor.leftLine
+                    leftCharPosition.line + 1, leftCharPosition.column, leftCharPosition.index,
+                    cursor.right - cursor.left
                 )
 
             else -> {
                 getString(
                     R.string.editor_edit_cursor_position_format,
-                    leftCharPosition.line,
+                    leftCharPosition.line + 1,
                     leftCharPosition.column,
                     leftCharPosition.index,
                 )
