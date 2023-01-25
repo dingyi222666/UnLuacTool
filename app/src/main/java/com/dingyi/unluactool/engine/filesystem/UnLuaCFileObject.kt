@@ -4,6 +4,7 @@ import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.engine.lasm.assemble.LasmAssembleService
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
 import com.dingyi.unluactool.engine.lua.decompile.DecompileService
 import org.apache.commons.vfs2.FileChangeEvent
@@ -35,6 +36,11 @@ class UnLuaCFileObject(
     private val decompileService by lazy(LazyThreadSafetyMode.NONE) {
         MainApplication.instance.globalServiceRegistry
             .get<DecompileService>()
+    }
+
+    private val lasmAssembleService by lazy(LazyThreadSafetyMode.NONE) {
+        MainApplication.instance.globalServiceRegistry
+            .get<LasmAssembleService>()
     }
 
     private fun isNotUnLuacParsedObject(): Boolean = data == null
@@ -230,7 +236,7 @@ class UnLuaCFileObject(
 
 
     private fun decompileFunction() {
-
+        // val assembleObject = lasmAssembleService.assemble()
     }
 
     fun getFunctionFullName(): String? {
