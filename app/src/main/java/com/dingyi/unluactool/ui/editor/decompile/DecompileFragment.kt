@@ -12,4 +12,6 @@ class DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>() {
     ): FragmentEditorDecompileBinding {
         return FragmentEditorDecompileBinding.inflate(inflater, container, false)
     }
+
+
 }

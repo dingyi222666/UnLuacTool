@@ -34,6 +34,7 @@
     <string name="editor_edit_cursor_position_search_format_empty">(行 %1$d, 列 %2$d) 绝对位置: %3$d (无匹配)</string>
 
     <string name="editor_menu_code_search">搜索</string>
+    <string name="editor_menu_code_reload">重新加载</string>
     <string name="editor_menu_code_as_lua">转成Lua</string>
     <string name="editor_menu_code_goto">转到指定行</string>
     <string name="editor_menu_wordwrap">自动换行</string>

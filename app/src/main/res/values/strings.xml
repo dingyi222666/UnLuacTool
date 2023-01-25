@@ -30,6 +30,7 @@
     <string name="editor_project_indexer_toast">Lua compiled file is opening %1$s (%2$s/%3$s)</string>
     <string name="editor_menu_code_goto">Jump to Line</string>
     <string name="editor_menu_wordwrap">Word wrap</string>
+    <string name="editor_menu_code_reload">Reload</string>
     <string name="editor_menu_readonly">Read-only mode</string>
     <string name="editor_edit_cursor_position_format">(row %1$d, column %2$d) offset: %3$d</string>
     <string name="editor_edit_cursor_position_select_format">(row %1$d, column %2$d) offset: %3$d (%4$d chars)</string>
