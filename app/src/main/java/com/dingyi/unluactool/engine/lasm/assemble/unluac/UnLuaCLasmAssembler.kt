@@ -9,7 +9,7 @@ import java.io.ByteArrayInputStream
 import java.io.OutputStream
 
 class UnLuaCLasmAssembler : AbstractLasmAssembler {
-    override fun assembleToStream(mainChunk: LASMChunk, output: OutputStream):Boolean {
+    override fun assembleToStream(mainChunk: LASMChunk, output: OutputStream): Boolean {
         return kotlin.runCatching {
             Assembler(
                 ByteArrayInputStream(mainChunk.getAllData().encodeToByteArray()),
@@ -28,7 +28,14 @@ class UnLuaCLasmAssembler : AbstractLasmAssembler {
 
         val mainAssembleFunction = chunk.main
 
-        return chunk.convertToFunction(mainAssembleFunction)
+        return chunk.convertToFunction(mainAssembleFunction).apply {
+            header.config = Configuration().apply {
+                rawstring = true
+                mode = Configuration.Mode.DECOMPILE
+                variable = Configuration.VariableMode.NODEBUG
+                //strict_scope = true
+            }
+        }
     }
 
     override fun assembleToObject(
@@ -36,6 +43,7 @@ class UnLuaCLasmAssembler : AbstractLasmAssembler {
         targetFunction: LASMFunction
     ): Pair<Any, Any> {
         val inputStream = ByteArrayInputStream(mainChunk.getAllData().encodeToByteArray())
+
         val assembler = Assembler(
             inputStream,
             null
@@ -53,7 +61,10 @@ class UnLuaCLasmAssembler : AbstractLasmAssembler {
 
         val currentFunction = chunk.convertToFunction(currentASMFunction)
         mainFunction.header.config = Configuration().apply {
+            rawstring = true
+            mode = Configuration.Mode.DECOMPILE
             variable = Configuration.VariableMode.FINDER
+            /*strict_scope = true*/
         }
 
         inputStream.close()

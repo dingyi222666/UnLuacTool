@@ -13,6 +13,8 @@ import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.provider.AbstractFileName
 import org.apache.commons.vfs2.provider.AbstractFileObject
+import unluac.Configuration
+import unluac.parse.LFunction
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -240,12 +242,28 @@ class UnLuaCFileObject(
             lasmAssembleService.assembleToObject(extra.chunk)
         } else {
             lasmAssembleService.assembleToObject(extra.chunk, extra.requireFunction())?.second
+        }.let { it as LFunction? } ?: error("Unable to decompile function: ${getFunctionFullName()}")
+
+        assembleObject.header.config = Configuration().apply {
+            rawstring = true
+            mode = Configuration.Mode.DECOMPILE
+            variable = Configuration.VariableMode.FINDER
+            //strict_scope = true
         }
-        if (assembleObject == null) {
-            error("Unable to decompile function: ${getFunctionFullName()}")
+
+        var decompiledSource = (decompileService.decompileToSource(assembleObject, null)).toString()
+
+        if (decompiledSource == "null" || decompiledSource.isEmpty()) {
+            assembleObject.header.config = Configuration().apply {
+                rawstring = true
+                mode = Configuration.Mode.DECOMPILE
+                variable = Configuration.VariableMode.NODEBUG
+                //strict_scope = true
+            }
+            decompiledSource = (decompileService.decompileToSource(assembleObject, null)).toString()
         }
-        val decompiledSource = decompileService.decompileToSource(assembleObject, null)
-            ?: error("Unable to decompile function: ${getFunctionFullName()}")
+
+
         return extra.fileObject.wrapDataToStream(decompiledSource.toString())
 
     }

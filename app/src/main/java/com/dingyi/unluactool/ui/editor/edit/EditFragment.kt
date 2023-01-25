@@ -79,8 +79,8 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             .observe(viewLifecycleOwner) { isNotSaveEdit ->
                 toolbar.get()?.let { toolbarTarget ->
                     toolbarTarget.menu.let { menu ->
-                        val saveItem = menu.findItem(R.id.editor_menu_save)
-                        saveItem.isEnabled = isNotSaveEdit
+                        val saveItem: MenuItem? = menu.findItem(R.id.editor_menu_save)
+                        saveItem?.isEnabled = isNotSaveEdit
                     }
                     toolbarTarget.invalidateMenu()
                 }
@@ -242,6 +242,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                     )
                 }
             }
+
             R.id.editor_menu_code_as_lua -> {
                 openFileObject(currentOpenFileObject.resolveFile("_decompile") as UnLuaCFileObject)
             }
