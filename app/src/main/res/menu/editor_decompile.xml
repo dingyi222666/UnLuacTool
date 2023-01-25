@@ -6,6 +6,7 @@
         android:id="@+id/editor_menu_code_explore"
         android:iconTint="?colorOnSurface"
         android:title="@string/editor_menu_code_explore"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_round_explore_24" />
 
     <item
