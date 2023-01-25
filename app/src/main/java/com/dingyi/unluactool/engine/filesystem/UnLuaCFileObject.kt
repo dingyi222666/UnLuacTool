@@ -13,6 +13,7 @@ import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.provider.AbstractFileName
 import org.apache.commons.vfs2.provider.AbstractFileObject
+import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
@@ -133,12 +134,7 @@ class UnLuaCFileObject(
                 extra.fileObject.wrapDataToStream(it)
             }
         } else {
-            val extra = requireExtra()
-            extra.let {
-                it.currentFunction?.data ?: it.fileObject.getAllData()
-            }.let {
-                extra.fileObject.wrapDataToStream(it)
-            }
+            decompileFunction()
         }
     }
 
@@ -235,14 +231,28 @@ class UnLuaCFileObject(
     }
 
 
-    private fun decompileFunction() {
-        // val assembleObject = lasmAssembleService.assemble()
+    private fun decompileFunction(): InputStream {
+
+        val extra = requireExtra()
+        val assembleObject = if (extra.currentFunction == null) {
+            lasmAssembleService.assembleToObject(extra.chunk)
+        } else {
+            lasmAssembleService.assembleToObject(extra.chunk, extra.requireFunction())?.second
+        }
+        if (assembleObject == null) {
+            error("Unable to decompile function: ${getFunctionFullName()}")
+        }
+        val decompiledSource = decompileService.decompileToSource(assembleObject, null)
+            ?: error("Unable to decompile function: ${getFunctionFullName()}")
+        return extra.fileObject.wrapDataToStream(decompiledSource.toString())
+
     }
+
 
     fun getFunctionFullName(): String? {
         return when (getFileType()) {
             FileObjectType.FILE -> name.baseName
-            FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
+            FileObjectType.FUNCTION, FileObjectType.DECOMPILE_FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
                 val extra = requireExtra()
                 extra.currentFunction?.fullName
             }
@@ -254,7 +264,7 @@ class UnLuaCFileObject(
     fun getFunctionName(): String? {
         return when (getFileType()) {
             FileObjectType.FILE -> name.baseName
-            FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
+            FileObjectType.FUNCTION, FileObjectType.DECOMPILE_FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
                 val extra = requireExtra()
                 extra.currentFunction?.name
             }
@@ -268,12 +278,13 @@ class UnLuaCFileObject(
         if (fullName == null) {
             return fullName
         }
+
+
         val path =
             name.pathDecoded.substring(requireExtra().project.name.length + 2)
                 .replace(".lasm", ".lua(/main)")
-
         if (data?.isDecompile == true) {
-            return "${path}.lua"
+            return "${path.replace("_decompile", "")}.lua"
         }
 
         return path

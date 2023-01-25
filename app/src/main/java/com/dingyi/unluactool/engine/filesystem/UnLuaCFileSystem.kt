@@ -132,16 +132,20 @@ class UnLuaCFileSystem(
         fileName: FileName,
         projectSourceSrc: FileObject,
         projectName: String,
-        extraPath: String? = null
+        extra: UnLuacFileObjectExtra? = null
     ): AbstractFileName {
         // ?
         var uri = fileName.friendlyURI.replace(
             projectSourceSrc.name.friendlyURI/* "file:/"*/,
             "unluac://$projectName"
         )
-        if (extraPath != null) {
-            uri = "$uri/$extraPath"
+        if (extra != null) {
+            uri = "$uri/${extra.path}"
+            if (extra.isDecompile) {
+                uri += "_decompile"
+            }
         }
+
         return provider.parseUri(null, uri) as AbstractFileName
         // return fileName as AbstractFileName
     }
@@ -158,7 +162,7 @@ class UnLuaCFileSystem(
                 targetFileObject.name,
                 projectSourceSrc,
                 projectName,
-                extra.path
+                extra
             ),
             data = extra,
             fileSystem = this

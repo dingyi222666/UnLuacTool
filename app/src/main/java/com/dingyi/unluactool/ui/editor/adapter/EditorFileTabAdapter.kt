@@ -106,12 +106,17 @@ class EditorFileTabAdapter : RecyclerView.Adapter<EditorFileTabAdapter.ViewHolde
         }
 
         val binding = ItemEditorDrawerListItemBinding.bind(holder.itemView)
-
         val isNotSaveEditContent = currentData.isNotSaveEditContent
         val isNotSaveEditContentValue = isNotSaveEditContent.value ?: false
 
         binding.title.text = (if (isNotSaveEditContentValue) "*" else "") + currentData.functionName
         binding.path.text = currentData.fullFunctionName
+
+        if (currentData.fileUri.endsWith("_decompile")) {
+            binding.icon.setImageResource(R.drawable.ic_language_lua)
+        } else {
+            binding.icon.setImageResource(R.drawable.ic_round_edit_24)
+        }
 
         onContentChangeListener(currentData, binding)
 
