@@ -14,13 +14,13 @@ import com.dingyi.unluactool.common.ktx.getJavaClass
 import com.dingyi.unluactool.databinding.EditorBinding
 import com.dingyi.unluactool.databinding.IncludeToolbarBinding
 import com.dingyi.unluactool.repository.EditorRepository
+import com.dingyi.unluactool.ui.editor.decompile.DecompileFragment
 import com.dingyi.unluactool.ui.editor.drawer.DrawerFragment
 import com.dingyi.unluactool.ui.editor.edit.EditFragment
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import com.dingyi.unluactool.ui.editor.main.MainFragment
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class EditorActivity : BaseActivity() {
@@ -185,8 +185,15 @@ class EditorActivity : BaseActivity() {
 
 
     private fun createPagerFragment(editorFragmentData: OpenedFileTabData): Fragment {
-        if (editorFragmentData.fileUri.isNotEmpty()) {
+        val isUriNotEmpty = editorFragmentData.fileUri.isNotEmpty()
+        if (isUriNotEmpty && !editorFragmentData.fileUri.endsWith("_decompile")) {
             val fragment = EditFragment()
+            fragment.arguments = Bundle().apply {
+                putString("fileUri", editorFragmentData.fileUri)
+            }
+            return fragment
+        } else if (isUriNotEmpty && editorFragmentData.fileUri.endsWith("_decompile")) {
+            val fragment = DecompileFragment()
             fragment.arguments = Bundle().apply {
                 putString("fileUri", editorFragmentData.fileUri)
             }

@@ -243,7 +243,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                 }
             }
             R.id.editor_menu_code_as_lua -> {
-                // openFileObject(currentOpenFileObject.resolveFile("_decompile") as UnLuaCFileObject)
+                openFileObject(currentOpenFileObject.resolveFile("_decompile") as UnLuaCFileObject)
             }
         }
 

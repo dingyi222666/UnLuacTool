@@ -230,9 +230,11 @@ class UnLuaCFileObject(
         data?.fileObject?.refreshFlush()
     }
 
+    override fun doIsWriteable(): Boolean {
+        return getFileType() != FileObjectType.DECOMPILE_FUNCTION
+    }
 
     private fun decompileFunction(): InputStream {
-
         val extra = requireExtra()
         val assembleObject = if (extra.currentFunction == null) {
             lasmAssembleService.assembleToObject(extra.chunk)
@@ -264,9 +266,13 @@ class UnLuaCFileObject(
     fun getFunctionName(): String? {
         return when (getFileType()) {
             FileObjectType.FILE -> name.baseName
-            FileObjectType.FUNCTION, FileObjectType.DECOMPILE_FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
+            FileObjectType.FUNCTION,  FileObjectType.FUNCTION_WITH_CHILD -> {
                 val extra = requireExtra()
                 extra.currentFunction?.name
+            }
+            FileObjectType.DECOMPILE_FUNCTION -> {
+                val extra = requireExtra()
+                extra.currentFunction?.name + ".lua"
             }
 
             else -> null
@@ -279,12 +285,11 @@ class UnLuaCFileObject(
             return fullName
         }
 
-
         val path =
             name.pathDecoded.substring(requireExtra().project.name.length + 2)
                 .replace(".lasm", ".lua(/main)")
         if (data?.isDecompile == true) {
-            return "${path.replace("_decompile", "")}.lua"
+            return "${path.replace("_decompile", "")}(.lua)"
         }
 
         return path

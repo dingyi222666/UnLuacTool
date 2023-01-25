@@ -35,9 +35,15 @@ class OpenFileManager internal constructor() : FileEventListener {
     }
 
     suspend fun saveFile(fileObject: FileObject, content: String?) = withContext(Dispatchers.IO) {
+
+        if (!fileObject.isWriteable) {
+            return@withContext
+        }
+
         val uri = fileObject.name.friendlyURI
         val cacheContent = cacheOpenedFile.getValue(uri)
         val saveContent = cacheContent.content ?: content ?: return@withContext
+
 
         fileObject.content
             .outputStream
