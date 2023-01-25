@@ -203,6 +203,11 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
 
     }
 
+    private fun openFileObject(fileObject: UnLuaCFileObject) {
+        viewModel.openFileObject(fileObject)
+    }
+
+
     override fun onReloadMenu(toolbar: Toolbar, currentFragmentData: OpenedFileTabData) {
         if (currentFragmentData.fileUri != currentOpenFileObject.name.friendlyURI || isDetached) {
             return
@@ -236,6 +241,9 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                         binding.root
                     )
                 }
+            }
+            R.id.editor_menu_code_as_lua -> {
+                // openFileObject(currentOpenFileObject.resolveFile("_decompile") as UnLuaCFileObject)
             }
         }
 

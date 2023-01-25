@@ -1,14 +1,18 @@
 package com.dingyi.unluactool.engine.filesystem
 
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.outputStream
+import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.engine.lasm.data.v1.LASMChunk
+import com.dingyi.unluactool.engine.lua.decompile.DecompileService
 import org.apache.commons.vfs2.FileChangeEvent
 import org.apache.commons.vfs2.FileListener
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileType
 import org.apache.commons.vfs2.provider.AbstractFileName
 import org.apache.commons.vfs2.provider.AbstractFileObject
+import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 
@@ -27,6 +31,11 @@ class UnLuaCFileObject(
     private var currentFileType: FileObjectType? = null
 
     private var isDelete = false
+
+    private val decompileService by lazy(LazyThreadSafetyMode.NONE) {
+        MainApplication.instance.globalServiceRegistry
+            .get<DecompileService>()
+    }
 
     private fun isNotUnLuacParsedObject(): Boolean = data == null
 
@@ -69,8 +78,6 @@ class UnLuaCFileObject(
 
     override fun refresh() {
 
-        println(data?.currentFunction)
-
         proxyFileObject.refresh()
 
         data?.fileObject?.refresh()
@@ -84,6 +91,10 @@ class UnLuaCFileObject(
 
     private fun doGetFileType() {
         val func = func@{
+
+            if (data?.isDecompile == true) {
+                return@func FileObjectType.DECOMPILE_FUNCTION
+            }
 
             if (!proxyFileObject.exists() || isDelete) {
                 return@func FileObjectType.IMAGINARY
@@ -105,13 +116,22 @@ class UnLuaCFileObject(
 
 
     override fun doGetInputStream(): InputStream {
+        val fileType = getFileType()
         return if (isNotUnLuacParsedObject()) {
             proxyFileObject.inputStream
-        } else {
-            requireExtra().let {
+        } else if (fileType != FileObjectType.DECOMPILE_FUNCTION) {
+            val extra = requireExtra()
+            extra.let {
                 it.currentFunction?.data ?: it.fileObject.getAllData()
             }.let {
-                requireExtra().fileObject.wrapDataToStream(it)
+                extra.fileObject.wrapDataToStream(it)
+            }
+        } else {
+            val extra = requireExtra()
+            extra.let {
+                it.currentFunction?.data ?: it.fileObject.getAllData()
+            }.let {
+                extra.fileObject.wrapDataToStream(it)
             }
         }
     }
@@ -149,7 +169,7 @@ class UnLuaCFileObject(
     override fun doGetType(): FileType {
         return when (getFileType()) {
             FileObjectType.DIR, FileObjectType.FUNCTION_WITH_CHILD, FileObjectType.FILE -> FileType.FOLDER
-            FileObjectType.FUNCTION -> FileType.FILE
+            FileObjectType.FUNCTION, FileObjectType.DECOMPILE_FUNCTION -> FileType.FILE
             FileObjectType.IMAGINARY -> FileType.IMAGINARY
         }
     }
@@ -159,13 +179,17 @@ class UnLuaCFileObject(
     }
 
     override fun doGetOutputStream(bAppend: Boolean): OutputStream {
+        val fileType = getFileType()
         return if (isNotUnLuacParsedObject()) {
             proxyFileObject.content.getOutputStream(bAppend)
-        } else {
+        } else if (fileType != FileObjectType.DECOMPILE_FUNCTION) {
             requireExtra().let {
                 if (it.currentFunction == null) it.fileObject.writeAllData()
                 else it.fileObject.writeData(it.requireFunction())
             }
+        } else {
+            // ?
+            ByteArrayOutputStream()
         }
     }
 
@@ -205,6 +229,10 @@ class UnLuaCFileObject(
     }
 
 
+    private fun decompileFunction() {
+
+    }
+
     fun getFunctionFullName(): String? {
         return when (getFileType()) {
             FileObjectType.FILE -> name.baseName
@@ -237,11 +265,16 @@ class UnLuaCFileObject(
         val path =
             name.pathDecoded.substring(requireExtra().project.name.length + 2)
                 .replace(".lasm", ".lua(/main)")
+
+        if (data?.isDecompile == true) {
+            return "${path}.lua"
+        }
+
         return path
     }
 
 }
 
 enum class FileObjectType {
-    FUNCTION, FILE, DIR, FUNCTION_WITH_CHILD, IMAGINARY
+    FUNCTION, FILE, DIR, FUNCTION_WITH_CHILD, DECOMPILE_FUNCTION, IMAGINARY
 }

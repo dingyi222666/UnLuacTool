@@ -164,7 +164,8 @@ data class UnLuacFileObjectExtra(
     var currentFunction: LASMFunction?,
     var path: String,
     var fileObject: UnLuacParsedFileObject,
-    var project: Project
+    var project: Project,
+    val isDecompile:Boolean = false
 ) {
     fun requireFunction(): LASMFunction = checkNotNull(currentFunction)
 

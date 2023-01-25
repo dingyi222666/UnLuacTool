@@ -7,6 +7,7 @@ interface Decompiler {
 
     fun decompile(input: ByteArray, configuration: Any?,decompilerGetter: DecompilerGetter): Any
 
+    // fun decompileToSource(input:Any,configuration: Any?,decompilerGetter: DecompilerGetter):Any
 }
 
 interface DecompilerGetter {

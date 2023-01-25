@@ -26,10 +26,16 @@ class UnLuaCFileSystem(
     private val cacheParsedFileObject = mutableMapOf<String, UnLuacParsedFileObject>()
 
     //unluac://project/file (lasm)
-    override fun createFile(name: AbstractFileName): FileObject? {
-        val path = name.pathDecoded.substring(1)
+    override fun createFile(name: AbstractFileName): FileObject {
+        var path = name.pathDecoded.substring(1)
+        var isDecompileFunction = false
+        if (path.endsWith("_decompile")) {
+            isDecompileFunction = true
+            path = path.replace("_decompile", "")
+        }
+
         val projectName = path.substringBefore("/", path)
-        val targetFilePaths = path.replace(projectName + "/", "")
+        val targetFilePaths = path.replace("$projectName/", "")
             .split("/")
             .filter(String::isNotEmpty)
             .toMutableList()
@@ -81,7 +87,8 @@ class UnLuaCFileSystem(
             path = targetFilePaths.joinToString(separator = "/"),
             fileObject = parsedFileObject,
             currentFunction = null,
-            project = project
+            project = project,
+            isDecompile = isDecompileFunction
         )
 
         if (targetFilePaths.isEmpty()) {
