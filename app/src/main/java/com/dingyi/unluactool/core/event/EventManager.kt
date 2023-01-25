@@ -9,6 +9,8 @@ interface EventManager {
 
     fun <T:Any> subscribe(eventType: EventType<T>, target: T)
 
+    fun <T:Any> subscribe(eventType: EventType<T>, target: T,stickyEvent:Boolean)
+
     fun <T : Any> clearListener(eventType: EventType<T>)
 
     fun connect(): EventConnection

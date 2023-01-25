@@ -72,6 +72,18 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
     }
 
     override fun <T : Any> subscribe(eventType: EventType<T>, target: T) {
+        subscribeInternal(eventType, target, true)
+    }
+
+    override fun <T : Any> subscribe(eventType: EventType<T>, target: T, stickyEvent: Boolean) {
+        subscribeInternal(eventType, target, stickyEvent)
+    }
+
+    private fun <T : Any> subscribeInternal(
+        eventType: EventType<T>,
+        target: T,
+        stickyEvent: Boolean
+    ) {
         val receivers = lock.read { receivers.getOrDefault(eventType, mutableSetOf()) }
 
         lock.write {
@@ -90,10 +102,13 @@ open class EventManagerImpl(private val parent: EventManagerImpl?) : EventManage
 
         // sticky event support
 
+        if (!stickyEvent) {
+            return
+        }
+
         lock.read {
             stickyEventCaches[eventType]
         }?.execute(target)
-
     }
 
     override fun <T : Any> clearListener(eventType: EventType<T>) {

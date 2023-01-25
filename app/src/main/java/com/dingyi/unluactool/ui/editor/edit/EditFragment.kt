@@ -179,7 +179,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         super.onResume()
         listenerEditorContentChange()
         eventManager.subscribe(MenuListener.menuListenerEventType, this)
-        eventManager.subscribe(MenuEvent.eventType, this)
+        eventManager.subscribe(MenuEvent.eventType, this, stickyEvent = false)
         kotlin.runCatching {
             subscriptionReceipt = binding.editor.subscribeEvent(editorChangeEventReceiver)
         }
@@ -190,7 +190,6 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             viewModel.contentChangeFile(event.editor, currentOpenFileObject)
             updateMenuState()
         }
-
     }
 
 
