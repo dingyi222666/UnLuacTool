@@ -5,8 +5,10 @@ import com.dingyi.unluactool.engine.lasm.data.v1.LASMFunction
 import java.io.OutputStream
 
 interface AbstractLasmAssembler {
-    fun assemble(mainChunk: LASMChunk, output: OutputStream):Boolean
+    fun assembleToStream(mainChunk: LASMChunk, output: OutputStream):Boolean
 
-    fun assemble(mainChunk: LASMChunk): Any
+    fun assembleToObject(mainChunk: LASMChunk): Any
+
+    fun assembleToObject(mainChunk: LASMChunk, targetFunction:LASMFunction): Pair<Any,Any>
 
 }

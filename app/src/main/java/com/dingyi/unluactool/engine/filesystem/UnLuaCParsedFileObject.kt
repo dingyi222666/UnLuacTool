@@ -134,7 +134,7 @@ class UnLuacParsedFileObject(
                 currentFunction.data = data
             }
 
-            val byteCode = checkNotNull(lasmAssembleService.assemble(lasmChunk))
+            val byteCode = checkNotNull(lasmAssembleService.assembleToObject(lasmChunk))
 
             val oldChunk = lasmChunk
 
