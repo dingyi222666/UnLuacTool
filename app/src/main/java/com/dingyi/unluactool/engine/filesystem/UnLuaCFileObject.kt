@@ -251,7 +251,7 @@ class UnLuaCFileObject(
             //strict_scope = true
         }
 
-        var decompiledSource = (decompileService.decompileToSource(assembleObject, null)).toString()
+        var decompiledSource = decompileService.decompileToSource(assembleObject, null).toString()
 
         if (decompiledSource == "null" || decompiledSource.isEmpty()) {
             assembleObject.header.config = Configuration().apply {
@@ -260,7 +260,7 @@ class UnLuaCFileObject(
                 variable = Configuration.VariableMode.NODEBUG
                 //strict_scope = true
             }
-            decompiledSource = (decompileService.decompileToSource(assembleObject, null)).toString()
+            decompiledSource = decompileService.decompileToSource(assembleObject, null).toString()
         }
 
 

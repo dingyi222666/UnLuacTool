@@ -37,7 +37,7 @@ class LASMChunk(
                 return now
             }
         }
-        return if (current != this) (current as LASMFunction) else null
+        return if (current != this) current as LASMFunction else null
     }
 
 

@@ -144,8 +144,6 @@ class UnLuacParsedFileObject(
                 it.onChunkChange(lasmChunk, oldChunk)
             }
 
-            System.gc()
-
             refreshFlush()
 
         }

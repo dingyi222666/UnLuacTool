@@ -21,11 +21,9 @@ jobs:
       - name: Running gradle assembleDebug
         run: gradle assembleDebug
 
-      - name: Uploading Debug Apkx 
+      - name: Uploading Debug Apk
         uses: actions/upload-artifact@v2
         with:
           name: apk-debug
           path: |
             app/build/outputs/apk/debug
-      
-    

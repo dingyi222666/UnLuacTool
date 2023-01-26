@@ -60,8 +60,8 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
             for (index in 0 until size) {
 
                 val originFileObject = allProjectFileList[index]
-                val nowProgress = (index / size) * 100
-                val nextProgress = (index + 1 / size) * 100
+                val nowProgress = index / size * 100
+                val nextProgress = index + 1 / size * 100
                 val rangeProgress = nextProgress - nowProgress
 
 
