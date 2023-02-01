@@ -261,6 +261,11 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                 }
             }
 
+            R.id.editor_menu_edit_fragment_close -> {
+                val fileTabManager = viewModel.editorUIFileTabManager
+                fileTabManager.removeData(fileTabManager.queryOpenedFileTab(currentOpenFileObject))
+            }
+
             R.id.editor_menu_code_redo -> binding.editor.redo()
             R.id.editor_menu_code_undo -> binding.editor.undo()
 

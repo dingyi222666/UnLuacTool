@@ -214,6 +214,10 @@ class DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuLi
         when (menuItem.itemId) {
             R.id.editor_menu_code_redo -> binding.editor.redo()
             R.id.editor_menu_code_undo -> binding.editor.undo()
+            R.id.editor_menu_edit_fragment_close -> {
+                val fileTabManager = viewModel.editorUIFileTabManager
+                fileTabManager.removeData(fileTabManager.queryOpenedFileTab(currentOpenFileObject))
+            }
         }
 
     }
