@@ -1,6 +1,8 @@
 package com.dingyi.unluactool.core.editor
 
 import android.graphics.Typeface
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.dingyi.unluactool.MainApplication
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
@@ -11,14 +13,15 @@ import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.nio.charset.Charset
 
 class EditorConfigManager {
 
-    lateinit var font: Typeface
-        private set
+    private val _font = MutableLiveData<Typeface>()
+    val font: LiveData<Typeface> = _font
 
     init {
         val application = MainApplication.instance
@@ -31,7 +34,7 @@ class EditorConfigManager {
             val themes = arrayOf("quietlight.json", "solarized_drak.json")
 
             themes.forEach { themeName ->
-                val themePath = "assets/editor/textmate/theme/$themeName"
+                val themePath = "editor/textmate/theme/$themeName"
                 ThemeRegistry.getInstance().loadTheme(
                     IThemeSource.fromInputStream(
                         application.assets.open(themePath),
@@ -44,9 +47,11 @@ class EditorConfigManager {
             ThemeRegistry.getInstance().setTheme("Quiet Light")
 
             //TODO: Read config to set font
-            font = Typeface.createFromAsset(
-                MainApplication.instance.assets, "editor/fonts/JetBrainsMono-Regular.ttf"
-            )
+            withContext(Dispatchers.Main) {
+                _font.value = Typeface.createFromAsset(
+                    MainApplication.instance.assets, "editor/fonts/JetBrainsMono-Regular.ttf"
+                )
+            }
 
         }
     }

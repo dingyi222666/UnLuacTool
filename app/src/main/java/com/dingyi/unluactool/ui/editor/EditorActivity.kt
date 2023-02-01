@@ -31,9 +31,6 @@ class EditorActivity : BaseActivity() {
 
     private val viewModel by viewModels<EditorViewModel>()
 
-    private val globalServiceRegistry by lazy(LazyThreadSafetyMode.NONE) {
-        MainApplication.instance.globalServiceRegistry
-    }
 
     private val toolbar by lazy(LazyThreadSafetyMode.NONE) {
         IncludeToolbarBinding.bind(binding.root).toolbar

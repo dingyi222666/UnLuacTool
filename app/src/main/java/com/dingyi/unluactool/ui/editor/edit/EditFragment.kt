@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.ui.editor.edit
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -9,10 +10,13 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.showSnackBar
+import com.dingyi.unluactool.core.editor.EditorConfigManager
+import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.ui.editor.EditorViewModel
@@ -26,10 +30,13 @@ import io.github.rosemoe.sora.event.SelectionChangeEvent
 import io.github.rosemoe.sora.event.SubscriptionReceipt
 import io.github.rosemoe.sora.event.Unsubscribe
 import io.github.rosemoe.sora.event.subscribeEvent
+import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
+import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import io.github.rosemoe.sora.text.CharPosition
 import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
 import io.github.rosemoe.sora.widget.subscribeEvent
 import kotlinx.coroutines.launch
+import org.w3c.dom.Text
 import java.lang.ref.WeakReference
 
 class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, MenuEvent {
@@ -38,6 +45,10 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
 
     private val vfsManager by lazy(LazyThreadSafetyMode.NONE) {
         viewModel.vfsManager
+    }
+
+    private val globalServiceRegistry by lazy(LazyThreadSafetyMode.NONE) {
+        MainApplication.instance.globalServiceRegistry
     }
 
     private val eventManager by lazy(LazyThreadSafetyMode.NONE) {
@@ -114,13 +125,20 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
 
         val editor = binding.editor
 
-        editor.colorScheme.apply {
-            setColor(
-                EditorColorScheme.WHOLE_BACKGROUND,
-                getAttributeColor(android.R.attr.colorBackground)
-            )
-            editor.colorScheme = this
-        }
+        val newColorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
+
+        val editorConfigManager = globalServiceRegistry.get<EditorConfigManager>()
+
+        val fontData = editorConfigManager.font
+        val font = fontData.value ?: Typeface.MONOSPACE
+
+        newColorScheme.setColor(
+            EditorColorScheme.WHOLE_BACKGROUND,
+            getAttributeColor(android.R.attr.colorBackground)
+        )
+        editor.colorScheme = newColorScheme
+        editor.typefaceText = font
+        editor.typefaceLineNumber = editor.typefaceText
 
 
         subEditorEventManager.apply {
@@ -133,6 +151,17 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         }
 
         updatePositionText()
+
+        if (fontData.value != font) {
+            fontData.observe(this@EditFragment.viewLifecycleOwner) {
+                editor.typefaceText = it
+                editor.typefaceLineNumber = editor.typefaceText
+                editor.setEditorLanguage(editorConfigManager.getLanguage(currentOpenFileObject))
+            }
+        } else {
+            editor.setEditorLanguage(editorConfigManager.getLanguage(currentOpenFileObject))
+
+        }
 
 
     }
