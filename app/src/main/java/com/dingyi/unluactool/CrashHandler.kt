@@ -120,7 +120,6 @@ object CrashHandler
         }
 
         allFields.forEach { field ->
-
             kotlin.runCatching {
                 field.isAccessible = true
                 val obj = field[null]

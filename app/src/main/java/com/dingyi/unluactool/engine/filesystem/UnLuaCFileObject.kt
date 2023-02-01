@@ -210,7 +210,8 @@ class UnLuaCFileObject(
 
         other as UnLuaCFileObject
 
-        if (proxyFileObject.name.friendlyURI != other.proxyFileObject.name.friendlyURI) return false
+        if (name.uri != other.name.uri) return false
+        if (proxyFileObject.name.uri != other.proxyFileObject.name.uri) return false
 
         return true
     }
@@ -242,7 +243,8 @@ class UnLuaCFileObject(
             lasmAssembleService.assembleToObject(extra.chunk)
         } else {
             lasmAssembleService.assembleToObject(extra.chunk, extra.requireFunction())?.second
-        }.let { it as LFunction? } ?: error("Unable to decompile function: ${getFunctionFullName()}")
+        }.let { it as LFunction? }
+            ?: error("Unable to decompile function: ${getFunctionFullName()}")
 
         assembleObject.header.config = Configuration().apply {
             rawstring = true
@@ -284,10 +286,11 @@ class UnLuaCFileObject(
     fun getFunctionName(): String? {
         return when (getFileType()) {
             FileObjectType.FILE -> name.baseName
-            FileObjectType.FUNCTION,  FileObjectType.FUNCTION_WITH_CHILD -> {
+            FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
                 val extra = requireExtra()
                 extra.currentFunction?.name
             }
+
             FileObjectType.DECOMPILE_FUNCTION -> {
                 val extra = requireExtra()
                 extra.currentFunction?.name + ".lua"

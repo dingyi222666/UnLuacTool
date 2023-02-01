@@ -70,11 +70,12 @@ class EditorActivity : BaseActivity() {
         }
 
         MainApplication.instance.applicationScope.launch {
-            viewModel.saveAllOpenedFileTab()
+            saveAllOpenedFileTab()
         }
 
     }
 
+    private suspend inline fun saveAllOpenedFileTab() = viewModel.saveAllOpenedFileTab()
 
     override fun onBackEvent() {
         val currentFragmentData =
@@ -181,6 +182,9 @@ class EditorActivity : BaseActivity() {
         viewModel.eventManager.syncPublisher(MenuListener.menuListenerEventType)
             .onReloadMenu(toolbar, new)
 
+        MainApplication.instance.applicationScope.launch {
+            saveAllOpenedFileTab()
+        }
     }
 
 

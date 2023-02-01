@@ -10,6 +10,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Space
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -27,6 +29,7 @@ import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
+import com.google.android.material.textview.MaterialTextView
 import io.github.dingyi222666.view.treeview.AbstractTree
 import io.github.dingyi222666.view.treeview.Tree
 import io.github.dingyi222666.view.treeview.TreeNode
@@ -130,19 +133,6 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
     inner class FileNodeBinder : TreeViewBinder<UnLuaCFileObject>(),
         TreeNodeEventListener<UnLuaCFileObject> {
-        override fun areContentsTheSame(
-            oldItem: TreeNode<UnLuaCFileObject>,
-            newItem: TreeNode<UnLuaCFileObject>
-        ): Boolean {
-            return oldItem.data?.name?.friendlyURI == newItem.data?.name?.friendlyURI
-        }
-
-        override fun areItemsTheSame(
-            oldItem: TreeNode<UnLuaCFileObject>,
-            newItem: TreeNode<UnLuaCFileObject>
-        ): Boolean {
-            return oldItem.data?.name?.friendlyURI == newItem.data?.name?.friendlyURI
-        }
 
         override fun bindView(
             holder: TreeView.ViewHolder,
@@ -155,11 +145,12 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
 
             val binding =
-                if (extra.getFileType() == FileObjectType.FUNCTION) ItemEditorFileViewerListBinding.bind(itemView)
+                if (extra.getFileType() == FileObjectType.FUNCTION) ItemEditorFileViewerListBinding.bind(
+                    itemView
+                )
                 else ItemEditorFileViewerListDirBinding.bind(itemView)
 
-            val space = if (binding is ItemEditorFileViewerListDirBinding) binding.space else
-                (binding as ItemEditorFileViewerListBinding).space
+            val space = itemView.findViewById<Space>(R.id.space)
 
             space.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 val leftMargin = if (!node.isChild) {
@@ -171,18 +162,16 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
             }
 
 
-            val titleTextView = if (binding is ItemEditorFileViewerListDirBinding) binding.title
-            else (binding as ItemEditorFileViewerListBinding).title
+            val titleTextView = itemView.findViewById<MaterialTextView>(R.id.title)
 
-            val imageView = if (binding is ItemEditorFileViewerListDirBinding) binding.image
-            else (binding as ItemEditorFileViewerListBinding).image
+            val imageView = itemView.findViewById<AppCompatImageView>(R.id.image)
 
             val fileType = extra.getFileType()
 
             if (fileType == FileObjectType.FUNCTION) {
                 titleTextView.text = node.name
             } else {
-                applyDir(binding as ItemEditorFileViewerListDirBinding, extra, node)
+                applyDir(binding as ItemEditorFileViewerListDirBinding, node)
             }
 
             when (fileType) {
@@ -216,7 +205,6 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
         private fun applyDir(
             binding: ItemEditorFileViewerListDirBinding,
-            extra: UnLuaCFileObject,
             node: TreeNode<UnLuaCFileObject>
         ) {
             binding.title.text = node.name
@@ -253,7 +241,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
             val extra = checkNotNull(node.data)
             val binding = ItemEditorFileViewerListDirBinding.bind(holder.itemView)
             // if (extra.getFileType() != FileObjectType.FUNCTION) {
-            applyDir(binding, extra, node)
+            applyDir(binding, node)
             // }
 
             // node.expand = isExpand
@@ -281,68 +269,45 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
     inner class FileDataGenerator : TreeNodeGenerator<UnLuaCFileObject> {
 
-        override suspend fun refreshNode(
-            targetNode: TreeNode<UnLuaCFileObject>,
-            oldChildNodeSet: Set<Int>,
+        override fun createNode(
+            parentNode: TreeNode<UnLuaCFileObject>,
+            currentData: UnLuaCFileObject,
             tree: AbstractTree<UnLuaCFileObject>
-        ): Set<TreeNode<UnLuaCFileObject>> {
+        ): TreeNode<UnLuaCFileObject> {
+            val hasChild =
+                if (currentData.getFileType() != FileObjectType.FUNCTION) false else {
+                    currentData.children.isEmpty()
+                }
+            return TreeNode(
+                currentData,
+                parentNode.depth + 1,
+                currentData.name.baseName.replace(".lasm", ".lua"),
+                tree.generateId(),
+                hasChild,
+                currentData.getFileType() != FileObjectType.FUNCTION,
+                false
+            )
+        }
 
-            val targetNodeExtra = checkNotNull(targetNode.data)
+        override suspend fun fetchNodeChildData(targetNode: TreeNode<UnLuaCFileObject>): Set<UnLuaCFileObject> {
+            val targetNodeExtra = targetNode.requireData()
             // val friendlyURI = targetNodeExtra.name.friendlyURI
 
             withContext(Dispatchers.IO) { targetNodeExtra.refresh() }
 
-            if (targetNodeExtra.getFileType() == FileObjectType.FUNCTION) {
+            if (targetNodeExtra.isFile) {
                 targetNode.isChild = false
                 return setOf()
             }
 
-            val oldNodes = tree.getNodes(oldChildNodeSet)
+            return withContext(Dispatchers.IO) {
+                val result = checkNotNull(targetNodeExtra.children)
+                    .map { it as UnLuaCFileObject }
 
-            val child =
-                withContext(Dispatchers.IO) {
-                    checkNotNull(targetNodeExtra.children)
-                        // .filter { it.name.friendlyURI != friendlyURI }
-                        .toMutableList()
-                }
-
-            val result = mutableSetOf<TreeNode<UnLuaCFileObject>>()
-
-            oldNodes.forEach { node ->
-                val virtualFile =
-                    child.find { it.name.friendlyURI == node.data?.name?.friendlyURI }
-                if (virtualFile != null) {
-                    result.add(node)
-                }
-                child.remove(virtualFile)
+                println(result)
+                result.toSet()
             }
-
-            if (child.isEmpty()) {
-                return result
-            }
-
-            child.forEach {
-                val unLuaCFileObject = it as UnLuaCFileObject
-                val hasChild =
-                    if (unLuaCFileObject.getFileType() != FileObjectType.FUNCTION) false else {
-                        withContext(Dispatchers.IO) { unLuaCFileObject.children }.isEmpty()
-                    }
-                result.add(
-                    TreeNode(
-                        unLuaCFileObject,
-                        targetNode.depth + 1,
-                        unLuaCFileObject.name.baseName.replace(".lasm", ".lua"),
-                        tree.generateId(),
-                        hasChild,
-                        unLuaCFileObject.getFileType() != FileObjectType.FUNCTION,
-                        false
-                    )
-                )
-            }
-
-            return result
         }
-
 
         override fun createRootNode(): TreeNode<UnLuaCFileObject> {
             val project = checkNotNull(viewModel.project.value)

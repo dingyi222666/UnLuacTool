@@ -151,6 +151,7 @@ class EditorViewModel : ViewModel() {
 
     fun queryOpenedFileTab(fileObject: FileObject): OpenedFileTabData {
         return editorUIFileTabManager.queryOpenedFileTab(fileObject)
+
     }
 
 
@@ -159,6 +160,7 @@ class EditorViewModel : ViewModel() {
             fileObject.name.friendlyURI, project.value
                 ?.projectPath?.name?.friendlyURI ?: "/???"
         )
+
 
         editorUIFileTabManager.openFileObject(fileObject)
 
