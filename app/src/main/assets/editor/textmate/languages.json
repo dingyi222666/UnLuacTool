@@ -1,0 +1,15 @@
+{
+  "languages": [
+    {
+      "grammar": "textmate/python/syntaxes/lua.tmLanguage.json",
+      "name": "lua",
+      "scopeName": "source.lua",
+      "languageConfiguration": "textmate/lua/language-configuration.json"
+    },
+    {
+      "grammar": "textmate/lasm/syntaxes/lasm.tmLanguage.json",
+      "name": "lasm",
+      "scopeName": "source.lasm"
+    }
+  ]
+}

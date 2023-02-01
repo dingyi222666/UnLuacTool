@@ -45,8 +45,8 @@ android {
     }
 
     packagingOptions {
-        resources.excludes.addAll(listOf("xsd/*", "license/*"))
-        resources.pickFirsts.addAll(listOf("META-INF/**", "kotlin/**"))
+        resources.excludes.addAll(listOf("xsd/*", "license/*", "META-INF/*.SF", "META-INF/*.RSA"))
+        resources.pickFirsts.addAll(listOf("kotlin/**"))
     }
 
     kotlinOptions {
@@ -86,6 +86,7 @@ dependencies {
     implementation("com.github.techinessoverloaded:progress-dialog:1.5.1")
     implementation(platform("io.github.Rosemoe.sora-editor:bom:0.21.0"))
     implementation("io.github.Rosemoe.sora-editor:editor")
+    implementation("io.github.Rosemoe.sora-editor:language-textmate")
 
 
     testImplementation("junit:junit:4.13.2")
