@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.base.BaseFragment
-import com.dingyi.unluactool.common.ktx.getAttributeColor
 import com.dingyi.unluactool.common.ktx.showSnackBar
 import com.dingyi.unluactool.core.editor.EditorConfigManager
 import com.dingyi.unluactool.core.service.get
@@ -24,19 +23,12 @@ import com.dingyi.unluactool.ui.editor.event.MenuEvent
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import io.github.rosemoe.sora.event.ContentChangeEvent
-import io.github.rosemoe.sora.event.EventReceiver
 import io.github.rosemoe.sora.event.PublishSearchResultEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
-import io.github.rosemoe.sora.event.SubscriptionReceipt
-import io.github.rosemoe.sora.event.Unsubscribe
 import io.github.rosemoe.sora.event.subscribeEvent
 import io.github.rosemoe.sora.langs.textmate.TextMateColorScheme
 import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
-import io.github.rosemoe.sora.text.CharPosition
-import io.github.rosemoe.sora.widget.schemes.EditorColorScheme
-import io.github.rosemoe.sora.widget.subscribeEvent
 import kotlinx.coroutines.launch
-import org.w3c.dom.Text
 import java.lang.ref.WeakReference
 
 class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, MenuEvent {
@@ -132,10 +124,7 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         val fontData = editorConfigManager.font
         val font = fontData.value ?: Typeface.MONOSPACE
 
-        newColorScheme.setColor(
-            EditorColorScheme.WHOLE_BACKGROUND,
-            getAttributeColor(android.R.attr.colorBackground)
-        )
+
         editor.colorScheme = newColorScheme
         editor.typefaceText = font
         editor.typefaceLineNumber = editor.typefaceText
