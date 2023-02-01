@@ -251,6 +251,10 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             return
         }
 
+        if (menuItem.isCheckable) {
+            menuItem.isChecked = !menuItem.isChecked
+        }
+
         when (menuItem.itemId) {
             R.id.editor_menu_save -> {
                 lifecycleScope.launch {
@@ -266,6 +270,11 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                 val fileTabManager = viewModel.editorUIFileTabManager
                 fileTabManager.removeData(fileTabManager.queryOpenedFileTab(currentOpenFileObject))
             }
+
+            R.id.editor_menu_smooth_mode -> binding.editor.isBasicDisplayMode = menuItem.isChecked
+
+            R.id.editor_menu_readonly -> binding.editor.isEditable = !menuItem.isChecked
+
 
             R.id.editor_menu_code_goto -> gotoDialog(requireActivity(), binding.editor)
             R.id.editor_menu_code_redo -> binding.editor.redo()
