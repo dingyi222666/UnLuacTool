@@ -18,6 +18,7 @@ import com.dingyi.unluactool.core.editor.EditorConfigManager
 import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.ui.dialog.gotoDialog
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.event.MenuEvent
 import com.dingyi.unluactool.ui.editor.event.MenuListener
@@ -117,15 +118,13 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
 
         val editor = binding.editor
 
-        val newColorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
-
         val editorConfigManager = globalServiceRegistry.get<EditorConfigManager>()
 
         val fontData = editorConfigManager.font
         val font = fontData.value ?: Typeface.MONOSPACE
 
 
-        editor.colorScheme = newColorScheme
+
         editor.typefaceText = font
         editor.typefaceLineNumber = editor.typefaceText
 
@@ -146,9 +145,11 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                 editor.typefaceText = it
                 editor.typefaceLineNumber = editor.typefaceText
                 editor.setEditorLanguage(editorConfigManager.getLanguage(currentOpenFileObject))
+                editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
             }
         } else {
             editor.setEditorLanguage(editorConfigManager.getLanguage(currentOpenFileObject))
+            editor.colorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
 
         }
 
@@ -266,9 +267,9 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
                 fileTabManager.removeData(fileTabManager.queryOpenedFileTab(currentOpenFileObject))
             }
 
+            R.id.editor_menu_code_goto -> gotoDialog(requireActivity(), binding.editor)
             R.id.editor_menu_code_redo -> binding.editor.redo()
             R.id.editor_menu_code_undo -> binding.editor.undo()
-
             R.id.editor_menu_code_as_lua -> {
                 openFileObject(currentOpenFileObject.resolveFile("_decompile") as UnLuaCFileObject)
             }

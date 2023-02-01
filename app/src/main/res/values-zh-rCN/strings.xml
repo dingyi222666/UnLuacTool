@@ -32,7 +32,8 @@
     <string name="editor_edit_cursor_position_search_format_default">(行 %1$d, 列 %2$d) 绝对位置: %3$d (%4$d/%5$d 个匹配)</string>
     <string name="editor_edit_cursor_position_search_format_single">(行 %1$d, 列 %2$d) 绝对位置: %3$d (1 个匹配)</string>
     <string name="editor_edit_cursor_position_search_format_empty">(行 %1$d, 列 %2$d) 绝对位置: %3$d (无匹配)</string>
-
+    <string name="editor_edit_dialog_goto_hint">%1$d 到 %2$d</string>
+    <string name="editor_edit_dialog_goto_error">数值超出范围</string>
     <string name="editor_menu_code_search">搜索</string>
     <string name="editor_menu_code_reload">重新加载</string>
     <string name="editor_menu_code_as_lua">转成Lua</string>

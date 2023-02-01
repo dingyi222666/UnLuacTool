@@ -32,6 +32,8 @@
     <string name="editor_menu_wordwrap">Word wrap</string>
     <string name="editor_menu_code_reload">Reload</string>
     <string name="editor_menu_readonly">Read-only mode</string>
+    <string name="editor_edit_dialog_goto_hint">%1$d to %2$d</string>
+    <string name="editor_edit_dialog_goto_error">Value is out of range.</string>
     <string name="editor_edit_cursor_position_format">(row %1$d, column %2$d) offset: %3$d</string>
     <string name="editor_edit_cursor_position_select_format">(row %1$d, column %2$d) offset: %3$d (%4$d chars)</string>
     <string name="editor_edit_cursor_position_search_format_empty">(row %1$d, column %2$d) offset: %3$d (no match)</string>
