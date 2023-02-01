@@ -62,7 +62,6 @@ class DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuLi
     }
 
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -84,7 +83,6 @@ class DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuLi
 
         initEditor()
     }
-
 
 
     private fun initEditor() {
@@ -213,9 +211,10 @@ class DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuLi
             return
         }
 
-       /* when (menuItem.itemId) {
-
-        }*/
+        when (menuItem.itemId) {
+            R.id.editor_menu_code_redo -> binding.editor.redo()
+            R.id.editor_menu_code_undo -> binding.editor.undo()
+        }
 
     }
 
