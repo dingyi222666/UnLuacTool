@@ -89,8 +89,11 @@ internal class LuaProject constructor(
                     fileObject.close()
                     error("Can't resolve file info")
                 }
-                fileObject.outputStream
-                    .use { it.write(this.encodeToJson().encodeToByteArray()) }
+                fileObject.outputStream {
+                    it.use {
+                        it.write(this.encodeToJson().encodeToByteArray())
+                    }
+                }
 
             }
     }

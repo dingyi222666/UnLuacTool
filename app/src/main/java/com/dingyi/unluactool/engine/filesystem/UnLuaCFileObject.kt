@@ -72,6 +72,7 @@ class UnLuaCFileObject(
                 fileSystem.fireFileDeleted(this)
                 return
             }
+            println(newFunction)
             data.currentFunction = newFunction
         } else {
             data.chunk = newChunk
@@ -84,10 +85,11 @@ class UnLuaCFileObject(
     }
 
     override fun refresh() {
+        super.refresh()
 
         proxyFileObject.refresh()
 
-        data?.fileObject?.refresh()
+       // data?.fileObject?.refresh()
 
         doGetFileType()
 
@@ -100,6 +102,7 @@ class UnLuaCFileObject(
         val func = func@{
 
             if (data?.isDecompile == true) {
+                println(data?.currentFunction?.data)
                 return@func FileObjectType.DECOMPILE_FUNCTION
             }
 
@@ -125,7 +128,7 @@ class UnLuaCFileObject(
     override fun doGetInputStream(): InputStream {
         val fileType = getFileType()
         return if (isNotUnLuacParsedObject()) {
-            proxyFileObject.inputStream
+            proxyFileObject.content.inputStream
         } else if (fileType != FileObjectType.DECOMPILE_FUNCTION) {
             val extra = requireExtra()
             extra.let {
@@ -262,7 +265,7 @@ class UnLuaCFileObject(
         }
 
 
-        return extra.fileObject.wrapDataToStream(decompiledSource.toString())
+        return extra.fileObject.wrapDataToStream(decompiledSource)
 
     }
 

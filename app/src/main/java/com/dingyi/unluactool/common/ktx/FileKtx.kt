@@ -18,8 +18,16 @@ fun File.isZipFile(): Boolean {
     }
 }
 
-val FileObject.outputStream: OutputStream
-    get() = this.content.outputStream
+fun <R> FileObject.outputStream(block: (OutputStream) -> R): R {
+    return content.use {
+        block(it.outputStream)
+    }
+}
 
-val FileObject.inputStream: InputStream
-    get() = this.content.inputStream
+fun <R> FileObject.inputStream(block: (InputStream) -> R): R {
+    return content.use {
+        block(it.inputStream)
+    }
+}
+
+

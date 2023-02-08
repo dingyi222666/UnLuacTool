@@ -19,8 +19,7 @@ class LuaProjectInstanceCreator : ProjectInstanceCreator {
                         error("Can't resolve file info")
                     }
 
-                    fileObject.inputStream
-                        .use { it.readBytes() }
+                    fileObject.inputStream { it.readBytes() }
                         .decodeToString()
                         .decodeToBean<LuaProject.ProjectInfo>()
                 }

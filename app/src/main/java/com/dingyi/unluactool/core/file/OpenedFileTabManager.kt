@@ -33,8 +33,10 @@ class OpenedFileTabManager internal constructor() : FileEventListener {
             }
 
 
-            val openedFileObject = cacheJsonFile.inputStream.readBytes().decodeToString()
-                .decodeToBean<OpenedFileObject>()
+            val openedFileObject = cacheJsonFile.inputStream {
+                it.readBytes().decodeToString()
+                    .decodeToBean<OpenedFileObject>()
+            }
 
             cacheOpenedFile[publicUri] = openedFileObject.openedFiles.map {
                 vfsManager.resolveFile(it.uri)
@@ -109,7 +111,6 @@ class OpenedFileTabManager internal constructor() : FileEventListener {
             }
         }
     }
-
 
 
 }

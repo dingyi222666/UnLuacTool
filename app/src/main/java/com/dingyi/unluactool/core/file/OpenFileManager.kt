@@ -2,6 +2,7 @@ package com.dingyi.unluactool.core.file
 
 import com.dingyi.unluactool.common.ktx.encodeToJson
 import com.dingyi.unluactool.common.ktx.inputStream
+import com.dingyi.unluactool.common.ktx.outputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,9 +21,10 @@ class OpenFileManager internal constructor() : FileEventListener {
     suspend fun openFile(fileObject: FileObject): String = withContext(Dispatchers.IO) {
         val uri = fileObject.name.friendlyURI
         val fileContent = kotlin.runCatching {
-            fileObject.inputStream
-                .readBytes()
-                .decodeToString()
+            fileObject.inputStream {
+                it.readBytes()
+                    .decodeToString()
+            }
         }.getOrNull()
         val cacheContent = cacheOpenedFile[uri] ?: CacheOpenFileObject(
             uri = uri,
@@ -45,12 +47,14 @@ class OpenFileManager internal constructor() : FileEventListener {
         val saveContent = cacheContent.content ?: content ?: return@withContext
 
 
-        fileObject.content
-            .outputStream
-            .bufferedWriter()
-            .use {
-                it.write(saveContent)
-            }
+        fileObject.outputStream { stream ->
+            stream.bufferedWriter()
+                .use {
+                    it.write(saveContent)
+                }
+        }
+
+        fileObject.refresh()
 
         cacheContent.originContent = saveContent
     }

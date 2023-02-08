@@ -27,7 +27,7 @@ class UnLuacParsedFileObject(
     lateinit var lasmChunk: LASMChunk
         private set
 
-    private val chunkChangeListeners = mutableListOf<ChunkChangeListener>()
+    private val chunkChangeListeners = mutableSetOf<ChunkChangeListener>()
 
     private val lasmDisassembleService by lazy(LazyThreadSafetyMode.NONE) {
         MainApplication.instance.globalServiceRegistry.get<LasmDisassembleService>()
@@ -43,18 +43,18 @@ class UnLuacParsedFileObject(
             return
         }
 
-        lasmChunk =
+        lasmChunk = proxyFileObject.inputStream {
             LasmUnDumper().unDump(
-                proxyFileObject.inputStream
+                it
             )
+        }
 
     }
 
 
     fun addChunkChangeListener(listener: ChunkChangeListener) {
-        if (!chunkChangeListeners.contains(listener)) {
-            chunkChangeListeners.add(listener)
-        }
+        chunkChangeListeners.add(listener)
+
     }
 
     fun removeChunkChangeListener(listener: ChunkChangeListener) {
@@ -66,21 +66,27 @@ class UnLuacParsedFileObject(
     }
 
     fun refresh() {
-        lasmChunk =
+        lasmChunk = proxyFileObject.inputStream {
             LasmUnDumper().unDump(
-                proxyFileObject.inputStream
+                it
             )
+        }
 
     }
 
     fun refreshFlush() {
-        val outputProvider = StreamOutputProvider(
-            proxyFileObject.outputStream
-        )
-        LasmDumper(
-            Output(outputProvider), lasmChunk
-        ).dump()
-        outputProvider.close()
+        proxyFileObject.outputStream {
+            LasmDumper(
+                Output(
+                    StreamOutputProvider(
+                        it
+                    )
+                ), lasmChunk
+            ).dump()
+        }
+
+        proxyFileObject
+            .refresh()
     }
 
 
@@ -132,6 +138,8 @@ class UnLuacParsedFileObject(
 
             if (currentFunction != null) {
                 currentFunction.data = data
+            } else {
+                lasmChunk.data = data
             }
 
             val byteCode = checkNotNull(lasmAssembleService.assembleToObject(lasmChunk))
@@ -140,11 +148,10 @@ class UnLuacParsedFileObject(
 
             lasmChunk = checkNotNull(lasmDisassembleService.disassemble(byteCode))
 
+            refreshFlush()
             chunkChangeListeners.forEach {
                 it.onChunkChange(lasmChunk, oldChunk)
             }
-
-            refreshFlush()
 
 
         }
@@ -164,7 +171,7 @@ data class UnLuacFileObjectExtra(
     var path: String,
     var fileObject: UnLuacParsedFileObject,
     var project: Project,
-    val isDecompile:Boolean = false
+    val isDecompile: Boolean = false
 ) {
     fun requireFunction(): LASMFunction = checkNotNull(currentFunction)
 

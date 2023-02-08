@@ -7,7 +7,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dingyi.unluactool.core.progress.ProgressState
 import com.dingyi.unluactool.core.project.Project
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
@@ -15,12 +14,10 @@ import com.dingyi.unluactool.repository.EditorRepository
 import com.dingyi.unluactool.ui.dialog.progressDialogWithState
 import com.dingyi.unluactool.ui.editor.fileTab.EditorUIFileTabManager
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
-import io.github.rosemoe.sora.event.ContentChangeEvent
+import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSystemManager

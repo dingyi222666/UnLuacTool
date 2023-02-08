@@ -6,7 +6,7 @@ import java.io.OutputStream
 
 class StreamOutputProvider(
     private val out:OutputStream
-    ): unluac.decompile.OutputProvider,Closeable {
+    ): OutputProvider,Closeable {
 
 
 

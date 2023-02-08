@@ -101,7 +101,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
 
                 val header = decompileService.decompile(
-                    input = originFileObject.inputStream.use {
+                    input = originFileObject.inputStream {
                         it.readBytes()
                     },
                     configuration = null,
@@ -123,7 +123,7 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
                 val bytes = provider.getBytes()
 
-                targetFile.outputStream.use {
+                targetFile.outputStream {
                     it.write(bytes)
                 }
 

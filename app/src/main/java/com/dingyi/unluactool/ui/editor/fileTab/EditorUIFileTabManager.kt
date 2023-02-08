@@ -3,8 +3,10 @@ package com.dingyi.unluactool.ui.editor.fileTab
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.repository.EditorRepository
+import kotlinx.coroutines.launch
 import org.apache.commons.vfs2.FileObject
 
 class EditorUIFileTabManager {

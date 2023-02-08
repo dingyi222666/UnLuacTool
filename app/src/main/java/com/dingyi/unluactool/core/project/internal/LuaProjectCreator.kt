@@ -94,7 +94,7 @@ class LuaProjectCreator : ProjectCreator {
                                 targetFile.parent.createFolder()
                                 targetFile.createFile()
                                 zipFile.getInputStream(it).use { inputStream ->
-                                    targetFile.outputStream.use { outStream ->
+                                    targetFile.outputStream { outStream ->
                                         inputStream.copyTo(outStream)
                                     }
                                 }
@@ -127,8 +127,7 @@ class LuaProjectCreator : ProjectCreator {
             }
 
             projectPath.resolveFile(LuaProject.PROJECT_CONFIG_JSON)
-                .outputStream
-                .use {
+                .outputStream {
                     it.write(
                         LuaProject.ProjectInfo(
                             iconPath = null,
@@ -150,7 +149,7 @@ class LuaProjectCreator : ProjectCreator {
             .globalServiceRegistry
             .get<DecompileService>()
             .decompile(
-                input = targetFile.inputStream.use {
+                input = targetFile.inputStream {
                     it.readBytes()
                 }
             )
