@@ -46,4 +46,5 @@
     <string name="editor_menu_add">Add</string>
     <string name="editor_menu_delete">Delete</string>
     <string name="editor_menu_rename">Rename</string>
+    <string name="editor_menu_open">Open</string>
 </resources>

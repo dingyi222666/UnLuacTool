@@ -248,6 +248,11 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
                         true
                     }
 
+                    R.id.editor_menu_open -> {
+                        openFileObject(fileObject)
+                        true
+                    }
+
                     else -> false
                 }
 
