@@ -43,4 +43,7 @@
     <string name="editor_menu_code_completion">Instruction completion</string>
     <string name="editor_menu_edit_fragment_close">Close</string>
     <string name="editor_menu_code_export">Export</string>
+    <string name="editor_menu_add">Add</string>
+    <string name="editor_menu_delete">Delete</string>
+    <string name="editor_menu_rename">Rename</string>
 </resources>

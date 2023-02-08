@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/editor_menu_add"
+        android:enabled="false"
+        android:title="@string/editor_menu_add" />
+
+    <item
+        android:id="@+id/editor_menu_code_as_lua"
+        android:title="@string/editor_menu_code_as_lua" />
+
+    <item
+        android:id="@+id/editor_menu_delete"
+        android:enabled="false"
+        android:title="@string/editor_menu_delete" />
+
+    <item
+        android:id="@+id/editor_menu_rename"
+        android:enabled="false"
+        android:title="@string/editor_menu_rename" />
+
+
+</menu>

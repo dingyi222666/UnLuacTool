@@ -44,4 +44,7 @@
     <string name="editor_menu_code_completion">指令补全</string>
     <string name="editor_menu_code_export">导出</string>
     <string name="editor_menu_edit_fragment_close">关闭</string>
+    <string name="editor_menu_add">添加</string>
+    <string name="editor_menu_delete">删除</string>
+    <string name="editor_menu_rename">重命名</string>
 </resources>

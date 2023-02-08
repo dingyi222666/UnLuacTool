@@ -219,7 +219,7 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
 
         override fun onClick(node: TreeNode<UnLuaCFileObject>, holder: TreeView.ViewHolder) {
-            val extra = checkNotNull(node.data)
+            val extra = node.requireData()
             // val binding = ItemEditorFileViewerListBinding.bind(holder.itemView)
 
             if (!node.isChild) {
@@ -227,10 +227,20 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
                 return
             }
 
-            /*if (extra.getFileType() != FileObjectType.FUNCTION && !node.hasChild) {
-                onToggle(node, !node.expand, holder)
-            }*/
+        }
 
+        override fun onLongClick(
+            node: TreeNode<UnLuaCFileObject>,
+            holder: TreeView.ViewHolder
+        ): Boolean {
+            val fileObject = node.requireData()
+            if (fileObject.getFileType() == FileObjectType.DIR) {
+                return false
+            }
+
+
+
+            return true
         }
 
         override fun onToggle(
