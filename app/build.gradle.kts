@@ -66,10 +66,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-alpha05")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha05")
     implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha01")
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha02")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-alpha05")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.0-beta01")
     implementation("androidx.fragment:fragment-ktx:1.5.5")
     implementation("com.google.android.material:material:1.9.0-alpha01")
 

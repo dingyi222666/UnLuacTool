@@ -37,13 +37,11 @@ class UnLuaCFileObject(
     private var isDelete = false
 
     private val decompileService by lazy(LazyThreadSafetyMode.NONE) {
-        MainApplication.instance.globalServiceRegistry
-            .get<DecompileService>()
+        MainApplication.instance.globalServiceRegistry.get<DecompileService>()
     }
 
     private val lasmAssembleService by lazy(LazyThreadSafetyMode.NONE) {
-        MainApplication.instance.globalServiceRegistry
-            .get<LasmAssembleService>()
+        MainApplication.instance.globalServiceRegistry.get<LasmAssembleService>()
     }
 
     private fun isNotUnLuacParsedObject(): Boolean = data == null
@@ -145,11 +143,9 @@ class UnLuaCFileObject(
         return when {
             proxyFileObject.isFolder -> {
                 val result = proxyFileObject.children.map {
-                    val newUri =
-                        it.name.friendlyURI.replace(
-                            proxyFileObject.name.friendlyURI,
-                            name.friendlyURI
-                        )
+                    val newUri = it.name.friendlyURI.replace(
+                        proxyFileObject.name.friendlyURI, name.friendlyURI
+                    )
                     fileSystem.resolveFile(newUri)
                 }.toTypedArray()
                 result
@@ -274,9 +270,16 @@ class UnLuaCFileObject(
     fun getFunctionFullName(): String? {
         return when (getFileType()) {
             FileObjectType.FILE -> name.baseName
-            FileObjectType.FUNCTION, FileObjectType.DECOMPILE_FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
+            FileObjectType.FUNCTION, FileObjectType.FUNCTION_WITH_CHILD -> {
                 val extra = requireExtra()
                 extra.currentFunction?.fullName
+            }
+
+            FileObjectType.DECOMPILE_FUNCTION -> {
+                val extra = requireExtra()
+                (extra.currentFunction?.fullName ?: proxyFileObject.name.baseName.replace(
+                    ".lasm", ""
+                )) + ".lua"
             }
 
             else -> null
@@ -293,7 +296,7 @@ class UnLuaCFileObject(
 
             FileObjectType.DECOMPILE_FUNCTION -> {
                 val extra = requireExtra()
-                extra.currentFunction?.name + ".lua"
+                (extra.currentFunction?.name ?: proxyFileObject.name.baseName.replace(".lasm", ""))
             }
 
             else -> null
@@ -306,11 +309,20 @@ class UnLuaCFileObject(
             return fullName
         }
 
-        val path =
-            name.pathDecoded.substring(requireExtra().project.name.length + 2)
-                .replace(".lasm", ".lua(/main)")
+        val extra = requireExtra()
+
+        val hasCurrentFunction = extra.currentFunction != null
+
+        val path = name.pathDecoded.substring(extra.project.name.length + 2).replace(
+            ".lasm", ".lua${if (hasCurrentFunction) "(/main)" else ""}"
+        )
+
+
         if (data?.isDecompile == true) {
-            return "${path.replace("_decompile", "")}(.lua)"
+            if (!hasCurrentFunction) {
+                return path.replace("/_decompile", "")
+            }
+            return path.replace("_decompile", "") + "(.lua)"
         }
 
         return path

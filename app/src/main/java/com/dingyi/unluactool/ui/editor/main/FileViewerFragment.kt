@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Space
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -238,8 +239,20 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
                 return false
             }
 
+            val popupMenu = PopupMenu(requireContext(), holder.itemView)
+            popupMenu.inflate(R.menu.editor_file_tree)
+            popupMenu.setOnMenuItemClickListener {
+                when (it?.itemId) {
+                    R.id.editor_menu_code_as_lua -> {
+                        openFileObject(fileObject.resolveFile("_decompile") as UnLuaCFileObject)
+                        true
+                    }
 
+                    else -> false
+                }
 
+            }
+            popupMenu.show()
             return true
         }
 
