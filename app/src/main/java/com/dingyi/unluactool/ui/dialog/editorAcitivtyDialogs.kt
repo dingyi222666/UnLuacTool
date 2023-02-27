@@ -30,7 +30,7 @@ fun gotoDialog(context: Activity, editor: CodeEditor) {
         if (text.isBlank()) {
             return@setOnClickListener
         }
-        val targetLine = text.toInt()
+        val targetLine = runCatching { text.toInt() }.getOrNull() ?: (maxLine + 1)
         if (targetLine > maxLine) {
             binding.gotoEditGroup.error = getString(R.string.editor_edit_dialog_goto_error)
         } else {

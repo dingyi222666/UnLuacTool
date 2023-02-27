@@ -332,7 +332,6 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
                 val result = checkNotNull(targetNodeExtra.children)
                     .map { it as UnLuaCFileObject }
 
-                println(result)
                 result.toSet()
             }
         }

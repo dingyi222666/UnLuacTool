@@ -7,5 +7,6 @@
   "com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembleService": "com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembleService",
   "com.dingyi.unluactool.engine.lua.decompile.DecompileService": "com.dingyi.unluactool.engine.lua.decompile.DecompileService",
   "com.dingyi.unluactool.engine.lasm.assemble.LasmAssembleService": "com.dingyi.unluactool.engine.lasm.assemble.LasmAssembleService",
-  "com.dingyi.unluactool.core.editor.EditorConfigManager": "com.dingyi.unluactool.core.editor.EditorConfigManager"
+  "com.dingyi.unluactool.core.editor.EditorConfigManager": "com.dingyi.unluactool.core.editor.EditorConfigManager",
+  "com.dingyi.unluactool.engine.suggest.CodeSuggestService": "com.dingyi.unluactool.engine.suggest.CodeSuggestService"
 }
