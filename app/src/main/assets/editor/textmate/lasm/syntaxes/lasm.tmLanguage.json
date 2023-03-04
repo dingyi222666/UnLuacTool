@@ -14,7 +14,6 @@
     {
       "include": "#constants"
     },
-
     {
       "captures": {
         "1": {
@@ -27,7 +26,6 @@
       "comment": ".line",
       "match": "\\s*(\\.line)\\s+(\\d+)"
     },
-
     {
       "beginCaptures": {
         "1": {
@@ -38,17 +36,18 @@
         }
       },
       "comment": ".linedefined .. etc",
-      "begin": "(\\.)\\b(linedefined|lastlinedefined|numparams|is_vararg|maxstacksize|source)\\b\\s+",
+      "begin": "(\\.)\\b(version|format|int_size|size_t_size|instruction_size|integer_format|float_format|endianness|linedefined|lastlinedefined|numparams|is_vararg|maxstacksize|source)\\b\\s+",
       "end": "\n",
       "patterns": [
         {
           "match": "(\\d+)",
           "name": "constant.numeric.integer.lasm"
         },
-        { "include": "#strings" }
+        {
+          "include": "#strings"
+        }
       ]
     },
-
     {
       "beginCaptures": {
         "1": {
@@ -66,10 +65,11 @@
         {
           "include": "#strings"
         },
-        { "include": "#constants" }
+        {
+          "include": "#constants"
+        }
       ]
     },
-
     {
       "beginCaptures": {
         "1": {
@@ -87,10 +87,11 @@
         {
           "include": "#strings"
         },
-        { "include": "#constants" }
+        {
+          "include": "#constants"
+        }
       ]
     },
-
     {
       "beginCaptures": {
         "1": {
@@ -111,11 +112,17 @@
           "name": "variable.parameter.lasm",
           "begin": "\\s+(k\\d+)\\s+",
           "end": "\n",
-          "patterns": [{ "include": "#strings" }, { "include": "#constants" }]
+          "patterns": [
+            {
+              "include": "#strings"
+            },
+            {
+              "include": "#constants"
+            }
+          ]
         }
       ]
     },
-
     {
       "beginCaptures": {
         "1": {
@@ -129,23 +136,21 @@
       "begin": "(\\.)\\b(function)\\b\\s+",
       "end": "(\\w+\\/?)*",
       "endCaptures": {
-        "0": { "name": "entity.name.function.path.lasm" }
+        "0": {
+          "name": "entity.name.function.path.lasm"
+        }
       }
     },
-
     {
       "name": "entity.name.function.path.lasm",
-
       "comment": "opcodelist",
       "match": "\\b(move|loadk|loadbool|loadnil|getupval|getglobal|gettable|setglobal|setupval|settable|newtable|self|add|sub|mul|div|mod|pow|unm|not|len|concat|jmp|eq|lt|le|test|testset|call|tailcall|return|forloop|forprep|tforloop|setlist|close|closure|vararg|jmp|loadnil|loadkx|gettabup|settabup|setlist|tforcall|tforloop|extraarg|newtable|setlist|setlisto|tforprep|test|idiv|band|bor|bxor|shl|shr|bnot|loadi|loadf|loadfalse|lfalseskip|loadtrue|gettabup|gettable|geti|getfield|settabup|settable|seti|setfield|newtable|self|addi|addk|subk|mulk|modk|powk|divk|idivk|bandk|bork|bxork|shri|shli|add|sub|mul|mod|pow|div|idiv|band|bor|bxor|shl|shr|mmbin|mmbini|mmbink|concat|tbc|jmp|eq|lt|le|eqk|eqi|lti|lei|gti|gei|test|testset|tailcall|return|return0|return1|forloop|forprep|tforprep|tforcall|tforloop|setlist|vararg|varargprep|extrabyte)\\b"
     },
-
     {
       "name": "variable.parameter.lasm",
       "comment": ".label",
       "match": "\\s+(r|u|k|l)\\d+"
     },
-
     {
       "captures": {
         "1": {
@@ -158,7 +163,6 @@
       "comment": ".label",
       "match": "\\s*(\\.label)\\s+(l\\d+)"
     },
-
     {
       "captures": {
         "1": {
@@ -192,7 +196,7 @@
           "name": "constant.numeric.integer.lasm"
         },
         {
-          "match": "(?<![^.]\\.|:)\\b(false|nil(?!:)|true)\\b|(?<![.])\\.{3}(?!\\.)",
+          "match": "(?<![^.]\\.|:)\\b(false|nil(?!:)|true)\\b(LITTLE|BIG)\\b|(?<![.])\\.{3}(?!\\.)",
           "name": "constant.language.lasm"
         }
       ]

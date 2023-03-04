@@ -1,18 +1,20 @@
 package com.dingyi.unluactool.engine.suggest
 
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.text.CharPosition
+import org.apache.commons.vfs2.FileObject
 
 interface AbstractCodeSuggestProvider {
 
 
-    fun canProvide(file: UnLuaCFileObject): Boolean
+    fun canProvide(file: FileObject): Boolean
 
-    fun completion(file: UnLuaCFileObject, cursor: CharPosition): List<String> {
+    fun completion(file: FileObject,prefix:String, cursor: CharPosition): List<SimpleCompletionItem> {
         return emptyList()
     }
 
-    fun codeNavigation(file: UnLuaCFileObject): List<CodeNavigation> {
+    fun codeNavigation(file: FileObject): List<CodeNavigation> {
         return emptyList()
     }
 }

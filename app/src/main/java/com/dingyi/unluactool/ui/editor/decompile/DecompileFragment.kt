@@ -30,7 +30,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.ThemeRegistry
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
-class DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuListener, MenuEvent {
+class  DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuListener, MenuEvent {
 
     private val viewModel by activityViewModels<EditorViewModel>()
 
@@ -180,7 +180,7 @@ class DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuLi
             binding.editorEditFragmentProgressBar.isVisible = true
 
             binding.editor.setText(viewModel.openFile(currentOpenFileObject))
-            binding.editor.editable = false
+          //  binding.editor.editable = false
             binding.editor.isVisible = true
             binding.editorEditFragmentProgressBar.isVisible = false
 

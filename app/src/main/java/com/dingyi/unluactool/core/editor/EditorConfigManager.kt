@@ -4,6 +4,7 @@ import android.graphics.Typeface
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.dingyi.unluactool.MainApplication
+import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import io.github.rosemoe.sora.lang.Language
 import io.github.rosemoe.sora.langs.textmate.TextMateLanguage
 import io.github.rosemoe.sora.langs.textmate.registry.FileProviderRegistry
@@ -60,10 +61,12 @@ class EditorConfigManager {
         val uri = fileObject.name.friendlyURI
         if (uri.endsWith("_decompile") || uri.endsWith(".lua")) {
             return TextMateLanguage.create("source.lua", true)
+
         }
 
-        //TODO: lasm auto complete
-        return TextMateLanguage.create("source.lasm", false)
+        return WrapperLanguage(
+            TextMateLanguage.create("source.lasm", false), fileObject
+        )
     }
 
 
