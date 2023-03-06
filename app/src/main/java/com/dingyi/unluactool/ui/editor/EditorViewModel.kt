@@ -40,7 +40,6 @@ class EditorViewModel : ViewModel() {
         EditorRepository.getEventManager()
     }
 
-
     suspend fun loadProject(uri: String): Project {
         val projectValue = EditorRepository.loadProject(uri)
         _project.value = projectValue

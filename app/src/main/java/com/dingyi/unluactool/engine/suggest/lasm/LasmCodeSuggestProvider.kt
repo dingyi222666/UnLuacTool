@@ -56,7 +56,76 @@ class LasmCodeSuggestProvider : AbstractCodeSuggestProvider {
         return result
     }
 
+
+
     override fun codeNavigation(file: FileObject): List<CodeNavigation> {
+        val lines = file.inputStream { it.bufferedReader().readLines() }
+
+        val result = mutableListOf<CodeNavigation>()
+
+        lines.forEachIndexed { line, it ->
+            if (it.contains(".function")) {
+                val name = it.substringAfter(".function").substringBefore(" ")
+                val position = CharPosition(line, 0)
+                result.add(
+                    CodeNavigation(
+                        kind = CompletionItemKind.Function,
+                        name = name,
+                        position = position
+                    )
+                )
+            }
+
+            if (it.contains(".label")) {
+                val name = it.substringAfter(".label").substringBefore(" ")
+                val position = CharPosition(line, 0)
+                result.add(
+                    CodeNavigation(
+                        kind = CompletionItemKind.Issue,
+                        name = name,
+                        position = position
+                    )
+                )
+            }
+
+            if (it.contains(".constant")) {
+                val name = it.substringAfter(".constant").substringBefore(" ")
+                val position = CharPosition(line, 0)
+                result.add(
+                    CodeNavigation(
+                        kind = CompletionItemKind.Constant,
+                        name = name,
+                        position = position
+                    )
+                )
+            }
+
+            if (it.contains(".local")) {
+                val name = it.substringAfter(".local").substringBefore(" ")
+                val position = CharPosition(line, 0)
+                result.add(
+                    CodeNavigation(
+                        kind = CompletionItemKind.Variable,
+                        name = name,
+                        position = position
+                    )
+                )
+            }
+
+            if (it.contains(".upvalue")) {
+                val name = it.substringAfter(".upvalue").substringBefore(" ")
+                val position = CharPosition(line, 0)
+                result.add(
+                    CodeNavigation(
+                        kind = CompletionItemKind.Variable,
+                        name = name,
+                        position = position
+                    )
+                )
+            }
+
+        }
+
         return emptyList()
     }
 

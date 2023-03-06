@@ -18,7 +18,9 @@ import com.dingyi.unluactool.core.editor.EditorConfigManager
 import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.databinding.FragmentEditorEditBinding
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.repository.EditorRepository.codeNavigation
 import com.dingyi.unluactool.ui.dialog.gotoDialog
+import com.dingyi.unluactool.ui.dialog.navigationDialog
 import com.dingyi.unluactool.ui.editor.EditorViewModel
 import com.dingyi.unluactool.ui.editor.event.MenuEvent
 import com.dingyi.unluactool.ui.editor.event.MenuListener
@@ -281,6 +283,10 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             R.id.editor_menu_code_undo -> binding.editor.undo()
             R.id.editor_menu_code_as_lua -> {
                 openFileObject(currentOpenFileObject.resolveFile("_decompile") as UnLuaCFileObject)
+            }
+
+            R.id.editor_menu_code_explore -> {
+                navigationDialog(requireActivity(), binding.editor,codeNavigation(currentOpenFileObject))
             }
         }
 

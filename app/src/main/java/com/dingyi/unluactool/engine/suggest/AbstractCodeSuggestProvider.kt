@@ -1,6 +1,7 @@
 package com.dingyi.unluactool.engine.suggest
 
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import io.github.rosemoe.sora.lang.completion.CompletionItemKind
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.text.CharPosition
 import org.apache.commons.vfs2.FileObject
@@ -20,6 +21,7 @@ interface AbstractCodeSuggestProvider {
 }
 
 data class CodeNavigation(
+    val kind:CompletionItemKind,
     val name: String,
     val position: CharPosition
 )
