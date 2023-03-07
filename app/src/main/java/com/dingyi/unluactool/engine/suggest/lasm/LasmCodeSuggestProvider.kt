@@ -6,7 +6,6 @@ import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
 import com.dingyi.unluactool.engine.suggest.AbstractCodeSuggestProvider
 import com.dingyi.unluactool.engine.suggest.CodeNavigation
 import io.github.rosemoe.sora.lang.completion.CompletionItemKind
-import io.github.rosemoe.sora.lang.completion.IdentifierAutoComplete
 import io.github.rosemoe.sora.lang.completion.SimpleCompletionItem
 import io.github.rosemoe.sora.text.CharPosition
 import org.apache.commons.vfs2.FileObject
@@ -80,6 +79,7 @@ class LasmCodeSuggestProvider : AbstractCodeSuggestProvider {
                     CodeNavigation(
                         kind = CompletionItemKind.Issue,
                         name = name,
+                        kindName = "label",
                         position = CharPosition(line, 0)
                     )
                 }
@@ -113,9 +113,14 @@ class LasmCodeSuggestProvider : AbstractCodeSuggestProvider {
 
                 else -> null
             }?.let { codeNavigation ->
+
                 result.add(codeNavigation)
             }
 
+        }
+
+        result.sortBy {
+            it.kind.ordinal
         }
 
         return result
@@ -133,9 +138,11 @@ class LasmCodeSuggestProvider : AbstractCodeSuggestProvider {
 
 
         private val matchFunctionRegex = Regex("\\.function\\s+(.*)\\s?")
-        private val matchLabelRegex = Regex("\\.label\\s+(\\s)(.+)")
-        private val matchConstantRegex = Regex("\\.constant\\s+\\w+\\s+(.*)\\s?")
-        private val matchLocalRegex = Regex("\\.local\\s+(\\S+)(.+)")
-        private val matchUpvalueRegex = Regex("\\.upvalue\\s+(\\S)(.+)")
+        private val matchLabelRegex = Regex("\\.label\\s+(.*)\\s?")
+        private val matchConstantRegex = Regex("\\.constant\\s+\\w+\\s+\"(.*)\"\\s?")
+        private val matchLocalRegex = Regex("\\.local\\s+\"(.*)\".*")
+        private val matchUpvalueRegex = Regex("\\.upvalue\\s+\"(.*)\".*")
+        // match "111" '111'
+
     }
 }

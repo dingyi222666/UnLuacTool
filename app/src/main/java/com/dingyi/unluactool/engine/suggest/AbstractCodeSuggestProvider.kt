@@ -27,6 +27,6 @@ interface AbstractCodeSuggestProvider {
 data class CodeNavigation(
     val kind: CompletionItemKind,
     val name: String,
-    val kindName: String = kind.name,
+    val kindName: String = kind.name.lowercase(),
     val position: CharPosition
 )
