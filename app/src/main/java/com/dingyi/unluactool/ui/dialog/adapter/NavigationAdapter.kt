@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.dingyi.unluactool.databinding.ItemEditorNavigationListBinding
 import com.dingyi.unluactool.engine.suggest.CodeNavigation
+import io.github.rosemoe.sora.lang.completion.SimpleCompletionIconDrawer
 
-class NavigationAdapter:ListAdapter<CodeNavigation,NavigationAdapter.ViewHolder>(DiffItemCallback) {
+class NavigationAdapter :
+    ListAdapter<CodeNavigation, NavigationAdapter.ViewHolder>(DiffItemCallback) {
 
     private lateinit var listener: OnItemClickListener
 
@@ -33,7 +35,11 @@ class NavigationAdapter:ListAdapter<CodeNavigation,NavigationAdapter.ViewHolder>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding =
-            ItemEditorNavigationListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemEditorNavigationListBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
         return ViewHolder(binding)
     }
 
@@ -42,6 +48,8 @@ class NavigationAdapter:ListAdapter<CodeNavigation,NavigationAdapter.ViewHolder>
         holder.binding.apply {
             val item = getItem(position)
             title.text = item.name
+            icon.setImageDrawable(SimpleCompletionIconDrawer.draw(item.kind))
+            description.text = item.kindName
             root.setOnClickListener {
                 listener.onItemClick(item)
             }

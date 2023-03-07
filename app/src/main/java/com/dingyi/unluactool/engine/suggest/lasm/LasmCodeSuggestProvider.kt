@@ -57,76 +57,68 @@ class LasmCodeSuggestProvider : AbstractCodeSuggestProvider {
     }
 
 
-
     override fun codeNavigation(file: FileObject): List<CodeNavigation> {
         val lines = file.inputStream { it.bufferedReader().readLines() }
 
         val result = mutableListOf<CodeNavigation>()
 
-        lines.forEachIndexed { line, it ->
-            if (it.contains(".function")) {
-                val name = it.substringAfter(".function").substringBefore(" ")
-                val position = CharPosition(line, 0)
-                result.add(
+        lines.forEachIndexed { line, lineString ->
+
+
+            when {
+                matchFunctionRegex.matches(lineString) -> {
+                    val name = matchFunctionRegex.find(lineString)!!.groupValues[1]
                     CodeNavigation(
                         kind = CompletionItemKind.Function,
                         name = name,
-                        position = position
+                        position = CharPosition(line, 0)
                     )
-                )
-            }
+                }
 
-            if (it.contains(".label")) {
-                val name = it.substringAfter(".label").substringBefore(" ")
-                val position = CharPosition(line, 0)
-                result.add(
+                matchLabelRegex.matches(lineString) -> {
+                    val name = matchLabelRegex.find(lineString)!!.groupValues[1]
                     CodeNavigation(
                         kind = CompletionItemKind.Issue,
                         name = name,
-                        position = position
+                        position = CharPosition(line, 0)
                     )
-                )
-            }
+                }
 
-            if (it.contains(".constant")) {
-                val name = it.substringAfter(".constant").substringBefore(" ")
-                val position = CharPosition(line, 0)
-                result.add(
+                matchConstantRegex.matches(lineString) -> {
+                    val name = matchConstantRegex.find(lineString)!!.groupValues[1]
                     CodeNavigation(
-                        kind = CompletionItemKind.Constant,
+                        kind = CompletionItemKind.Value,
                         name = name,
-                        position = position
+                        position = CharPosition(line, 0)
                     )
-                )
-            }
+                }
 
-            if (it.contains(".local")) {
-                val name = it.substringAfter(".local").substringBefore(" ")
-                val position = CharPosition(line, 0)
-                result.add(
+                matchLocalRegex.matches(lineString) -> {
+                    val name = matchLocalRegex.find(lineString)!!.groupValues[1]
                     CodeNavigation(
                         kind = CompletionItemKind.Variable,
-                        name = name,
-                        position = position
+                        name,
+                        position = CharPosition(line, 0)
                     )
-                )
-            }
+                }
 
-            if (it.contains(".upvalue")) {
-                val name = it.substringAfter(".upvalue").substringBefore(" ")
-                val position = CharPosition(line, 0)
-                result.add(
+                matchUpvalueRegex.matches(lineString) -> {
+                    val name = matchUpvalueRegex.find(lineString)!!.groupValues[1]
                     CodeNavigation(
-                        kind = CompletionItemKind.Variable,
-                        name = name,
-                        position = position
+                        CompletionItemKind.Variable,
+                        name,
+                        position = CharPosition(line, 0)
                     )
-                )
+                }
+
+                else -> null
+            }?.let { codeNavigation ->
+                result.add(codeNavigation)
             }
 
         }
 
-        return emptyList()
+        return result
     }
 
     companion object {
@@ -140,5 +132,10 @@ class LasmCodeSuggestProvider : AbstractCodeSuggestProvider {
             )
 
 
+        private val matchFunctionRegex = Regex("\\.function\\s+(.*)\\s?")
+        private val matchLabelRegex = Regex("\\.label\\s+(\\s)(.+)")
+        private val matchConstantRegex = Regex("\\.constant\\s+\\w+\\s+(.*)\\s?")
+        private val matchLocalRegex = Regex("\\.local\\s+(\\S+)(.+)")
+        private val matchUpvalueRegex = Regex("\\.upvalue\\s+(\\S)(.+)")
     }
 }

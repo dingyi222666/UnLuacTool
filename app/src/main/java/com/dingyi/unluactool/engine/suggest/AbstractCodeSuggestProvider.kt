@@ -11,7 +11,11 @@ interface AbstractCodeSuggestProvider {
 
     fun canProvide(file: FileObject): Boolean
 
-    fun completion(file: FileObject,prefix:String, cursor: CharPosition): List<SimpleCompletionItem> {
+    fun completion(
+        file: FileObject,
+        prefix: String,
+        cursor: CharPosition
+    ): List<SimpleCompletionItem> {
         return emptyList()
     }
 
@@ -21,7 +25,8 @@ interface AbstractCodeSuggestProvider {
 }
 
 data class CodeNavigation(
-    val kind:CompletionItemKind,
+    val kind: CompletionItemKind,
     val name: String,
+    val kindName: String = kind.name,
     val position: CharPosition
 )

@@ -60,7 +60,7 @@ fun navigationDialog(context: Activity, editor: CodeEditor,navigationList: List<
     val binding = DialogNavigationBinding.inflate(context.layoutInflater)
     val dialog = MaterialAlertDialogBuilder(context)
         .apply {
-            setTitle(R.string.editor_menu_code_goto)
+            setTitle(R.string.editor_menu_code_explore)
             setView(binding.root)
             setNegativeButton(android.R.string.cancel) { _, _ ->
             }
@@ -76,7 +76,6 @@ fun navigationDialog(context: Activity, editor: CodeEditor,navigationList: List<
                 editor.jumpToLine(it.position.line)
                 dialog.dismiss()
             }
-
         }
     }
 
