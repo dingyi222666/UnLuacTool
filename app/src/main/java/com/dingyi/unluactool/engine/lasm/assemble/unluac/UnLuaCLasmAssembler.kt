@@ -19,6 +19,8 @@ class UnLuaCLasmAssembler : AbstractLasmAssembler {
     }
 
     override fun assembleToObject(mainChunk: LASMChunk): Any {
+        println(mainChunk.versionData)
+        println(mainChunk.data)
         val inputStream = ByteArrayInputStream(mainChunk.getAllData().encodeToByteArray())
         val assembler = Assembler(
             inputStream,

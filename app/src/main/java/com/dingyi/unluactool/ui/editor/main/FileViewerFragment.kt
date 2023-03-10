@@ -146,6 +146,9 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     }
 
     override fun onClick(menuItem: MenuItem) {
+        if (viewModel.editorUIFileTabManager.currentSelectOpenedFileTabData.value?.fileUri != "") {
+            return
+        }
         when (menuItem.itemId) {
             R.id.editor_menu_exit -> {
                 requireActivity().finish()

@@ -27,7 +27,6 @@ class LasmUnDumper {
         //data
         val data = readString(stream)
 
-
         val chunk = LASMChunk(data, version, name, fullName)
 
         val childSize = readInt(stream)
@@ -81,7 +80,7 @@ class LasmUnDumper {
             val cArray = CharArray(1024)
             var len = it.read(cArray, 0, cArray.size)
             while (len > 0) {
-                builder.append(cArray, 0, len)
+                builder.appendRange(cArray, 0, len)
                 len = it.read(cArray, 0, cArray.size)
             }
 
@@ -109,7 +108,6 @@ class LasmUnDumper {
         if (!array.contentEquals(LasmDumper.lasmHeader)) {
             error("Does not match the header bytecode")
         }
-
 
     }
 }

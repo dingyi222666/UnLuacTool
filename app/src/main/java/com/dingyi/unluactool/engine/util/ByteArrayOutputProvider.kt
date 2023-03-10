@@ -5,7 +5,7 @@ import java.io.ByteArrayOutputStream
 
 class ByteArrayOutputProvider : unluac.decompile.OutputProvider {
 
-    private val out = ByteArrayOutputStream()
+    private var out = ByteArrayOutputStream()
 
     private val eol = System.lineSeparator();
 
@@ -31,6 +31,7 @@ class ByteArrayOutputProvider : unluac.decompile.OutputProvider {
 
     fun reset() {
         out.reset();
+      //  out = ByteArrayOutputStream()
     }
 
     fun close() {

@@ -66,7 +66,6 @@ class LasmDumper(
 
     private fun dumpString(data: String) {
 
-
         val byteArrayOutputStream = ByteArrayOutputStream()
 
         val gzipOutputStream = GZIPOutputStream(byteArrayOutputStream)

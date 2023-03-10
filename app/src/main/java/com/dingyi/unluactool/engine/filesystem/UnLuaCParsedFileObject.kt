@@ -121,6 +121,7 @@ class UnLuacParsedFileObject(
     }
 
 
+
     inner class ParsedObjectOutputStream(
         private val currentFunction: LASMFunction? = null
     ) : OutputStream() {
@@ -139,8 +140,11 @@ class UnLuacParsedFileObject(
             if (currentFunction != null) {
                 currentFunction.data = data
             } else {
+                // 暂时清空versionData 非常有效的方案的说
+                lasmChunk.versionData = ""
                 lasmChunk.data = data
             }
+
 
             val byteCode = checkNotNull(lasmAssembleService.assembleToObject(lasmChunk))
 
