@@ -4,8 +4,10 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.dingyi.unluactool.core.event.EventType
 import com.dingyi.unluactool.core.progress.ProgressState
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import org.apache.commons.vfs2.FileObject
 import java.io.File
+import java.io.OutputStream
 
 interface Project {
 
@@ -29,12 +31,13 @@ interface Project {
 
     fun getProjectPath(attr: String): FileObject
 
-    fun getProjectPath(attr: String,name:String):FileObject
+    fun getProjectPath(attr: String, name: String): FileObject
 
     suspend fun open(progressState: ProgressState? = null)
 
-    fun isOpened():Boolean = false
+    fun isOpened(): Boolean = false
 
+    fun exportProject(outputStream: ZipOutputStream)
 
     companion object {
         const val PROJECT_SRC_NAME = "srcDir"

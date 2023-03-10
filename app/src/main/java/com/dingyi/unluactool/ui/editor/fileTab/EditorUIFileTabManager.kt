@@ -129,7 +129,10 @@ class EditorUIFileTabManager {
         return checkNotNull(openedFileList.find {
             it.fileUri == fileObject.name.friendlyURI
         })
+    }
 
+    fun isAllSaved(): Boolean {
+        return openedFileList.all { it.isNotSaveEditContent.value == false }
     }
 }
 

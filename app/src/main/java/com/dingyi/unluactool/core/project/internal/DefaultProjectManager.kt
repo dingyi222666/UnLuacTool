@@ -12,6 +12,7 @@ import com.dingyi.unluactool.core.service.get
 import com.dingyi.unluactool.core.util.JsonConfigReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.VFS
 import java.io.File
@@ -170,6 +171,11 @@ object EmptyProject : Project {
     override suspend fun open(progressState: ProgressState?) {
         TODO("Not yet implemented")
     }
+
+    override fun exportProject(outputStream: ZipOutputStream) {
+        TODO("Not yet implemented")
+    }
+
 
 
 }

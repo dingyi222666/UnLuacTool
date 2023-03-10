@@ -1,6 +1,7 @@
 package com.dingyi.unluactool.core.project.internal
 
 import com.dingyi.unluactool.common.ktx.encodeToJson
+import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.outputStream
 import com.dingyi.unluactool.core.event.EventManager
 import com.dingyi.unluactool.core.progress.ProgressState
@@ -10,11 +11,19 @@ import com.dingyi.unluactool.core.project.ProjectIndexer
 import com.dingyi.unluactool.core.project.ProjectManager
 import com.dingyi.unluactool.core.service.ServiceRegistry
 import com.dingyi.unluactool.core.service.get
+import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.engine.lasm.assemble.LasmAssembleService
+import com.dingyi.unluactool.engine.lasm.disassemble.LasmDisassembleService
+import com.dingyi.unluactool.engine.lasm.dump.v1.LasmUnDumper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import net.lingala.zip4j.io.outputstream.ZipOutputStream
+import net.lingala.zip4j.model.ZipParameters
 import org.apache.commons.vfs2.FileObject
 import org.apache.commons.vfs2.FileSelectInfo
 import org.apache.commons.vfs2.FileSelector
+import java.io.ByteArrayOutputStream
+import java.io.OutputStream
 
 internal class LuaProject constructor(
     private val serviceRegistry: ServiceRegistry,
@@ -130,6 +139,36 @@ internal class LuaProject constructor(
         return result
     }
 
+
+    override fun exportProject(outputStream: ZipOutputStream) {
+        val lasmFiles = getProjectPath(Project.PROJECT_INDEXED_NAME)
+            .findFiles(LasmFileSelector)
+            .toList()
+
+        val lasmAssembleService = serviceRegistry.get<LasmAssembleService>()
+        val projectIndexerName = getProjectPath(Project.PROJECT_INDEXED_NAME).name
+        lasmFiles.forEach { fileObject ->
+
+            val chunk = fileObject.inputStream {
+                LasmUnDumper().unDump(
+                    it
+                )
+            }
+
+            val subName = fileObject.name.path.substring(projectIndexerName.path.length + 1)
+                .replace(".lasm", ".lua")
+            outputStream.putNextEntry(
+                ZipParameters().apply {
+                    fileNameInZip = subName
+                }
+            )
+            lasmAssembleService.assembleToStream(chunk, outputStream)
+            outputStream.closeEntry()
+        }
+        outputStream.flush()
+        outputStream.close()
+    }
+
     override fun <T> getIndexer(): ProjectIndexer<T> {
         return indexer as ProjectIndexer<T>
     }
@@ -159,6 +198,16 @@ internal class LuaProject constructor(
     object LuaFileSelector : FileSelector {
         override fun includeFile(fileInfo: FileSelectInfo): Boolean {
             return fileInfo.file.run { isFile && name.extension == "lua" }
+        }
+
+        override fun traverseDescendents(fileInfo: FileSelectInfo): Boolean {
+            return true
+        }
+    }
+
+    object LasmFileSelector : FileSelector {
+        override fun includeFile(fileInfo: FileSelectInfo): Boolean {
+            return fileInfo.file.run { isFile && name.extension == "lasm" }
         }
 
         override fun traverseDescendents(fileInfo: FileSelectInfo): Boolean {

@@ -8,9 +8,12 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Space
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
@@ -22,12 +25,16 @@ import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.dp
+import com.dingyi.unluactool.common.ktx.showSnackBar
+import com.dingyi.unluactool.core.project.ProjectExporter
 import com.dingyi.unluactool.databinding.FragmentEditorFileViewerBinding
 import com.dingyi.unluactool.databinding.ItemEditorFileViewerListBinding
 import com.dingyi.unluactool.databinding.ItemEditorFileViewerListDirBinding
 import com.dingyi.unluactool.engine.filesystem.FileObjectType
 import com.dingyi.unluactool.engine.filesystem.UnLuaCFileObject
+import com.dingyi.unluactool.ui.dialog.showMessageDialog
 import com.dingyi.unluactool.ui.editor.EditorViewModel
+import com.dingyi.unluactool.ui.editor.event.MenuEvent
 import com.dingyi.unluactool.ui.editor.event.MenuListener
 import com.dingyi.unluactool.ui.editor.fileTab.OpenedFileTabData
 import com.google.android.material.textview.MaterialTextView
@@ -43,7 +50,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), MenuListener {
+class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), MenuListener,
+    MenuEvent {
 
     private val viewModel by activityViewModels<EditorViewModel>()
 
@@ -56,6 +64,9 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
     private val projectUri by lazy(LazyThreadSafetyMode.NONE) {
         viewModel.project.value?.projectPath?.name?.friendlyURI ?: ""
     }
+
+    private lateinit var createDocumentLauncher: ActivityResultLauncher<String>
+
 
     private val eventManager by lazy(LazyThreadSafetyMode.NONE) {
         viewModel.eventManager
@@ -86,6 +97,19 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
         lifecycleScope.launch {
             refresh()
+        }
+
+        createDocumentLauncher = registerForActivityResult(
+            ActivityResultContracts.CreateDocument("application/zip")
+        ) {
+            kotlin.runCatching {
+                ProjectExporter.exportProject(it, viewModel.project.value)
+            }.onFailure {
+                showMessageDialog(requireContext(), it.message.toString())
+            }.onSuccess {
+                getString(R.string.editor_project_export_success)
+                    .showSnackBar(binding.root)
+            }
         }
 
     }
@@ -121,15 +145,28 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
 
     }
 
+    override fun onClick(menuItem: MenuItem) {
+        when (menuItem.itemId) {
+            R.id.editor_menu_exit -> {
+                requireActivity().finish()
+            }
+
+            R.id.editor_menu_make_project -> {
+                createDocumentLauncher.launch("${viewModel.project.value?.name ?: "Default"}.zip")
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         eventManager.subscribe(MenuListener.menuListenerEventType, this)
-
+        eventManager.subscribe(MenuEvent.eventType, this, stickyEvent = false)
     }
 
     override fun onPause() {
         super.onPause()
         eventManager.unsubscribe(MenuListener.menuListenerEventType, this)
+        eventManager.unsubscribe(MenuEvent.eventType, this)
     }
 
     inner class FileNodeBinder : TreeViewBinder<UnLuaCFileObject>(),

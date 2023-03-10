@@ -260,8 +260,8 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
         when (menuItem.itemId) {
             R.id.editor_menu_save -> {
                 lifecycleScope.launch {
-                    viewModel.saveFile(currentOpenFileObject,binding.editor.text.toString())
                     viewModel.contentChangeFile(binding.editor, currentOpenFileObject)
+                    viewModel.saveFile(currentOpenFileObject, binding.editor.text.toString())
                     getString(R.string.editor_save_successful).showSnackBar(
                         binding.root
                     )
@@ -286,7 +286,11 @@ class EditFragment : BaseFragment<FragmentEditorEditBinding>(), MenuListener, Me
             }
 
             R.id.editor_menu_code_explore -> {
-                navigationDialog(requireActivity(), binding.editor,codeNavigation(currentOpenFileObject))
+                navigationDialog(
+                    requireActivity(),
+                    binding.editor,
+                    codeNavigation(currentOpenFileObject)
+                )
             }
         }
 
