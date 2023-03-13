@@ -14,8 +14,7 @@
     <string name="editor_project_export_success">导出项目成功</string>
     <string name="editor_project_export_fail">导出项目失败</string>
     <string name="editor_main_viewer_tab_browse">浏览</string>
-    <string name="editor_main_viewer_tab_recent">最近</string>
-    <string name="editor_main_viewer_tab_search">搜索</string>
+    <string name="editor_main_viewer_tab_constant">常量</string>
     <string name="editor_menu_export_project">编译并导出</string>
     <string name="editor_menu_save">保存</string>
     <string name="editor_menu_backup_project">备份</string>

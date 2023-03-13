@@ -24,12 +24,7 @@
         <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/editor_main_viewer_tab_recent" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="@string/editor_main_viewer_tab_search" />
+            android:text="@string/editor_main_viewer_tab_constant" />
     </com.google.android.material.tabs.TabLayout>
 
 

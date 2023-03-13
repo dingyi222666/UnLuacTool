@@ -17,7 +17,7 @@ fun progressDialogWithState(
     state.observe(lifecycleOwner) {
         val (text, progress) = it
         dialog.setMessage(text)
-        dialog.progress = progress
+        dialog.progress = progress.toInt()
     }
 
     return dialog to state

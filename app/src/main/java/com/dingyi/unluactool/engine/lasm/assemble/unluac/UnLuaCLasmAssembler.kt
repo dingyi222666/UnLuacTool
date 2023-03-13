@@ -19,8 +19,6 @@ class UnLuaCLasmAssembler : AbstractLasmAssembler {
     }
 
     override fun assembleToObject(mainChunk: LASMChunk): Any {
-        println(mainChunk.versionData)
-        println(mainChunk.data)
         val inputStream = ByteArrayInputStream(mainChunk.getAllData().encodeToByteArray())
         val assembler = Assembler(
             inputStream,
@@ -34,7 +32,7 @@ class UnLuaCLasmAssembler : AbstractLasmAssembler {
             header.config = Configuration().apply {
                 rawstring = true
                 mode = Configuration.Mode.DECOMPILE
-                variable = Configuration.VariableMode.NODEBUG
+                variable = Configuration.VariableMode.FINDER
                 //strict_scope = true
             }
         }

@@ -8,8 +8,6 @@ class StreamOutputProvider(
     private val out:OutputStream
     ): OutputProvider,Closeable {
 
-
-
     private val eol = System.lineSeparator();
 
     override fun print(s: String) {

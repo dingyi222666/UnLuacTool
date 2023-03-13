@@ -1,5 +1,6 @@
 package com.dingyi.unluactool.engine.lasm.indexer
 
+import android.util.Log
 import com.dingyi.unluactool.MainApplication
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.ktx.getString
@@ -57,13 +58,15 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
 
             projectIndexedDir.createFolder()
 
+            val progressIndex = 1.0
+            val nowProgress = (progressIndex / size) * 100
+            val nextProgress = (progressIndex + 1.0) / size * 100
+            val rangeProgress = nextProgress - nowProgress
+
+
             for (index in 0 until size) {
 
                 val originFileObject = allProjectFileList[index]
-                val nowProgress = index / size * 100
-                val nextProgress = index + 1 / size * 100
-                val rangeProgress = nextProgress - nowProgress
-
 
                 val originFile = originFileObject.uri.toPath().toFile()
                 val srcDirFile = projectSrcDir.uri.toPath().toFile()
@@ -73,14 +76,15 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     srcDirFile.absolutePath.length + 1
                 )
 
-                progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
-
-                progressState?.text = getString(
-                    R.string.editor_project_indexer_toast,
-                    fileName,
-                    index,
-                    size
-                )
+                progressState?.apply {
+                    progress += rangeProgress / 3
+                    text = getString(
+                        R.string.editor_project_indexer_toast,
+                        fileName,
+                        index,
+                        size
+                    )
+                }
 
                 delay(1000)
 
@@ -95,7 +99,9 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     )
 
                 if (targetFile.exists()) {
-                    progressState?.progress = nextProgress
+                    progressState?.apply {
+                        progress += rangeProgress
+                    }
                     continue
                 }
 
@@ -107,7 +113,9 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     configuration = null,
                 ) ?: continue
 
-                progressState?.progress = progressState?.progress?.plus(rangeProgress / 3) ?: 0
+                progressState?.apply {
+                    progress += rangeProgress / 3
+                }
 
                 delay(1000)
 
@@ -127,12 +135,15 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     it.write(bytes)
                 }
 
-                progressState?.progress = nextProgress
+                progressState?.apply {
+                    progress += rangeProgress / 3
+                }
+
+                delay(1000)
 
             }
 
-
-            return@withContext Collections.emptyList()
+            return@withContext emptyList()
 
 
         }

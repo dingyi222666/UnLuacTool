@@ -12,8 +12,7 @@
     <string name="main_project_lua_file_count">%1$s lua files</string>
     <string name="editor_project_indexer_tips">Opening project %1$s (%2$s/%3$s)</string>
     <string name="editor_main_viewer_tab_browse">Browse</string>
-    <string name="editor_main_viewer_tab_recent">Recent</string>
-    <string name="editor_main_viewer_tab_search">Search</string>
+    <string name="editor_main_viewer_tab_constant">Constant</string>
     <string name="editor_project_export_success">Export project successfully</string>
     <string name="editor_project_export_fail">Export project failed</string>
     <string name="editor_menu_export_project">Compile and Export</string>

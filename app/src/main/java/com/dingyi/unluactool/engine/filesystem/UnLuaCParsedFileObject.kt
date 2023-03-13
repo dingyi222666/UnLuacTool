@@ -48,7 +48,6 @@ class UnLuacParsedFileObject(
                 it
             )
         }
-
     }
 
 
@@ -71,7 +70,6 @@ class UnLuacParsedFileObject(
                 it
             )
         }
-
     }
 
     fun refreshFlush() {
@@ -121,7 +119,6 @@ class UnLuacParsedFileObject(
     }
 
 
-
     inner class ParsedObjectOutputStream(
         private val currentFunction: LASMFunction? = null
     ) : OutputStream() {
@@ -136,6 +133,7 @@ class UnLuacParsedFileObject(
             super.close()
 
             val data = outputStream.toByteArray().decodeToString()
+            val oldVersionData = lasmChunk.versionData
 
             if (currentFunction != null) {
                 currentFunction.data = data
@@ -149,6 +147,7 @@ class UnLuacParsedFileObject(
             val byteCode = checkNotNull(lasmAssembleService.assembleToObject(lasmChunk))
 
             val oldChunk = lasmChunk
+            oldChunk.versionData = oldVersionData
 
             lasmChunk = checkNotNull(lasmDisassembleService.disassemble(byteCode))
 

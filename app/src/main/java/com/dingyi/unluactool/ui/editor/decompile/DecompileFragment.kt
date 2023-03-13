@@ -46,12 +46,9 @@ class  DecompileFragment : BaseFragment<FragmentEditorDecompileBinding>(), MenuL
         binding.editor.createSubEventManager()
     }
 
-
     private val globalServiceRegistry by lazy(LazyThreadSafetyMode.NONE) {
         MainApplication.instance.globalServiceRegistry
     }
-
-    private var toolbar = WeakReference<Toolbar>(null)
 
     private lateinit var currentOpenFileObject: UnLuaCFileObject
 

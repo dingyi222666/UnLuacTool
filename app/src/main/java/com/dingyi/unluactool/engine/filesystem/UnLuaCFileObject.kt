@@ -238,6 +238,7 @@ class UnLuaCFileObject(
 
     private fun decompileFunction(): InputStream {
         val extra = requireExtra()
+
         val assembleObject = if (extra.currentFunction == null) {
             lasmAssembleService.assembleToObject(extra.chunk)
         } else {
