@@ -86,8 +86,6 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                     )
                 }
 
-                delay(1000)
-
                 val targetFile = MainApplication
                     .instance
                     .fileSystemManager
@@ -116,8 +114,6 @@ class LasmIndexer : ProjectIndexer<List<LASMChunk>> {
                 progressState?.apply {
                     progress += rangeProgress / 3
                 }
-
-                delay(1000)
 
                 val chunk = lasmDisassembleService.disassemble(header) ?: continue
 

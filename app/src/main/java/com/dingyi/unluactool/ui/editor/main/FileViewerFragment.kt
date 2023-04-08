@@ -7,6 +7,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -25,6 +26,7 @@ import androidx.lifecycle.lifecycleScope
 import com.dingyi.unluactool.R
 import com.dingyi.unluactool.common.base.BaseFragment
 import com.dingyi.unluactool.common.ktx.dp
+import com.dingyi.unluactool.common.ktx.inputStream
 import com.dingyi.unluactool.common.ktx.showSnackBar
 import com.dingyi.unluactool.core.project.ProjectExporter
 import com.dingyi.unluactool.databinding.FragmentEditorFileViewerBinding
@@ -202,7 +204,6 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
                 this.width = leftMargin
             }
 
-
             val titleTextView = itemView.findViewById<MaterialTextView>(R.id.title)
 
             val imageView = itemView.findViewById<AppCompatImageView>(R.id.image)
@@ -371,7 +372,12 @@ class FileViewerFragment : BaseFragment<FragmentEditorFileViewerBinding>(), Menu
             return withContext(Dispatchers.IO) {
                 val result = checkNotNull(targetNodeExtra.children)
                     .map { it as UnLuaCFileObject }
-
+                result.forEach { unLuaCFileObject ->
+                    // print it and read it to print
+                    val path = unLuaCFileObject.name.path
+                    val content = unLuaCFileObject.inputStream { it.readBytes().decodeToString() }
+                    Log.d("UnLuaCFileObject", "path: $path, content: $content")
+                }
                 result.toSet()
             }
         }
